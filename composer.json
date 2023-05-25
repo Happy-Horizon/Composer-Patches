@@ -9,5 +9,11 @@
         "psr-4": {
             "HH\\Patches\\": "app"
         }
-    }
+    },
+    "authors": [
+        {
+            "name": "Matthijs Breed",
+            "email": "matthijs.breed@experius.nl"
+        }
+    ]
 }

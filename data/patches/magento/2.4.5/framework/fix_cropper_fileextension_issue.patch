@@ -1,0 +1,51 @@
+diff --git a/vendor/magento/framework/File/Uploader.php b/vendor/magento/framework/File/Uploader.php
+index ff4eb803..add90674 100644
+--- a/vendor/magento/framework/File/Uploader.php
++++ b/vendor/magento/framework/File/Uploader.php
+@@ -428,21 +428,22 @@ class Uploader
+      * @return void
+      * @throws ValidationException
+      */
+     protected function _validateFile()
+     {
+         if ($this->_fileExists === false) {
+             return;
+         }
+ 
+         //is file extension allowed
+-        if (!$this->checkAllowedExtension($this->getFileExtension())) {
++        $fileExtension = $this->getFileExtension() ?: explode('/', $this->_file['type'])[1];
++        if (!$this->checkAllowedExtension($fileExtension)) {
+             throw new ValidationException(__('Disallowed file type.'));
+         }
+         //run validate callbacks
+         foreach ($this->_validateCallbacks as $params) {
+             if (is_object($params['object'])
+                 && method_exists($params['object'], $params['method'])
+                 && is_callable([$params['object'], $params['method']])
+             ) {
+                 $params['object']->{$params['method']}($this->_file['tmp_name']);
+             }
+@@ -657,21 +658,21 @@ class Uploader
+         return $extension && in_array(strtolower($extension), $this->_allowedExtensions);
+     }
+ 
+     /**
+      * Return file mime type
+      *
+      * @return string
+      */
+     private function _getMimeType()
+     {
+-        return $this->fileMime->getMimeType($this->_file['tmp_name']);
++        return $this->_file['type'];
+     }
+ 
+     /**
+      * Set upload field id
+      *
+      * @param string|array $fileId
+      * @return void
+      * @throws \DomainException
+      * @throws \InvalidArgumentException
+      * @SuppressWarnings(PHPMD.CyclomaticComplexity)

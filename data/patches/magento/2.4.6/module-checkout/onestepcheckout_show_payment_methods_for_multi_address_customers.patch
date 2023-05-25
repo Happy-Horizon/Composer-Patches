@@ -1,0 +1,36 @@
+diff --git a/vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js b/vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js
+index e728a5c..747c948 100644
+--- a/vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js
++++ b/vendor/magento/module-checkout/view/frontend/web/js/view/billing-address.js
+@@ -71,25 +71,29 @@ function (
+ 
+         /**
+          * @return {exports.initObservable}
+          */
+         initObservable: function () {
+             this._super()
+                 .observe({
+                     selectedAddress: null,
+                     isAddressDetailsVisible: quote.billingAddress() != null,
+                     isAddressFormVisible: !customer.isLoggedIn() || !addressOptions.length,
+-                    isAddressSameAsShipping: false,
++                    isAddressSameAsShipping: true,
+                     saveInAddressBook: 1
+                 });
+ 
+             quote.billingAddress.subscribe(function (newAddress) {
++       if (!quote.shippingAddress()) {
++           return this;
++       }
++
+                 if (quote.isVirtual()) {
+                     this.isAddressSameAsShipping(false);
+                 } else {
+                     this.isAddressSameAsShipping(
+                         newAddress != null &&
+                         newAddress.getCacheKey() == quote.shippingAddress().getCacheKey() //eslint-disable-line eqeqeq
+                     );
+                 }
+ 
+                 if (newAddress != null && newAddress.saveInAddressBook !== undefined) {
+ 

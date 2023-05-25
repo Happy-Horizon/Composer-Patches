@@ -15,5 +15,6 @@ class Router
     {
         $app->get('/', [Controller::class, 'root']);
         $app->get('/patches[/{params:.*}]', [Controller::class, 'patches']);
+        $app->get('/generate/patches[/{params:.*}]', [Controller::class, 'generate']);
     }
 }

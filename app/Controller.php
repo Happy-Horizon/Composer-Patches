@@ -57,29 +57,76 @@ class Controller
         return $response;
     }
     
+    /**
+     * @param Path $path
+     * @param ResponseInterface
+     * @param array $args
+     * @return ResponseInterface
+     */
     protected function showDirectoryContents(Path $path, ResponseInterface $response, array $args): ResponseInterface
     {
         $contents = array_diff(scandir($path->getFullPath()), ['.', '..']);
         
+        $args['actions'] = [];
+        $args['links'] = [];
         foreach ($contents as $content) {
-            $args['links'][$path->getRelativePath() . '/' . $content] = ucfirst($content);
+            if ($content === '.install.flag') {
+                $args['actions']['/generate' . $path->getRelativePath()] = 'Generate composer.patches.json';
+            } else {
+                $args['links'][$path->getRelativePath() . '/' . $content] = $content;
+            }
         }
         $args['parent'] = $path->getParent();
         
         return $this->phpRenderer->render($response, 'links.phtml', $args);
     }
     
+    /**
+     * @param Path $path
+     * @param ResponseInterface
+     * @param array $args
+     * @return ResponseInterface
+     */
     protected function showFile(Path $path, ResponseInterface $response, array $args): ResponseInterface
     {
-        $response = $response->withHeader('Content-Type', 'text/x-diff');
+        $response = $response->withHeader('Content-Type', 'text/plain')->withHeader('Content-Disposition', 'inline');
         $response->getBody()->write(file_get_contents($path->getFullPath()));
         return $response;
     }
-    
-    protected function invalidUrl($path, ResponseInterface $response): ResponseInterface
+
+    /**
+     * @param Path $path
+     * @param ResponseInterface
+     * @return ResponseInterface
+     */
+    protected function invalidUrl(Path $path, ResponseInterface $response): ResponseInterface
     {
         $response->withStatus(404);
-        $response->getBody()->write('Invalid Url');
+        $response->getBody()->write('<span>Invalid Url - <a href="/patches">Back to patch list</a></span>');
+        return $response;
+    }
+
+    public function generate(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    {
+        $path = $this->directoryResolver->processPath($args['params'] ?? '');
+        $modules = array_diff(scandir($path->getFullPath()), ['.', '..', '.install.flag']);
+        $json = [
+            'patches' => []
+        ];
+        foreach($modules as $module) {
+            $patches = array_diff(scandir($path->getFullPath() . '/' . $module), ['.', '..']);
+            /**
+             * Array keys are needed for cweagans patcher to work
+             */
+            $i = 0;
+            foreach ($patches as $patch) {
+                $json['patches'][$module]['#' . $i] = "https://patches.experius.nl" . $path->getRelativePath() . "/" . $module . "/" . $patch;
+                $i++;
+            }
+            
+        }
+        $response = $response->withHeader('Content-Type', 'text/plain');
+        $response->getBody()->write(json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         return $response;
     }
 }

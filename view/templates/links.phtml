@@ -1,15 +1,28 @@
 <?php
 /** @var $this \Slim\Views\PhpRenderer */
 /** @var $links string[] */
+/** @var $actions string[] */
 ?>
 <h1>
     Happy Horizon Patches
 </h1>
     <?php if (empty($links)): ?>
-        <span>No patches yet - <a href="<?= $parent?>">Go Back</a></span>
+        <span>No patches yet</span>
+        <br/>
     <?php endif; ?>
+<a href="<?= $parent?>">Go Back</a>
 <ul>
     <?php foreach ($links as $link => $title): ?>
-        <li><a href="<?= $link ?>"><?= $title ?></a></li>
+        <li>
+            <a href="<?= $link ?>"><?= $title ?></a>
+        </li>
     <?php endforeach; ?>
 </ul>
+
+<?php if (!empty($actions)): ?>
+    <?php foreach ($actions as $link => $title): ?>
+        <button>
+            <a href="<?= $link ?>"><?= $title ?></a>
+        </button>
+    <?php endforeach; ?>
+<?php endif; ?>
