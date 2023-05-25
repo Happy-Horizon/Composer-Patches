@@ -1,0 +1,15 @@
+<?php
+/** @var $this \Slim\Views\PhpRenderer */
+/** @var $links string[] */
+?>
+<h1>
+    Happy Horizon Patches
+</h1>
+    <?php if (empty($links)): ?>
+        <span>No patches yet - <a href="<?= $parent?>">Go Back</a></span>
+    <?php endif; ?>
+<ul>
+    <?php foreach ($links as $link => $title): ?>
+        <li><a href="<?= $link ?>"><?= $title ?></a></li>
+    <?php endforeach; ?>
+</ul>
