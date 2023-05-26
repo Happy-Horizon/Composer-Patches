@@ -25,11 +25,13 @@ class Controller
      * @param ResponseInterface $response
      * @param array $args
      * @return ResponseInterface
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function root(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {   
         $args['links'] = [
-            'patches' => 'Patches'
+            'patches' => 'Patches',
+            'patches/all' => 'All'
         ];
         return $this->phpRenderer->render($response, 'links.phtml', $args);
     }
@@ -39,41 +41,52 @@ class Controller
      * @param ResponseInterface $response
      * @param array $args
      * @return ResponseInterface
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function patches(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        $args['actions']['/patches/all'] = 'Show All';
         $path = $this->directoryResolver->processPath($args['params'] ?? '');
-        switch ($path->getType()) {
-            case Type::Directory:
-                $response = $this->showDirectoryContents($path, $response, $args);
-                break;
-            case Type::File:
-                $response = $this->showFile($path, $response, $args);
-                break;
-            case Type::Invalid:
-                $response = $this->invalidUrl($path, $response);
-                break;
+        return match ($path->getType()) {
+            Type::All => $this->allPatches($path, $response, $args),
+            Type::Directory => $this->showDirectoryContents($path, $response, $args),
+            Type::File => $this->showFile($path, $response, $args),
+            Type::Invalid => $this->invalidUrl($path, $response)
+        };
+    }
+
+    /**
+     * @param Path $path
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return ResponseInterface
+     */
+    protected function allPatches(Path $path, ResponseInterface $response, array $args): ResponseInterface
+    {
+        $args['links'] = [];
+        foreach($this->directoryResolver->getAllPatchFiles($path) as $patchFile) {
+            $args['links'][$patchFile] = $patchFile;
         }
-        return $response;
+        $args['parent'] = $path->getRelativePath();
+        return $this->phpRenderer->render($response, 'links.phtml', $args);
     }
     
     /**
      * @param Path $path
-     * @param ResponseInterface
+     * @param ResponseInterface $response
      * @param array $args
      * @return ResponseInterface
      */
     protected function showDirectoryContents(Path $path, ResponseInterface $response, array $args): ResponseInterface
     {
-        $contents = array_diff(scandir($path->getFullPath()), ['.', '..']);
+        $contents = $this->directoryResolver->getDirectoryContents($path);
         
-        $args['actions'] = [];
         $args['links'] = [];
         foreach ($contents as $content) {
             if ($content === '.install.flag') {
                 $args['actions']['/generate' . $path->getRelativePath()] = 'Generate composer.patches.json';
             } else {
-                $args['links'][$path->getRelativePath() . '/' . $content] = $content;
+                $args['links'][$path->getRelativePath() . DS . $content] = $content;
             }
         }
         $args['parent'] = $path->getParent();
@@ -83,7 +96,7 @@ class Controller
     
     /**
      * @param Path $path
-     * @param ResponseInterface
+     * @param ResponseInterface $response
      * @param array $args
      * @return ResponseInterface
      */
@@ -96,7 +109,7 @@ class Controller
 
     /**
      * @param Path $path
-     * @param ResponseInterface
+     * @param ResponseInterface $response
      * @return ResponseInterface
      */
     protected function invalidUrl(Path $path, ResponseInterface $response): ResponseInterface
@@ -106,21 +119,29 @@ class Controller
         return $response;
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return ResponseInterface
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function generate(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $path = $this->directoryResolver->processPath($args['params'] ?? '');
-        $modules = array_diff(scandir($path->getFullPath()), ['.', '..', '.install.flag']);
+        $modules = $this->directoryResolver->getDirectoryContents($path, true);
         $json = [
             'patches' => []
         ];
+        $vendor = str_replace('/patches/', '', $path->getParent());
         foreach($modules as $module) {
-            $patches = array_diff(scandir($path->getFullPath() . '/' . $module), ['.', '..']);
+            $patches = array_diff(scandir($path->getFullPath() . DS . $module), ['.', '..']);
             /**
              * Array keys are needed for cweagans patcher to work
              */
             $i = 0;
             foreach ($patches as $patch) {
-                $json['patches'][$module]['#' . $i] = "https://patches.experius.nl" . $path->getRelativePath() . "/" . $module . "/" . $patch;
+                $json['patches'][$vendor . DS . $module]['#' . $i] = "https://patches.experius.nl" . $path->getRelativePath() . DS . $module . DS . $patch;
                 $i++;
             }
             

@@ -1,0 +1,57 @@
+Index: vendor/magento/module-ui/view/base/web/js/lib/knockout/template/engine.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/magento/module-ui/view/base/web/js/lib/knockout/template/engine.js b/vendor/magento/module-ui/view/base/web/js/lib/knockout/template/engine.js
+--- a/vendor/magento/module-ui/view/base/web/js/lib/knockout/template/engine.js	
++++ b/vendor/magento/module-ui/view/base/web/js/lib/knockout/template/engine.js	(date 1670588333732)
+@@ -175,7 +175,13 @@
+             source,
+             templateId;
+ 
+-        if (typeof template === 'string') {
++        if (typeof template === 'string' && options.rendering !== 'undefined' && options.rendering == 'sync') {
++            templateDocument = templateDocument || document;
++            var elem = templateDocument.getElementById(template);
++            if (!elem)
++                throw new Error("Cannot find template with ID " + template);
++            return new ko.templateSources.domElement(elem);
++        } else if(typeof template === 'string') {
+             templateId = createTemplateIdentifier(template);
+             source = sources[templateId];
+ 
+@@ -227,10 +233,20 @@
+      * @param  {TemplateSource} templateSource - object with methods 'nodes' and 'data'.
+      * @return {Array} - array of html elements
+      */
+-    RemoteTemplateEngine.prototype.renderTemplateSource = function (templateSource) {
++    RemoteTemplateEngine.prototype.renderTemplateSource = function (templateSource, bindingContext, options, templateDocument) {
+         var nodes = templateSource.nodes();
+ 
+-        return ko.utils.cloneNodes(nodes);
++        var useNodesIfAvailable = !(ko.utils.ieVersion < 9), // IE<9 cloneNode doesn't work properly
++            templateNodesFunc = useNodesIfAvailable ? templateSource['nodes'] : null,
++            templateNodes = templateNodesFunc ? templateSource['nodes']() : null;
++
++        if (templateNodes && templateSource.text == undefined) {
++            return ko.utils.cloneNodes(nodes);
++            return ko.utils.makeArray(templateNodes.cloneNode(true).childNodes);
++        } else {
++            var templateText = templateSource['text']();
++            return ko.utils.parseHtmlFragment(templateText, templateDocument);
++        }
+     };
+ 
+     /**
+@@ -244,8 +260,7 @@
+      */
+     RemoteTemplateEngine.prototype.renderTemplate = function (template, bindingContext, options, templateDocument) {
+         var templateSource = this.makeTemplateSource(template, templateDocument, options, bindingContext);
+-
+-        return this.renderTemplateSource(templateSource);
++        return this.renderTemplateSource(templateSource, bindingContext, options, templateDocument);
+     };
+ 
+     return new RemoteTemplateEngine;
+ 

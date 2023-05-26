@@ -1,0 +1,26 @@
+diff --git a/vendor/magento/module-catalog/view/frontend/templates/product/list/toolbar/limiter.phtml b/vendor/magento/module-catalog/view/frontend/templates/product/list/toolbar/limiter.phtml
+index fd20210a..04b0fe69 100644
+--- a/vendor/magento/module-catalog/view/frontend/templates/product/list/toolbar/limiter.phtml
++++ b/vendor/magento/module-catalog/view/frontend/templates/product/list/toolbar/limiter.phtml
+@@ -16,17 +16,19 @@
+     <label class="label" for="limiter">
+         <span><?= $block->escapeHtml(__('Show')) ?></span>
+     </label>
+     <div class="control">
+         <select id="limiter" data-role="limiter" class="limiter-options">
+             <?php foreach ($block->getAvailableLimit() as $_key => $_limit):?>
+                 <option value="<?= $block->escapeHtmlAttr($_key) ?>"
+                     <?php if ($block->isLimitCurrent($_key)):?>
+                         selected="selected"
+                     <?php endif ?>>
+-                    <?= $block->escapeHtml($localeFormatter->formatNumber((int) $_limit)) ?>
++                    <?= $block->escapeHtml(
++                        is_numeric($_limit) ? $localeFormatter->formatNumber((int) $_limit) : $_limit
++                    ) ?>
+                 </option>
+             <?php endforeach; ?>
+         </select>
+     </div>
+     <span class="limiter-text"><?= $block->escapeHtml(__('per page')) ?></span>
+ </div>
+ 

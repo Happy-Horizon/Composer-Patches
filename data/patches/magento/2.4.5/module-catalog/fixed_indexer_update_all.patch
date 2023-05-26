@@ -1,0 +1,15 @@
+diff --git a/vendor/magento/module-catalog/Model/Indexer/Product/Price/AbstractAction.php b/vendor/magento/module-catalog/Model/Indexer/Product/Price/AbstractAction.php
+index e69ab504880ef..219467033ecde 100644
+--- a/vendor/magento/module-catalog/Model/Indexer/Product/Price/AbstractAction.php
++++ b/vendor/magento/module-catalog/Model/Indexer/Product/Price/AbstractAction.php
+@@ -179,7 +179,8 @@ protected function _syncData(array $processIds = [])
+         // for backward compatibility split data from old idx table on dimension tables
+         foreach ($this->dimensionCollectionFactory->create() as $dimensions) {
+             $insertSelect = $this->getConnection()->select()->from(
+-                ['ip_tmp' => $this->_defaultIndexerResource->getIdxTable()]
++                ['ip_tmp' => $this->_defaultIndexerResource->getIdxTable()],
++                array_keys($this->getConnection()->describeTable($this->tableMaintainer->getMainTableByDimensions($dimensions)))
+             );
+
+             foreach ($dimensions as $dimension) {
+ 

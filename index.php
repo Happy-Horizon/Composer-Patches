@@ -29,5 +29,6 @@ Router::populateRoutes($app);
  * Application Constants
  */
 const BP = __DIR__;
+const DS = DIRECTORY_SEPARATOR;
 
 $app->run();
