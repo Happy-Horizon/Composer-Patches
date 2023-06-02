@@ -64,7 +64,11 @@ class Controller
     protected function allPatches(Path $path, ResponseInterface $response, array $args): ResponseInterface
     {
         $args['links'] = [];
-        foreach($this->directoryResolver->getAllPatchFiles($path) as $patchFile) {
+        $patches = $this->directoryResolver->getAllPatchFiles($path);
+        usort($patches, function ($patch1, $patch2) {
+            return $this->getPatchNumber($patch1) - $this->getPatchNumber($patch2);
+        });
+        foreach($patches as $patchFile) {
             $args['links'][$patchFile] = $patchFile;
         }
         $args['parent'] = $path->getRelativePath();
@@ -83,11 +87,10 @@ class Controller
         
         $args['links'] = [];
         foreach ($contents as $content) {
-            if ($content === '.install.flag') {
-                $args['actions']['/generate' . $path->getRelativePath()] = 'Generate composer.patches.json';
-            } else {
-                $args['links'][$path->getRelativePath() . DS . $content] = $content;
-            }
+            $args['links'][$path->getRelativePath() . DS . $content] = $content;
+        }
+        if ($this->directoryResolver->getVendor($path)) {
+            $args['actions']['/generate' . $path->getRelativePath()] = 'Generate composer.patches.json';
         }
         $args['parent'] = $path->getParent();
         
@@ -129,11 +132,11 @@ class Controller
     public function generate(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $path = $this->directoryResolver->processPath($args['params'] ?? '');
-        $modules = $this->directoryResolver->getDirectoryContents($path, true);
+        $modules = $this->directoryResolver->getDirectoryContents($path);
         $json = [
             'patches' => []
         ];
-        $vendor = str_replace('/patches/', '', $path->getParent());
+        $vendor = $this->directoryResolver->getVendor($path);
         foreach($modules as $module) {
             $patches = array_diff(scandir($path->getFullPath() . DS . $module), ['.', '..']);
             /**
@@ -141,7 +144,7 @@ class Controller
              */
             $i = 0;
             foreach ($patches as $patch) {
-                $json['patches'][$vendor . DS . $module]['#' . $i] = "https://patches.experius.nl" . $path->getRelativePath() . DS . $module . DS . $patch;
+                $json['patches'][$vendor . DS . $module][$this->getPatchNumber($patch, $i)] = "https://patches.experius.nl" . $path->getRelativePath() . DS . $module . DS . $patch;
                 $i++;
             }
             
@@ -149,5 +152,16 @@ class Controller
         $response = $response->withHeader('Content-Type', 'text/plain');
         $response->getBody()->write(json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         return $response;
+    }
+
+    /**
+     * @param string $patch
+     * @param int $fallback
+     * @return int
+     */
+    protected function getPatchNumber(string $patch, int $fallback = 0): int
+    {
+        preg_match('/^(?:\/.*\/)?(\d{4})_.*\.patch$/', $patch, $patchNumber);
+        return (int)$patchNumber[1] ?? $fallback;
     }
 }

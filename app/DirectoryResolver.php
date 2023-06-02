@@ -38,19 +38,38 @@ class DirectoryResolver
 
     /**
      * @param Path $path
-     * @param bool $ignoreFlags
      * @return string[]
      */
-    public function getDirectoryContents(Path $path, bool $ignoreFlags = false): array
+    public function getDirectoryContents(Path $path): array
     {
-        $ignore = [
-            '.',
-            '..'
-        ];
-        if ($ignoreFlags) {
-            $ignore[] = '.install.flag';
-        }
-        return array_diff(scandir($path->getFullPath()), $ignore);
+        return array_filter(
+            scandir($path->getFullPath()), 
+            function ($content) {
+                return preg_match(
+                '/(^.*\.flag$)|(^\.{1,2})$/',
+                    $content,
+                ) == 0;
+            }
+        );
+    }
+
+    /**
+     * @param Path $path
+     * @return string|null
+     */
+    public function getVendor(Path $path): ?string
+    {
+        return array_reduce(
+            scandir($path->getFullPath()),
+            function ($result, $content) {
+                preg_match('/^\.(.*)\.flag$/', $content, $matches);
+                if (isset($matches[1])) {
+                    $result = $matches[1];
+                }
+                return $result;
+            },
+            null
+        );
     }
 
     /**

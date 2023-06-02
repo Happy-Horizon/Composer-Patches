@@ -1,4 +1,4 @@
-##  (2023-05-26)
+##  (2023-06-02)
 
 [View Release](https://bitbucket.org/experius/happy-horizon-patches.git/commits/tag/)
 
@@ -7,5 +7,6 @@
 *  [DOCS][IN23-187] Add README *(Matthijs Breed)*
 *  [FEATURE][IN23-187] Add two patches *(Matthijs Breed)*
 *  [FEATURE][IN23-187] Add view all functionality *(Matthijs Breed)*
+*  [FEATURE][IN23-187] Add all patches functionality for third parties, add patch numbers back *(Matthijs Breed)*
 
 
