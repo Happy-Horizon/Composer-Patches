@@ -28,6 +28,11 @@ class DirectoryResolver
             $exists = true;
             $type = Type::All;
         }
+        if ($path === 'readme') {
+            $fullPath = BP . DS . 'README.md';
+            $exists = true;
+            $type = Type::File;
+        }
         
         return new Path(
             $fullPath,

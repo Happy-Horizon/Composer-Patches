@@ -4,6 +4,7 @@ namespace HH\Patches;
 
 use HH\Patches\Data\Enums\Type;
 use HH\Patches\Data\Path;
+use League\CommonMark\CommonMarkConverter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Views\PhpRenderer;
@@ -14,8 +15,14 @@ class Controller
      * @var PhpRenderer 
      */
     protected PhpRenderer $phpRenderer;
+
+    /**
+     * @param DirectoryResolver $directoryResolver
+     * @param CommonMarkConverter $markConverter
+     */
     public function __construct(
-        protected DirectoryResolver $directoryResolver
+        protected DirectoryResolver $directoryResolver,
+        protected CommonMarkConverter $markConverter
     ) {
         $this->phpRenderer = new PhpRenderer(__DIR__ . '/../view/templates/');
     }
@@ -31,7 +38,8 @@ class Controller
     {   
         $args['links'] = [
             'patches' => 'Patches',
-            'patches/all' => 'All'
+            'patches/all' => 'All',
+            'patches/readme' => 'README'
         ];
         return $this->phpRenderer->render($response, 'links.phtml', $args);
     }
@@ -46,6 +54,7 @@ class Controller
     public function patches(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $args['actions']['/patches/all'] = 'Show All';
+        $args['actions']['/patches/readme'] = 'README';
         $path = $this->directoryResolver->processPath($args['params'] ?? '');
         return match ($path->getType()) {
             Type::All => $this->allPatches($path, $response, $args),
@@ -105,8 +114,14 @@ class Controller
      */
     protected function showFile(Path $path, ResponseInterface $response, array $args): ResponseInterface
     {
-        $response = $response->withHeader('Content-Type', 'text/plain')->withHeader('Content-Disposition', 'inline');
-        $response->getBody()->write(file_get_contents($path->getFullPath()));
+        if ($path->getExtension() === 'md') {
+            $content = $this->markConverter->convert($path->getContents())->getContent();
+            $response = $response->withHeader('Content-Type', 'text/html')->withHeader('Content-Disposition', 'inline');
+        } else {
+            $content = $path->getContents();
+            $response = $response->withHeader('Content-Type', 'text/plain')->withHeader('Content-Disposition', 'inline');
+        }
+        $response->getBody()->write($content);
         return $response;
     }
 

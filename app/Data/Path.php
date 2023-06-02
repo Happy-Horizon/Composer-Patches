@@ -16,19 +16,54 @@ class Path
         protected bool $exists
     ) {}
 
+    /**
+     * @return string
+     */
     public function getFullPath(): string
     {
         return $this->fullPath;
     }
-    
+
+    /**
+     * @return string
+     */
     public function getRelativePath(): string
     {
         return str_replace(BP . '/data', '', $this->fullPath);
     }
-    
+
+    /**
+     * @return string
+     */
     public function getParent(): string
     {
         return str_replace(BP . '/data', '',dirname($this->fullPath, 1));
+    }
+
+    /**
+     * @return string
+     */
+    public function getExtension(): string
+    {
+        return match ($this->type) {
+            Type::All => 'all',
+            Type::Directory => 'dir',
+            Type::File => pathinfo($this->getFullPath(), PATHINFO_EXTENSION),
+            Type::Invalid => 'err'
+        };
+        
+    }
+
+    /**
+     * @return string
+     */
+    public function getContents(): string
+    {
+        $content = '';
+        if ($this->type === Type::File) {
+            $content = file_get_contents($this->getFullPath());
+        }
+        return $content;
     }
     
     /**

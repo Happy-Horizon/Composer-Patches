@@ -8,5 +8,6 @@
 *  [FEATURE][IN23-187] Add two patches *(Matthijs Breed)*
 *  [FEATURE][IN23-187] Add view all functionality *(Matthijs Breed)*
 *  [FEATURE][IN23-187] Add all patches functionality for third parties, add patch numbers back *(Matthijs Breed)*
+*  [DOCS][IN23-187] Add README to frontend *(Matthijs Breed)*
 
 
