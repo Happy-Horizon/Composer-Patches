@@ -4,9 +4,18 @@ namespace HH\Patches;
 
 use HH\Patches\Data\Enums\Type;
 use HH\Patches\Data\Path;
+use HH\Patches\Utils;
 
 class DirectoryResolver
 {
+    /**
+     * @param Utils $utils
+     */
+    public function __construct(
+        protected Utils $utils
+    ) {        
+    }
+    
     /**
      * @param string $path
      * @return Path
@@ -33,7 +42,9 @@ class DirectoryResolver
             $exists = true;
             $type = Type::File;
         }
-        
+        if (!$exists) {
+            list('fullPath' => $fullPath, 'type' => $type, 'exists' => $exists) = $this->findPathByPatchNumber($path);
+        }
         return new Path(
             $fullPath,
             $type,
@@ -91,7 +102,7 @@ class DirectoryResolver
     /**
      * @param string $path
      * @param string $pattern
-     * @param array $results
+     * @param string[] $results
      * @return void
      */
     protected function recursiveDirSearch(string $path, string $pattern, array &$results) {
@@ -103,5 +114,24 @@ class DirectoryResolver
         foreach ($dirs as $dir) {
             $this->recursiveDirSearch($dir, $pattern, $results);
         }
+    }
+
+    /**
+     * @return array{fullPath: string,type: Type,exists: bool}
+     */
+    protected function findPathByPatchNumber(string $path): array
+    {
+        $patchNumber = $this->utils->getPatchNumberAsString($path);
+        $results = [];
+        $exists = false;
+        $type = Type::Invalid;
+        $this->recursiveDirSearch(BP . DS . 'data/patches', $patchNumber . '*.patch', $results);
+        if (!empty($results)) {
+            $fullPath = BP . DS . 'data' . DS . current($results);
+            $exists = true;
+            $type = Type::File;
+        }
+        
+        return ['fullPath' => $fullPath, 'type' => $type, 'exists' => $exists];
     }
 }

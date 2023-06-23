@@ -50,7 +50,7 @@ All patch files are grouped as:
 
 Patched versions such as Magento 2.4.5-p1 are considered different versions, since some patches for 2.4.5 may not apply.
 
-Every version should contain all applicable patches, even if this results in file duplication.
+Every version should contain all applicable patches, even if this results in file duplication.  
 This way, the version folder also serves as comprehensive documentation for all known patches for that version.
 
 A `.<platform>.flag` file should be included in the version folder to facilitate [generating the `composer.patches.json` file](#creating-composerpatchesjson)
@@ -75,7 +75,7 @@ Patches will be hosted at https://patches.experius.nl/
 
 On version pages (for example https://patches.experius.nl/patches/magento/2.4.6), it will be possible to automatically generate a `composer.patches.json` file for that version.
 
-It's also possible to generate a `composer.patches.json` file for third party vendor patches (for example http://patches.experius.nl.local.xpdev.nl/patches/magento/third-party/smile).
+It's also possible to generate a `composer.patches.json` file for third party vendor patches (for example http://patches.experius.nl.local.xpdev.nl/patches/magento/third-party/smile).  
 There is (at the moment) no version information for these patches, so check manually if these apply to your project or not 
 
 Sample output:
@@ -176,4 +176,5 @@ Magento commits use app/code in their repository for the filepatch, change this 
 # Contributer notes:
 
 * To add a new patch, place it in the appropriate folder. If the folder for that version or module does not exist yet, please add it.
-* If a new version is released, make a copy of the folder of the previous version, rework all patches that no longer apply or remove them. Check that the .install.flag is present in the new version folder.
+* If a new version is released, make a copy of the folder of the previous version, rework all patches that no longer apply or remove them.  
+Check that the .install.flag is present in the new version folder.

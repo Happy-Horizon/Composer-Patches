@@ -4,6 +4,7 @@ namespace HH\Patches;
 
 use HH\Patches\Data\Enums\Type;
 use HH\Patches\Data\Path;
+use HH\Patches\Utils;
 use League\CommonMark\CommonMarkConverter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -22,7 +23,8 @@ class Controller
      */
     public function __construct(
         protected DirectoryResolver $directoryResolver,
-        protected CommonMarkConverter $markConverter
+        protected CommonMarkConverter $markConverter,
+        protected Utils $utils
     ) {
         $this->phpRenderer = new PhpRenderer(__DIR__ . '/../view/templates/');
     }
@@ -75,7 +77,7 @@ class Controller
         $args['links'] = [];
         $patches = $this->directoryResolver->getAllPatchFiles($path);
         usort($patches, function ($patch1, $patch2) {
-            return $this->getPatchNumber($patch1) - $this->getPatchNumber($patch2);
+            return $this->utils->getPatchNumber($patch1) - $this->utils->getPatchNumber($patch2);
         });
         foreach($patches as $patchFile) {
             $args['links'][$patchFile] = $patchFile;
@@ -159,7 +161,7 @@ class Controller
              */
             $i = 0;
             foreach ($patches as $patch) {
-                $json['patches'][$vendor . DS . $module][$this->getPatchNumber($patch, $i)] = "https://patches.experius.nl" . $path->getRelativePath() . DS . $module . DS . $patch;
+                $json['patches'][$vendor . DS . $module][$this->utils->getPatchNumber($patch, $i)] = "https://patches.experius.nl" . $path->getRelativePath() . DS . $module . DS . $patch;
                 $i++;
             }
             
@@ -167,16 +169,5 @@ class Controller
         $response = $response->withHeader('Content-Type', 'text/plain');
         $response->getBody()->write(json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         return $response;
-    }
-
-    /**
-     * @param string $patch
-     * @param int $fallback
-     * @return int
-     */
-    protected function getPatchNumber(string $patch, int $fallback = 0): int
-    {
-        preg_match('/^(?:\/.*\/)?(\d{4})_.*\.patch$/', $patch, $patchNumber);
-        return (int)$patchNumber[1] ?? $fallback;
     }
 }
