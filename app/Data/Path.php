@@ -1,8 +1,8 @@
 <?php
 
-namespace HH\Patches\Data;
+namespace HappyHorizon\Patches\Data;
 
-use HH\Patches\Data\Enums\Type;
+use HappyHorizon\Patches\Data\Enums\Type;
 class Path
 {
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace HH\Patches\Data\Enums;
+namespace HappyHorizon\Patches\Data\Enums;
 
 enum Type: string
 {

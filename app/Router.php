@@ -1,8 +1,8 @@
 <?php
 
-namespace HH\Patches;
+namespace HappyHorizon\Patches;
 
-use HH\Patches\Controller;
+use HappyHorizon\Patches\Controller;
 use Slim\App;
 
 class Router

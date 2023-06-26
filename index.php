@@ -1,6 +1,6 @@
 <?php
 use DI\ContainerBuilder;
-use HH\Patches\Router;
+use HappyHorizon\Patches\Router;
 use Psr\Log\LogLevel;
 use Slim\Factory\AppFactory;
 

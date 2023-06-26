@@ -1,6 +1,6 @@
 <?php
 
-namespace HH\Patches;
+namespace HappyHorizon\Patches;
 
 class Utils
 {

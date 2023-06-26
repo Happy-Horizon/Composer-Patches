@@ -1,10 +1,10 @@
 <?php
 
-namespace HH\Patches;
+namespace HappyHorizon\Patches;
 
-use HH\Patches\Data\Enums\Type;
-use HH\Patches\Data\Path;
-use HH\Patches\Utils;
+use HappyHorizon\Patches\Data\Enums\Type;
+use HappyHorizon\Patches\Data\Path;
+use HappyHorizon\Patches\Utils;
 
 class DirectoryResolver
 {
