@@ -25,7 +25,7 @@ class Utils
     public function getPatchNumber(string $patch, int $fallback = 0): int
     {
         preg_match('/^(?:\/?.*\/)?(?<patch_number>\d{4})_.*\.patch$/', $patch, $patchNumber);
-        return (int)$patchNumber['patch_number'] ?? $fallback;
+        return isset($patchNumber['patch_number']) ? (int)$patchNumber['patch_number'] : $fallback;
     }
 
     /**
