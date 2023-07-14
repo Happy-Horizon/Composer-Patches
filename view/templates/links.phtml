@@ -2,7 +2,7 @@
 /** @var $this \Slim\Views\PhpRenderer */
 /** @var $links string[] */
 /** @var $actions string[] */
-/** @var $parent string */
+/** @var $parent ?string */
 ?>
 <h1>
     Happy Horizon Patches
@@ -11,7 +11,9 @@
         <span>No patches yet</span>
         <br/>
     <?php endif; ?>
+<?php if (isset($parent)): ?>
 <a href="<?= $parent?>">Go Back</a>
+<?php endif; ?>
 <ul>
     <?php foreach ($links as $link => $title): ?>
         <li>

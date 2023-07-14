@@ -1,4 +1,4 @@
-##  (2023-06-26)
+##  (2023-07-14)
 
 [View Release](https://bitbucket.org/experius/happy-horizon-patches.git/commits/tag/)
 
@@ -11,5 +11,6 @@
 *  [DOCS][IN23-187] Add README to frontend *(Matthijs Breed)*
 *  [FEATURE][INS23-187] Backwards compatibility on old urls based on patch number *(Matthijs Breed)*
 *  [FEATURE][IN23-187] Move namespace to HappyHorizon *(Matthijs Breed)*
+*  [FEATURE][IN23-187] Cleanup for publication *(Matthijs Breed)*
 
 

@@ -82,7 +82,7 @@ class Controller
         foreach($patches as $patchFile) {
             $args['links'][$patchFile] = $patchFile;
         }
-        $args['parent'] = $path->getRelativePath();
+        $args['parent'] = $this->utils->getUrl($path->getRelativePath());
         return $this->phpRenderer->render($response, 'links.phtml', $args);
     }
     
@@ -103,7 +103,7 @@ class Controller
         if ($this->directoryResolver->getVendor($path)) {
             $args['actions']['/generate' . $path->getRelativePath()] = 'Generate composer.patches.json';
         }
-        $args['parent'] = $path->getParent();
+        $args['parent'] = $this->utils->getUrl();
         
         return $this->phpRenderer->render($response, 'links.phtml', $args);
     }

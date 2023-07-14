@@ -9,6 +9,15 @@ class Utils
     }
 
     /**
+     * @param string $path
+     * @return string
+     */
+    public function getUrl(string $path = ''): string
+    {
+        return 'https://' . $_SERVER['SERVER_NAME'] . $path;
+    }
+
+    /**
      * @param string $patch
      * @param int $fallback
      * @return int
