@@ -125,6 +125,7 @@ class DirectoryResolver
         $results = [];
         $exists = false;
         $type = Type::Invalid;
+        $fullPath = '';
         $this->recursiveDirSearch(BP . DS . 'data/patches', $patchNumber . '*.patch', $results);
         if (!empty($results)) {
             $fullPath = BP . DS . 'data' . DS . current($results);

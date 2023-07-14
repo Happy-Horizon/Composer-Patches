@@ -161,7 +161,7 @@ class Controller
              */
             $i = 0;
             foreach ($patches as $patch) {
-                $json['patches'][$vendor . DS . $module][$this->utils->getPatchNumber($patch, $i)] = "https://patches.experius.nl" . $path->getRelativePath() . DS . $module . DS . $patch;
+                $json['patches'][$vendor . DS . $module][$this->utils->getPatchNumber($patch, $i)] = $this->utils->getUrl($path->getRelativePath() . DS . $module . DS . $patch);
                 $i++;
             }
             
