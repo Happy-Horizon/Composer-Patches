@@ -1,0 +1,25 @@
+--- /vendor/magento/module-eav/Model/Attribute/Data/Text.php	2023-02-23 14:11:00.000000000 +0100
++++ /vendor/magento/module-eav/Model/Attribute/Data/Text.php	2023-03-31 13:33:39.000000000 +0200
+@@ -80,7 +80,9 @@
+         }
+
+         // if string with diacritics encode it.
++        if ($this->shouldEncodeDiacritics($attribute->getAttributeCode())) {
+         $value = $this->encodeDiacritics($value);
++        }
+
+         $validateLengthResult = $this->validateLength($attribute, $value);
+         $errors = array_merge($errors, $validateLengthResult);
+@@ -191,4 +193,12 @@
+         }
+         return $encoded;
+     }
++
++    private function shouldEncodeDiacritics(string $attributeCode): bool
++    {
++        return !in_array(
++            $attributeCode,
++            ['rp_token']
++        );
++    }
+ }
