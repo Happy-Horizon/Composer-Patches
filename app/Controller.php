@@ -4,7 +4,6 @@ namespace HappyHorizon\Patches;
 
 use HappyHorizon\Patches\Data\Enums\Type;
 use HappyHorizon\Patches\Data\Path;
-use HappyHorizon\Patches\Utils;
 use League\CommonMark\CommonMarkConverter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
