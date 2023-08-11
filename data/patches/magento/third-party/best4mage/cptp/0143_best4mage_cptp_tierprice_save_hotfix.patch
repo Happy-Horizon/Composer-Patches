@@ -1,0 +1,47 @@
+diff --git a/vendor/best4mage/cptp/Controller/Adminhtml/Tier/Save.php b/vendor/best4mage/cptp/Controller/Adminhtml/Tier/Save.php
+index b11e87f..319784a 100644
+--- a/vendor/best4mage/cptp/Controller/Adminhtml/Tier/Save.php
++++ b/vendor/best4mage/cptp/Controller/Adminhtml/Tier/Save.php
+@@ -140,19 +140,30 @@ class Save extends \Magento\Backend\App\Action
+             } else {
+                 $isGroupValid = ($item['cust_group'] == $customerGroupId);
+             }
+-
+-            if ($isGroupValid && $item['website_id'] == $websiteIdentifier && $item['price_qty'] == $qty) {
+-                if ($priceType == ProductPriceOptionsInterface::VALUE_FIXED) {
+-                    $item['price'] = $price;
+-                    $item['website_price'] = $price;
+-                    $item['percentage_value'] = null;
+-                } else {
+-                    $item['price'] = 0;
+-                    $item['website_price'] = 0;
+-                    $item['percentage_value'] = $price;
++
++            // Experius Vendor Hotfix
++            if ($tierPrices) {
++                foreach ($tierPrices as &$item) {
++                    if ('all' == $customerGroupId) {
++                        $isGroupValid = ($item['all_groups'] == 1);
++                    } else {
++                        $isGroupValid = ($item['cust_group'] == $customerGroupId);
++                    }
++
++                    if ($isGroupValid && $item['website_id'] == $websiteIdentifier && $item['price_qty'] == $qty) {
++                        if ($priceType == ProductPriceOptionsInterface::VALUE_FIXED) {
++                            $item['price'] = $price;
++                            $item['website_price'] = $price;
++                            $item['percentage_value'] = null;
++                        } else {
++                            $item['price'] = 0;
++                            $item['website_price'] = 0;
++                            $item['percentage_value'] = $price;
++                        }
++                        $found = true;
++                        break;
++                    }
+                 }
+-                $found = true;
+-                break;
+             }
+         }
+         if (!$found) {

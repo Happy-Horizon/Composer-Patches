@@ -1,0 +1,15 @@
+diff --git a/vendor/magento/framework/Setup/Declaration/Schema/Declaration/SchemaBuilder.php b/vendor/magento/framework/Setup/Declaration/Schema/Declaration/SchemaBuilder.php
+index 4c65d8a70..7311cc45f 100644
+--- a/vendor/magento/framework/Setup/Declaration/Schema/Declaration/SchemaBuilder.php
++++ b/vendor/magento/framework/Setup/Declaration/Schema/Declaration/SchemaBuilder.php
+@@ -309,8 +309,8 @@ class SchemaBuilder
+             if ($this->isDisabled($indexData)) {
+                 continue;
+             }
+-
+-            $indexData['name'] = $this->elementNameResolver->getFullIndexName(
++            // Do the same as on Magento\Framework\Setup\SchemaPersistor - use referenceId
++            $indexData['name'] = $indexData['referenceId'] ?? $this->elementNameResolver->getFullIndexName(
+                 $table,
+                 $indexData['column'],
+                 $indexData['indexType'] ?? null

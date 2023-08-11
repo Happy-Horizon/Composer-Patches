@@ -1,0 +1,76 @@
+diff --git a/vendor/magento/module-configurable-product-graph-ql/Model/Resolver/Product/Price/Provider.php b/vendor/magento/module-configurable-product-graph-ql/Model/Resolver/Product/Price/Provider.php
+index 4dfa09d..6d43451 100644
+--- a/vendor/magento/module-configurable-product-graph-ql/Model/Resolver/Product/Price/Provider.php
++++ b/vendor/magento/module-configurable-product-graph-ql/Model/Resolver/Product/Price/Provider.php
+@@ -44,20 +44,24 @@ class Provider implements ProviderInterface
+         $this->optionsProvider = $optionsProvider;
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function getMinimalFinalPrice(SaleableInterface $product): AmountInterface
+     {
+         if (!isset($this->minimumFinalAmounts[$product->getId()])) {
+             $minimumAmount = null;
++            $this->minimumFinalAmounts[$product->getId()] = $product->getPriceInfo()->getPrice(FinalPrice::PRICE_CODE)->getAmount();
++            if ($this->minimumFinalAmounts[$product->getId()]) {
++                return $this->minimumFinalAmounts[$product->getId()];
++            }
+             foreach ($this->optionsProvider->getProducts($product) as $variant) {
+                 $variantAmount = $variant->getPriceInfo()->getPrice(FinalPrice::PRICE_CODE)->getAmount();
+                 if (!$minimumAmount || ($variantAmount->getValue() < $minimumAmount->getValue())) {
+                     $minimumAmount = $variantAmount;
+                     $this->minimumFinalAmounts[$product->getId()] = $variantAmount;
+                 }
+             }
+         }
+ 
+         return $this->minimumFinalAmounts[$product->getId()];
+@@ -73,40 +77,45 @@ class Provider implements ProviderInterface
+         return $regularPrice->getMinRegularAmount();
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function getMaximalFinalPrice(SaleableInterface $product): AmountInterface
+     {
+         if (!isset($this->maximumFinalAmounts[$product->getId()])) {
+             $maximumAmount = null;
++            $this->maximumFinalAmounts[$product->getId()] = $product->getPriceInfo()->getPrice(FinalPrice::PRICE_CODE)->getAmount();
++            if ($this->maximumFinalAmounts[$product->getId()]) {
++                return $this->maximumFinalAmounts[$product->getId()];
++            }
+             foreach ($this->optionsProvider->getProducts($product) as $variant) {
+                 $variantAmount = $variant->getPriceInfo()->getPrice(FinalPrice::PRICE_CODE)->getAmount();
+                 if (!$maximumAmount || ($variantAmount->getValue() > $maximumAmount->getValue())) {
+                     $maximumAmount = $variantAmount;
+                     $this->maximumFinalAmounts[$product->getId()] = $variantAmount;
+                 }
+             }
+         }
+ 
+         return $this->maximumFinalAmounts[$product->getId()];
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function getMaximalRegularPrice(SaleableInterface $product): AmountInterface
+     {
+         /** @var ConfigurableRegularPrice $regularPrice */
+         $regularPrice = $product->getPriceInfo()->getPrice(RegularPrice::PRICE_CODE);
+-        return $regularPrice->getMaxRegularAmount();
++        return $regularPrice->getMaxRegularAmount() ?: $this->getRegularPrice($product);
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function getRegularPrice(SaleableInterface $product): AmountInterface
+     {
+         return $product->getPriceInfo()->getPrice(RegularPrice::PRICE_CODE)->getAmount();
+     }
+ }
++

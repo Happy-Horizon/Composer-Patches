@@ -1,0 +1,28 @@
+Source: https://github.com/magento/magento2/issues/35592 
+diff --git a/vendor/magento/module-tax/Model/Calculation/AbstractCalculator.php b/vendor/magento/module-tax/Model/Calculation/AbstractCalculator.php
+index 8cfe3079..95128d1d 100644
+--- a/vendor/magento/module-tax/Model/Calculation/AbstractCalculator.php
++++ b/vendor/magento/module-tax/Model/Calculation/AbstractCalculator.php
+@@ -269,21 +269,21 @@ abstract class AbstractCalculator
+ 
+     /**
+      * Check if tax rate is same as store tax rate
+      *
+      * @param float $rate
+      * @param float $storeRate
+      * @return bool
+      */
+     protected function isSameRateAsStore($rate, $storeRate)
+     {
+-        if ((bool)$this->config->crossBorderTradeEnabled($this->storeId)) {
++        if ((bool)$this->config->crossBorderTradeEnabled($this->storeId) && $rate > 0.0) {
+             return true;
+         } else {
+             return (abs($rate - $storeRate) < 0.00001);
+         }
+     }
+ 
+     /**
+      * Create AppliedTax data object based applied tax rates and tax amount
+      *
+      * @param float $rowTax

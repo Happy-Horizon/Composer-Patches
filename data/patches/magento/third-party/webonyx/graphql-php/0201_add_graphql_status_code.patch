@@ -1,0 +1,53 @@
+diff --git a/vendor/webonyx/graphql-php/src/Error/Error.php b/vendor/webonyx/graphql-php/src/Error/Error.php
+index 2e78221d7..fe92ca248 100644
+--- a/vendor/webonyx/graphql-php/src/Error/Error.php
++++ b/vendor/webonyx/graphql-php/src/Error/Error.php
+@@ -94,21 +94,21 @@ class Error extends Exception implements JsonSerializable, ClientAware
+      */
+     public function __construct(
+         $message,
+         $nodes = null,
+         ?Source $source = null,
+         $positions = null,
+         $path = null,
+         $previous = null,
+         array $extensions = []
+     ) {
+-        parent::__construct($message, 0, $previous);
++        parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
+ 
+         // Compute list of blame nodes.
+         if ($nodes instanceof Traversable) {
+             $nodes = iterator_to_array($nodes);
+         } elseif ($nodes && ! is_array($nodes)) {
+             $nodes = [$nodes];
+         }
+ 
+         $this->nodes      = $nodes;
+         $this->source     = $source;
+diff --git a/vendor/webonyx/graphql-php/src/Error/FormattedError.php b/vendor/webonyx/graphql-php/src/Error/FormattedError.php
+index 799ee7492..904113b8c 100644
+--- a/vendor/webonyx/graphql-php/src/Error/FormattedError.php
++++ b/vendor/webonyx/graphql-php/src/Error/FormattedError.php
+@@ -215,20 +215,21 @@ class FormattedError
+             }
+             if (! empty($e->getExtensions())) {
+                 $formattedError['extensions'] = $e->getExtensions() + $formattedError['extensions'];
+             }
+         }
+ 
+         if ($debug) {
+             $formattedError = self::addDebugEntries($formattedError, $e, $debug);
+         }
+ 
++        $formattedError['code'] = $e->getCode() ?: 502;
+         return $formattedError;
+     }
+ 
+     /**
+      * Decorates spec-compliant $formattedError with debug entries according to $debug flags
+      * (see GraphQL\Error\Debug for available flags)
+      *
+      * @param mixed[]   $formattedError
+      * @param Throwable $e
+      * @param bool|int  $debug

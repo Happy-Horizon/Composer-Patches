@@ -1,0 +1,31 @@
+diff --git a/vendor/magento/module-sales/Model/Order/Creditmemo/Item.php b/vendor/magento/module-sales/Model/Order/Creditmemo/Item.php
+index 35244b26..8c726829 100644
+--- a/vendor/magento/module-sales/Model/Order/Creditmemo/Item.php
++++ b/vendor/magento/module-sales/Model/Order/Creditmemo/Item.php
+@@ -260,24 +260,24 @@ class Item extends AbstractModel implements CreditmemoItemInterface
+             $availableQty = $orderItemQtyInvoiced - $orderItem->getQtyRefunded();
+             $rowTotal = $creditmemo->roundPrice($rowTotal / $availableQty * $qty);
+             $baseRowTotal = $creditmemo->roundPrice($baseRowTotal / $availableQty * $qty, 'base');
+         }
+         $this->setRowTotal($rowTotal);
+         $this->setBaseRowTotal($baseRowTotal);
+ 
+         if ($rowTotalInclTax && $baseRowTotalInclTax) {
+             $orderItemQty = $orderItem->getQtyOrdered();
+             $this->setRowTotalInclTax(
+-                $creditmemo->roundPrice($rowTotalInclTax / $orderItemQty * $qty, 'including')
++                $creditmemo->roundPrice($rowTotalInclTax / $orderItemQtyInvoiced * $qty, 'including')
+             );
+             $this->setBaseRowTotalInclTax(
+-                $creditmemo->roundPrice($baseRowTotalInclTax / $orderItemQty * $qty, 'including_base')
++                $creditmemo->roundPrice($baseRowTotalInclTax / $orderItemQtyInvoiced * $qty, 'including_base')
+             );
+         }
+         return $this;
+     }
+ 
+     /**
+      * Checking if the item is last
+      *
+      * @return bool
+      */

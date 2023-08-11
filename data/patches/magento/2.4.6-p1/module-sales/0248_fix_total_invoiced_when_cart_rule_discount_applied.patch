@@ -1,0 +1,34 @@
+diff --git a/vendor/magento/module-sales/Model/Order/Invoice/Total/Discount.php b/vendor/magento/module-sales/Model/Order/Invoice/Total/Discount.php
+index ef7205b3..48866a72 100644
+--- a/vendor/magento/module-sales/Model/Order/Invoice/Total/Discount.php
++++ b/vendor/magento/module-sales/Model/Order/Invoice/Total/Discount.php
+@@ -64,26 +64,23 @@ class Discount extends AbstractTotal
+                 $item->setBaseDiscountAmount($baseDiscount);
+ 
+                 $totalDiscountAmount += $discount;
+                 $baseTotalDiscountAmount += $baseDiscount;
+             }
+         }
+ 
+         $invoice->setDiscountAmount(-$totalDiscountAmount);
+         $invoice->setBaseDiscountAmount(-$baseTotalDiscountAmount);
+ 
+-        $grandTotal = abs($invoice->getGrandTotal() - $totalDiscountAmount) < 0.0001
+-            ? 0 : $invoice->getGrandTotal() - $totalDiscountAmount;
+-        $baseGrandTotal = abs($invoice->getBaseGrandTotal() - $baseTotalDiscountAmount) < 0.0001
+-            ? 0 : $invoice->getBaseGrandTotal() - $baseTotalDiscountAmount;
+-        $invoice->setGrandTotal($grandTotal);
+-        $invoice->setBaseGrandTotal($baseGrandTotal);
++        $invoice->setGrandTotal($invoice->getGrandTotal() - $totalDiscountAmount);
++        $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() - $baseTotalDiscountAmount);
++
+         return $this;
+     }
+ 
+     /**
+      * Checking if shipping discount was added in previous invoices.
+      *
+      * @param Invoice $invoice
+      * @return bool
+      */
+     private function isShippingDiscount(Invoice $invoice): bool
