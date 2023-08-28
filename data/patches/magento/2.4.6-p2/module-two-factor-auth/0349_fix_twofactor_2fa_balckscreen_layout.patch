@@ -1,0 +1,232 @@
+diff --git a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_authy_auth.xml b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_authy_auth.xml
+index 2d8327df..24b12729 100644
+--- a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_authy_auth.xml
++++ b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_authy_auth.xml
+@@ -10,21 +10,21 @@
+     <update handle="admin_login" />
+     <update handle="tfa_screen" />
+ 
+     <head>
+         <css src="Magento_TwoFactorAuth::css/auth.css"/>
+         <css src="Magento_TwoFactorAuth::css/authy.css"/>
+     </head>
+ 
+     <body>
+         <referenceContainer name="login.content">
+-            <block class="Magento\TwoFactorAuth\Block\Provider\Authy\Auth" name="content"
++            <block class="Magento\TwoFactorAuth\Block\Provider\Authy\Auth" name="twofactorauth.content"
+                    template="Magento_TwoFactorAuth::tfa/provider/auth.phtml">
+ 
+                 <arguments>
+                     <argument name="jsLayout" xsi:type="array">
+                         <item name="components" xsi:type="array">
+                             <item name="tfa-auth" xsi:type="array">
+                                 <item name="component" xsi:type="string">Magento_TwoFactorAuth/js/authy/auth</item>
+                             </item>
+                         </item>
+                     </argument>
+diff --git a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_authy_configure.xml b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_authy_configure.xml
+index 1a79da42..020f4e4f 100644
+--- a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_authy_configure.xml
++++ b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_authy_configure.xml
+@@ -10,21 +10,21 @@
+     <update handle="admin_login" />
+     <update handle="tfa_screen" />
+ 
+     <head>
+         <css src="Magento_TwoFactorAuth::css/auth.css"/>
+         <css src="Magento_TwoFactorAuth::css/authy.css"/>
+     </head>
+ 
+     <body>
+         <referenceContainer name="login.content">
+-            <block class="Magento\TwoFactorAuth\Block\Provider\Authy\Configure" name="content"
++            <block class="Magento\TwoFactorAuth\Block\Provider\Authy\Configure" name="twofactorauth.content"
+                    template="Magento_TwoFactorAuth::tfa/provider/configure.phtml">
+ 
+                 <arguments>
+                     <argument name="jsLayout" xsi:type="array">
+                         <item name="components" xsi:type="array">
+                             <item name="tfa-configure" xsi:type="array">
+                                 <item name="component" xsi:type="string">Magento_TwoFactorAuth/js/authy/configure</item>
+                                 <item name="children" xsi:type="array">
+                                     <item name="register" xsi:type="array">
+                                         <item name="component" xsi:type="string">Magento_TwoFactorAuth/js/authy/configure/register</item>
+diff --git a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_duo_auth.xml b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_duo_auth.xml
+index 273a7cdf..1180cc32 100644
+--- a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_duo_auth.xml
++++ b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_duo_auth.xml
+@@ -10,21 +10,21 @@
+     <update handle="admin_login" />
+     <update handle="tfa_screen" />
+ 
+     <head>
+         <css src="Magento_TwoFactorAuth::css/auth.css"/>
+         <css src="Magento_TwoFactorAuth::css/duo.css"/>
+     </head>
+ 
+     <body>
+         <referenceContainer name="login.content">
+-            <block class="Magento\TwoFactorAuth\Block\Provider\Duo\Auth" name="content"
++            <block class="Magento\TwoFactorAuth\Block\Provider\Duo\Auth" name="twofactorauth.content"
+                    template="Magento_TwoFactorAuth::tfa/provider/auth.phtml">
+ 
+                 <arguments>
+                     <argument name="jsLayout" xsi:type="array">
+                         <item name="components" xsi:type="array">
+                             <item name="tfa-auth" xsi:type="array">
+                                 <item name="component" xsi:type="string">Magento_TwoFactorAuth/js/duo/auth</item>
+                             </item>
+                         </item>
+                     </argument>
+diff --git a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_google_auth.xml b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_google_auth.xml
+index 8288e39e..602fb7f1 100644
+--- a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_google_auth.xml
++++ b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_google_auth.xml
+@@ -10,21 +10,21 @@
+     <update handle="admin_login" />
+     <update handle="tfa_screen" />
+ 
+     <head>
+         <css src="Magento_TwoFactorAuth::css/auth.css"/>
+         <css src="Magento_TwoFactorAuth::css/google.css"/>
+     </head>
+ 
+     <body>
+         <referenceContainer name="login.content">
+-            <block class="Magento\TwoFactorAuth\Block\Provider\Google\Auth" name="content"
++            <block class="Magento\TwoFactorAuth\Block\Provider\Google\Auth" name="twofactorauth.content"
+                    template="Magento_TwoFactorAuth::tfa/provider/auth.phtml">
+ 
+                 <arguments>
+                     <argument name="jsLayout" xsi:type="array">
+                         <item name="components" xsi:type="array">
+                             <item name="tfa-auth" xsi:type="array">
+                                 <item name="component" xsi:type="string">Magento_TwoFactorAuth/js/google/auth</item>
+                             </item>
+                         </item>
+                     </argument>
+diff --git a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_google_configure.xml b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_google_configure.xml
+index a571f628..dc2daa86 100644
+--- a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_google_configure.xml
++++ b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_google_configure.xml
+@@ -10,21 +10,21 @@
+     <update handle="admin_login" />
+     <update handle="tfa_screen" />
+ 
+     <head>
+         <css src="Magento_TwoFactorAuth::css/auth.css"/>
+         <css src="Magento_TwoFactorAuth::css/google.css"/>
+     </head>
+ 
+     <body>
+         <referenceContainer name="login.content">
+-            <block class="Magento\TwoFactorAuth\Block\Provider\Google\Configure" name="content"
++            <block class="Magento\TwoFactorAuth\Block\Provider\Google\Configure" name="twofactorauth.content"
+                    template="Magento_TwoFactorAuth::tfa/provider/configure.phtml">
+ 
+                 <arguments>
+                     <argument name="jsLayout" xsi:type="array">
+                         <item name="components" xsi:type="array">
+                             <item name="tfa-configure" xsi:type="array">
+                                 <item name="component" xsi:type="string">Magento_TwoFactorAuth/js/google/auth</item>
+                                 <item name="template" xsi:type="string">Magento_TwoFactorAuth/google/configure</item>
+                             </item>
+                         </item>
+diff --git a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_tfa_configure.xml b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_tfa_configure.xml
+index bb56d4a7..5e13def7 100644
+--- a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_tfa_configure.xml
++++ b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_tfa_configure.xml
+@@ -10,15 +10,15 @@
+     <update handle="admin_login" />
+     <update handle="formkey"/>
+     <update handle="tfa_screen" />
+ 
+     <head>
+         <css src="Magento_TwoFactorAuth::css/auth.css"/>
+     </head>
+ 
+     <body>
+         <referenceContainer name="login.content">
+-            <block class="Magento\TwoFactorAuth\Block\Configure" name="content"
++            <block class="Magento\TwoFactorAuth\Block\Configure" name="twofactorauth.content"
+                    template="Magento_TwoFactorAuth::tfa/configure.phtml" />
+         </referenceContainer>
+     </body>
+ </page>
+diff --git a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_tfa_requestconfig.xml b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_tfa_requestconfig.xml
+index 43643774..4d32f7e0 100644
+--- a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_tfa_requestconfig.xml
++++ b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_tfa_requestconfig.xml
+@@ -5,15 +5,15 @@
+  * See COPYING.txt for license details.
+  */
+ -->
+ <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+     <update handle="admin_login" />
+     <update handle="tfa_screen" />
+ 
+     <body>
+         <referenceContainer name="login.content">
+-            <block class="Magento\Backend\Block\Template" name="content"
++            <block class="Magento\Backend\Block\Template" name="twofactorauth.content"
+                    template="Magento_TwoFactorAuth::tfa/request_config.phtml" />
+         </referenceContainer>
+     </body>
+ </page>
+diff --git a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_u2f_auth.xml b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_u2f_auth.xml
+index 5aa91757..d6582abe 100644
+--- a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_u2f_auth.xml
++++ b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_u2f_auth.xml
+@@ -10,21 +10,21 @@
+     <update handle="admin_login" />
+     <update handle="tfa_screen" />
+ 
+     <head>
+         <css src="Magento_TwoFactorAuth::css/u2f.css"/>
+         <css src="Magento_TwoFactorAuth::css/auth.css"/>
+     </head>
+ 
+     <body>
+         <referenceContainer name="login.content">
+-            <block class="Magento\TwoFactorAuth\Block\Provider\U2fKey\Auth" name="content"
++            <block class="Magento\TwoFactorAuth\Block\Provider\U2fKey\Auth" name="twofactorauth.content"
+                    template="Magento_TwoFactorAuth::tfa/provider/auth.phtml">
+ 
+                 <arguments>
+                     <argument name="jsLayout" xsi:type="array">
+                         <item name="components" xsi:type="array">
+                             <item name="tfa-auth" xsi:type="array">
+                                 <item name="component" xsi:type="string">Magento_TwoFactorAuth/js/u2fkey/auth</item>
+                             </item>
+                         </item>
+                     </argument>
+diff --git a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_u2f_configure.xml b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_u2f_configure.xml
+index 8a7d202d..68948350 100644
+--- a/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_u2f_configure.xml
++++ b/vendor/magento/module-two-factor-auth/view/adminhtml/layout/tfa_u2f_configure.xml
+@@ -10,21 +10,21 @@
+     <update handle="admin_login" />
+     <update handle="tfa_screen" />
+ 
+     <head>
+         <css src="Magento_TwoFactorAuth::css/auth.css"/>
+         <css src="Magento_TwoFactorAuth::css/u2f.css"/>
+     </head>
+ 
+     <body>
+         <referenceContainer name="login.content">
+-            <block class="Magento\TwoFactorAuth\Block\Provider\U2fKey\Configure" name="content"
++            <block class="Magento\TwoFactorAuth\Block\Provider\U2fKey\Configure" name="twofactorauth.content"
+                    template="Magento_TwoFactorAuth::tfa/provider/configure.phtml">
+                 <arguments>
+                     <argument name="jsLayout" xsi:type="array">
+                         <item name="components" xsi:type="array">
+                             <item name="tfa-configure" xsi:type="array">
+                                 <item name="component" xsi:type="string">Magento_TwoFactorAuth/js/u2fkey/configure</item>
+                             </item>
+                         </item>
+                     </argument>
+                 </arguments>
+ 
