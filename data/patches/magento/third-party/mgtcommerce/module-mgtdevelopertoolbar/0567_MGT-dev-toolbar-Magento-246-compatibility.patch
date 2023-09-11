@@ -1,0 +1,52 @@
+From 2732a74be4abe28c857f4031313d46810a173fa8 Mon Sep 17 00:00:00 2001
+From: zamoroka <zapashok0@gmail.com>
+Date: Wed, 15 Mar 2023 12:46:55 +0200
+Subject: [PATCH] Magento 2.4.6: remove zend usage
+
+---
+ composer.json                                         | 3 ++-
+ src/app/code/Mgt/DeveloperToolbar/Model/Feed/Feed.php | 9 ++++++---
+ 2 files changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/vendor/mgtcommerce/module-mgtdevelopertoolbar/composer.json b/vendor/mgtcommerce/module-mgtdevelopertoolbar/composer.json
+index f3c543b..a3f3c5c 100644
+--- a/vendor/mgtcommerce/module-mgtdevelopertoolbar/composer.json
++++ b/vendor/mgtcommerce/module-mgtdevelopertoolbar/composer.json
+@@ -5,7 +5,8 @@
+   "homepage": "https://www.mgt-commerce.com",
+   "type": "magento2-module",
+   "require": {
+-    "php": ">=7.0.0"
++    "php": ">=7.0.0",
++    "laminas/laminas-http": "*"
+   },
+   "version": "1.0.10",
+   "license": [ "proprietary" ],
+diff --git a/vendor/mgtcommerce/module-mgtdevelopertoolbar/src/app/code/Mgt/DeveloperToolbar/Model/Feed/Feed.php b/vendor/mgtcommerce/module-mgtdevelopertoolbar/src/app/code/Mgt/DeveloperToolbar/Model/Feed/Feed.php
+index 71cecb7..c4c6f15 100755
+--- a/vendor/mgtcommerce/module-mgtdevelopertoolbar/src/app/code/Mgt/DeveloperToolbar/Model/Feed/Feed.php
++++ b/vendor/mgtcommerce/module-mgtdevelopertoolbar/src/app/code/Mgt/DeveloperToolbar/Model/Feed/Feed.php
+@@ -21,6 +21,8 @@
+  */
+ namespace Mgt\DeveloperToolbar\Model\Feed;
+ 
++use Laminas\Http\Client;
++use Laminas\Http\Request;
+ use Magento\Framework\Config\ConfigOptionsListConstants;
+ 
+ class Feed extends \Magento\Framework\Model\AbstractModel
+@@ -193,10 +195,11 @@ public function getFeedData()
+                 'shop_url' => $this->storeManager->getStore()->getBaseUrl(),
+                 'version'  => $this->productMetadata->getVersion(),
+             ];
+-            $client = new \Zend_Http_Client(self::FEED_URL);
++            $client = new Client(self::FEED_URL);
+             $client->setParameterPost($postParams);
+-            $client->setConfig(array('maxredirects' => 0, 'timeout' => 30));
+-            $data = $client->request(\Zend_Http_Client::POST);
++            $client->setOptions(array('maxredirects' => 0, 'timeout' => 30));
++            $client->setMethod(Request::METHOD_POST);
++            $data = $client->send();
+             if ($data = $data->getBody()) {
+                 $xml = new \SimpleXMLElement($data);
+             }
