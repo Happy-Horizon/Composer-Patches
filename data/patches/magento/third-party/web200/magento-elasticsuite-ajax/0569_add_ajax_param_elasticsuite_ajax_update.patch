@@ -1,0 +1,21 @@
+diff --git a/vendor/web200/magento-elasticsuite-ajax/view/frontend/web/js/elasticsuite-ajax.js b/vendor/web200/magento-elasticsuite-ajax/view/frontend/web/js/elasticsuite-ajax.js
+--- a/vendor/web200/magento-elasticsuite-ajax/view/frontend/web/js/elasticsuite-ajax.js	
++++ b/vendor/web200/magento-elasticsuite-ajax/view/frontend/web/js/elasticsuite-ajax.js	(date 1694511320825)
+@@ -165,7 +165,7 @@
+             let self = this;
+             let newUrl = elasticsuiteUrl._buildUrl(url, replaceParam, replaceValue);
+             $.ajax({
+-                url: newUrl,
++                url: elasticsuiteUrl._buildUrl(newUrl, 'ajax', 1),
+                 type: 'get',
+                 dataType: 'json',
+                 cache: true,
+@@ -215,7 +215,7 @@
+         _loadPage: function (url) {
+             let self = this;
+             $.ajax({
+-                url: url,
++                url: elasticsuiteUrl._buildUrl(url, 'ajax', 1),
+                 type: 'get',
+                 dataType: 'json',
+                 cache: true,
