@@ -1,0 +1,25 @@
+diff --git a/vendor/magento/module-cms-url-rewrite-graph-ql/Model/Resolver/UrlRewrite/CmsUrlResolverIdentity.php b/vendor/magento/module-cms-url-rewrite-graph-ql/Model/Resolver/UrlRewrite/CmsUrlResolverIdentity.php
+index 7025217..ae856ab 100644
+--- a/vendor/magento/module-cms-url-rewrite-graph-ql/Model/Resolver/UrlRewrite/CmsUrlResolverIdentity.php
++++ b/vendor/magento/module-cms-url-rewrite-graph-ql/Model/Resolver/UrlRewrite/CmsUrlResolverIdentity.php
+@@ -19,17 +19,18 @@ class CmsUrlResolverIdentity implements IdentityInterface
+ 
+     /**
+      * Get identities cache ID from a url rewrite entities
+      *
+      * @param array $resolvedData
+      * @return string[]
+      */
+     public function getIdentities(array $resolvedData): array
+     {
+         $ids = [];
+-        if (isset($resolvedData['id'])) {
++        $id = $resolvedData['id'] ?? $resolvedData['page_id'] ?? null;
++        if (isset($id)) {
+             $selectedCacheTag = $this->cacheTag;
+-            $ids =  [$selectedCacheTag, sprintf('%s_%s', $selectedCacheTag, $resolvedData['id'])];
++            $ids =  [$selectedCacheTag, sprintf('%s_%s', $selectedCacheTag, $id)];
+         }
+         return $ids;
+     }
+ }

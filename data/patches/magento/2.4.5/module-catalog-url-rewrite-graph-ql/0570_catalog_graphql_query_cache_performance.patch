@@ -1,0 +1,33 @@
+diff --git a/vendor/magento/module-catalog-url-rewrite-graph-ql/Model/Resolver/UrlRewrite/CatalogUrlResolverIdentity.php b/vendor/magento/module-catalog-url-rewrite-graph-ql/Model/Resolver/UrlRewrite/CatalogUrlResolverIdentity.php
+index 2040804..0b3ba29 100644
+--- a/vendor/magento/module-catalog-url-rewrite-graph-ql/Model/Resolver/UrlRewrite/CatalogUrlResolverIdentity.php
++++ b/vendor/magento/module-catalog-url-rewrite-graph-ql/Model/Resolver/UrlRewrite/CatalogUrlResolverIdentity.php
+@@ -22,25 +22,26 @@ class CatalogUrlResolverIdentity implements IdentityInterface
+ 
+     /**
+      * Get identities cache ID from a catalog url rewrite entities
+      *
+      * @param array $resolvedData
+      * @return string[]
+      */
+     public function getIdentities(array $resolvedData): array
+     {
+         $ids = [];
+-        if (isset($resolvedData['id'])) {
++        $entity_id = $resolvedData['id'] ?? $resolvedData['entity_id'] ?? null;
++        if (isset($entity_id)) {
+             $selectedCacheTag = isset($resolvedData['type']) ?
+                 $this->getTagFromEntityType($resolvedData['type']) : '';
+             if (!empty($selectedCacheTag)) {
+-                $ids = [$selectedCacheTag, sprintf('%s_%s', $selectedCacheTag, $resolvedData['id'])];
++                $ids = [$selectedCacheTag, sprintf('%s_%s', $selectedCacheTag, $entity_id)];
+             }
+         }
+         return $ids;
+     }
+ 
+     /**
+      * Match tag to entity type
+      *
+      * @param string $entityType
+      * @return string
