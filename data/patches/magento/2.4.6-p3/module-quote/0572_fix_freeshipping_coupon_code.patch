@@ -1,0 +1,12 @@
+diff --git a/vendor/magento/module-quote/Model/Quote/Address/Total/Shipping.php b/vendor/magento/module-quote/Model/Quote/Address/Total/Shipping.php
+--- a/vendor/magento/module-quote/Model/Quote/Address/Total/Shipping.php
++++ b/vendor/magento/module-quote/Model/Quote/Address/Total/Shipping.php	(date 1698242728287)
+@@ -73,7 +73,7 @@
+         $address->setFreeMethodWeight($data['freeMethodWeight']);
+ 
+         $isFreeShipping = $this->freeShipping->isFreeShipping($quote, $shippingAssignment->getItems());
+-        $address->setFreeShipping((int)$isFreeShipping);
++        $address->setFreeShipping($isFreeShipping);
+         // recalculate weights
+         $data = $this->getAssignmentWeightData($address, $shippingAssignment->getItems());
+         $address->setItemQty($data['addressQty']);
