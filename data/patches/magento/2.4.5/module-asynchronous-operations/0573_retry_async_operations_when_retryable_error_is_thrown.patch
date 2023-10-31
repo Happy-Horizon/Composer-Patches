@@ -1,0 +1,11 @@
+diff --git a/vendor/magento/module-asynchronous-operations/Model/OperationProcessor.php b/vendor/magento/module-asynchronous-operations/Model/OperationProcessor.php
+--- a/vendor/magento/module-asynchronous-operations/Model/OperationProcessor.php	
++++ b/vendor/magento/module-asynchronous-operations/Model/OperationProcessor.php
+@@ -197,6 +197,7 @@
+             if ($e instanceof LockWaitException
+                 || $e instanceof DeadlockException
+                 || $e instanceof ConnectionException
++                || $e instanceof \Magento\Framework\Exception\TemporaryState\CouldNotSaveException
+             ) {
+                 $result['status'] = OperationInterface::STATUS_TYPE_RETRIABLY_FAILED;
+                 $result['error_code'] = $e->getCode();
