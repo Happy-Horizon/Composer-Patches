@@ -2,7 +2,7 @@
 
 ## Patch name:
 The structure for a patch name is in 3 parts:
-* The patch number. In 4 digits with leading zero. These patch numbers are unique over all patches over all platforms/modules. Check [/patches/all](https://patches.happyhorizon.com/patches/all) to see the numbers currently in use
+* The patch number. In 4 digits with leading zero. These patch numbers are unique over all patches over all platforms/modules. Check [/patches/all](https://patches.happyhorizon.dev/patches/all) to see the numbers currently in use
 * The patch description, in lowercase, separated by underscores
 * the `.patch` file extension
 
@@ -82,7 +82,7 @@ Create a PR on GitHub with:
 - The new patch added to the appropriate folder(s)
 
 # Bug reports and patch/feature requests:
-Please only create GitHub issues for the functionality of https://patches.happyhorizon.com/
+Please only create GitHub issues for the functionality of https://patches.happyhorizon.dev/
 
 This application is created to facilitate easy sharing of patches for the supported platforms/modules. It, and it's contributors, do not offer direct support for these.  
 Check the original repositories for support
