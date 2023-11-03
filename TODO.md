@@ -2,3 +2,4 @@
 * ~~Publieke github~~
 * Pipeline
 * ~~Namespace `HH` > `HappyHorizon`~~
+* lock-file checker
