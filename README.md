@@ -42,6 +42,7 @@ Example:
 0448_fix_cropper_fileextension_issue.patch
 ```
 
+
 # Patch File Structure:
 
 All patch files are grouped as:
