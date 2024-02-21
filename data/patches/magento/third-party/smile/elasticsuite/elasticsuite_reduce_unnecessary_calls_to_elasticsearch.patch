@@ -1,0 +1,90 @@
+diff --git a/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/Client.php b/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/Client.php
+index d8ce4a308..012d4b3e6 100644
+--- a/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/Client.php
++++ b/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/Client.php
+@@ -94,20 +94,21 @@ class Client implements ClientInterface
+     public function deleteIndex($indexName)
+     {
+         $this->getEsClient()->indices()->delete(['index' => $indexName]);
+     }
+ 
+     /**
+      * {@inheritDoc}
+      */
+     public function indexExists($indexName)
+     {
++	return true;
+         return $this->getEsClient()->indices()->exists(['index' => $indexName]);
+     }
+ 
+     /**
+      * {@inheritDoc}
+      */
+     public function putIndexSettings($indexName, $indexSettings)
+     {
+         $this->getEsClient()->indices()->putSettings(['index' => $indexName, 'body' => $indexSettings]);
+     }
+diff --git a/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/ClientBuilder.php b/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/ClientBuilder.php
+index 840f86b0d..388de5fb2 100644
+--- a/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/ClientBuilder.php
++++ b/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/ClientBuilder.php
+@@ -91,21 +91,22 @@ class ClientBuilder
+         if (!empty($hosts)) {
+             $clientBuilder->setHosts($hosts);
+         }
+ 
+         if ($options['is_debug_mode_enabled']) {
+             $clientBuilder->setLogger($this->logger);
+             $clientBuilder->setTracer($this->logger);
+         }
+ 
+         if ($options['max_parallel_handles']) {
+-            $handlerParams = ['max_handles' => (int) $options['max_parallel_handles']];
++//            $handlerParams = ['max_handles' => (int) $options['max_parallel_handles']];
++	    $handlerParams = ['max_handles' => 100];
+             $handler = \Elasticsearch\ClientBuilder::defaultHandler($handlerParams);
+             $clientBuilder->setHandler($handler);
+         }
+ 
+         $connectionParams = $this->getConnectionParams($options);
+ 
+         if (!empty($connectionParams)) {
+             $this->clientBuilder->setConnectionParams($connectionParams);
+         }
+ 
+diff --git a/vendor/smile/elasticsuite/src/module-elasticsuite-core/Cluster/ClusterInfo.php b/vendor/smile/elasticsuite/src/module-elasticsuite-core/Cluster/ClusterInfo.php
+index 016e6ff0c..5b5db0eda 100644
+--- a/vendor/smile/elasticsuite/src/module-elasticsuite-core/Cluster/ClusterInfo.php
++++ b/vendor/smile/elasticsuite/src/module-elasticsuite-core/Cluster/ClusterInfo.php
+@@ -48,29 +48,31 @@ class ClusterInfo implements ClusterInfoInterface
+     public function __construct(\Smile\ElasticsuiteCore\Api\Client\ClientInterface $client)
+     {
+         $this->client = $client;
+     }
+ 
+     /**
+      * {@inheritDoc}
+      */
+     public function getServerVersion()
+     {
++	return "7.17.11";
+         if ($this->serverVersion === null) {
+             $this->serverVersion = $this->client->info()['version']['number'];
+         }
+ 
+         return $this->serverVersion;
+     }
+ 
+     /**
+      * {@inheritDoc}
+      */
+     public function getServerDistribution()
+     {
++	return self::DISTRO_ES;
+         if ($this->serverDistribution === null) {
+             $this->serverDistribution = $this->client->info()['version']['distribution'] ?? self::DISTRO_ES;
+         }
+ 
+         return $this->serverDistribution;
+     }
+ }

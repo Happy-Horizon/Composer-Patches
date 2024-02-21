@@ -1,0 +1,27 @@
+diff --git a/vendor/guzzlehttp/guzzle/src/Pool.php b/vendor/guzzlehttp/guzzle/src/Pool.php
+index 6277c61fb..bb1e64e83 100644
+--- a/vendor/guzzlehttp/guzzle/src/Pool.php
++++ b/vendor/guzzlehttp/guzzle/src/Pool.php
+@@ -34,21 +34,21 @@ class Pool implements PromisorInterface
+      *                                  requests to send concurrently.
+      * @param array           $config   Associative array of options
+      *                                  - concurrency: (int) Maximum number of requests to send concurrently
+      *                                  - options: Array of request options to apply to each request.
+      *                                  - fulfilled: (callable) Function to invoke when a request completes.
+      *                                  - rejected: (callable) Function to invoke when a request is rejected.
+      */
+     public function __construct(ClientInterface $client, $requests, array $config = [])
+     {
+         if (!isset($config['concurrency'])) {
+-            $config['concurrency'] = 25;
++            $config['concurrency'] = 500;
+         }
+ 
+         if (isset($config['options'])) {
+             $opts = $config['options'];
+             unset($config['options']);
+         } else {
+             $opts = [];
+         }
+ 
+         $iterable = P\Create::iterFor($requests);

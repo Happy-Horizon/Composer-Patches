@@ -1,0 +1,62 @@
+diff --git a/vendor/smile/elasticsuite/src/module-elasticsuite-catalog-graph-ql/Model/Resolver/Products.php b/vendor/smile/elasticsuite/src/module-elasticsuite-catalog-graph-ql/Model/Resolver/Products.php
+index ea6dfe10c..34c2eeb35 100644
+--- a/vendor/smile/elasticsuite/src/module-elasticsuite-catalog-graph-ql/Model/Resolver/Products.php
++++ b/vendor/smile/elasticsuite/src/module-elasticsuite-catalog-graph-ql/Model/Resolver/Products.php
+@@ -23,50 +23,55 @@ use Smile\ElasticsuiteCatalogGraphQl\DataProvider\Product\SearchCriteriaBuilder;
+ use Smile\ElasticsuiteCatalogGraphQl\Model\Resolver\Products\ContextUpdater;
+ use Smile\ElasticsuiteCatalogGraphQl\Model\Resolver\Products\Query\Search;
+ 
+ /**
+  * Elasticsuite custom implementation of GraphQL Products Resolver
+  *
+  * @category Smile
+  * @package  Smile\ElasticsuiteCatalogGraphQl
+  * @author   Romain Ruaud <romain.ruaud@smile.fr>
+  */
+-class Products implements ResolverInterface
++class Products extends \Magento\CatalogGraphQl\Model\Resolver\Products implements ResolverInterface
+ {
+     /**
+      * @var ProductQueryInterface
+      */
+     private $searchQuery;
+ 
+     /**
+      * @var \Smile\ElasticsuiteCatalogGraphQl\Model\Resolver\Products\ContextUpdater
+      */
+     private $contextUpdater;
+ 
+     /**
+      * @param ProductQueryInterface $searchQuery    Search Query
+      * @param ContextUpdater        $contextUpdater Context Updater
+      */
+     public function __construct(
+         ProductQueryInterface $searchQuery,
+-        ContextUpdater $contextUpdater
++        ContextUpdater $contextUpdater,
++        \Magento\CatalogGraphQl\DataProvider\Product\SearchCriteriaBuilder $searchApiCriteriaBuilder = null
+     ) {
++	parent::__construct($searchQuery, $searchApiCriteriaBuilder);
+         $this->searchQuery    = $searchQuery;
+         $this->contextUpdater = $contextUpdater;
+     }
+ 
+     /**
+      * {@inheritDoc}
+      */
+     public function resolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null)
+     {
+         $this->validateArgs($args);
++	if (isset($args['filter']['sku'])) {
++		return parent::resolve($field, $context, $info, $value, $args);
++	}
+         $this->contextUpdater->updateSearchContext($args);
+ 
+         $searchResult = $this->searchQuery->getResult($args, $info, $context);
+         $layerType    = Resolver::CATALOG_LAYER_CATEGORY;
+ 
+         if (isset($args['search']) && (!empty($args['search']))) {
+             $layerType = Resolver::CATALOG_LAYER_SEARCH;
+         }
+ 
+         return [
