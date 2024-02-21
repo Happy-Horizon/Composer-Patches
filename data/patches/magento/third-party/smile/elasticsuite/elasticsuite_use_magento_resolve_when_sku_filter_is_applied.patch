@@ -47,7 +47,7 @@ index ea6dfe10c..34c2eeb35 100644
      public function resolve(Field $field, $context, ResolveInfo $info, array $value = null, array $args = null)
      {
          $this->validateArgs($args);
-+	if (isset($args['filter']['sku'])) {
++	if (isset($args['filters']['sku'])) {
 +		return parent::resolve($field, $context, $info, $value, $args);
 +	}
          $this->contextUpdater->updateSearchContext($args);
