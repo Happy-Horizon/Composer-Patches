@@ -1,0 +1,22 @@
+Index: vendor/mageme/module-webforms-3/Helper/ConvertVersion/ResultConverter.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/mageme/module-webforms-3/Helper/ConvertVersion/ResultConverter.php b/vendor/mageme/module-webforms-3/Helper/ConvertVersion/ResultConverter.php
+--- a/vendor/mageme/module-webforms-3/Helper/ConvertVersion/ResultConverter.php	
++++ b/vendor/mageme/module-webforms-3/Helper/ConvertVersion/ResultConverter.php	(date 1712580604761)
+@@ -91,7 +91,12 @@
+             ]);
+             $result = $this->resultFactory->create();
+             $result->setData($this->convertV2Data($oldData));
+-            $this->resultRepository->save($result);
++            $customerSelect = $connection->select()->from([$setup->getTable('customer_entity')],['entity_id'])->where("entity_id = :customer_id");
++            $bind = ['customer_id' => $result->getCustomerId()];
++            $activeCustomer = $connection->fetchAll($customerSelect, $bind);
++            if ($activeCustomer || $result->getCustomerId() == 0) {
++                $this->resultRepository->save($result);
++            }
+         }
+     }
+ 
