@@ -1,0 +1,27 @@
+diff --git a/vendor/dpdconnect/magento2-shipping/Helper/Data.php b/vendor/dpdconnect/magento2-shipping/Helper/Data.php
+index e2a8e37..e57556e 100644
+--- a/vendor/dpdconnect/magento2-shipping/Helper/Data.php
++++ b/vendor/dpdconnect/magento2-shipping/Helper/Data.php
+@@ -88,21 +88,21 @@ class Data extends AbstractHelper
+         $this->dpdSettings = $dpdSettings;
+         $this->shipmentManager = $shipmentManager;
+         $this->shipmentNotifier = $shipmentNotifier;
+ 
+         parent::__construct($context);
+         $this->batchManager = $batchManager;
+     }
+ 
+     public function getGoogleServerApiKey()
+     {
+-        return $this->dpdSettings->getValue(DpdSettings::PARCELSHOP_MAPS_SERVER_KEY, ScopeInterface::SCOPE_STORE);
++        return $this->dpdSettings->getValue(DpdSettings::PARCELSHOP_MAPS_CLIENT_KEY, ScopeInterface::SCOPE_STORE);
+     }
+ 
+     /**
+      * @param Order $order
+      * @param Order\Shipment|null $shipment
+      * @param int $parcels
+      * @param bool $isReturn
+      * @return array
+      * @throws AlreadyExistsException
+      * @throws LocalizedException
