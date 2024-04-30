@@ -1,0 +1,120 @@
+diff --git a/vendor/trustedshops/trustedshops/Model/System/Config/Rating.php b/vendor/trustedshops/trustedshops/Model/System/Config/Rating.php
+index 6de0d7c3..5a352f8a 100644
+--- a/vendor/trustedshops/trustedshops/Model/System/Config/Rating.php
++++ b/vendor/trustedshops/trustedshops/Model/System/Config/Rating.php
+@@ -31,27 +31,29 @@ class Rating extends \Magento\Framework\App\Config\Value
+         return parent::beforeSave();
+     }
+ 
+     public function getDefault()
+     {
+         return <<<HTML
+ <script type="text/javascript"
+ src="//widgets.trustedshops.com/reviews/tsSticker/tsProductStickerSummary.
+ js"></script>
+ <script>
++if (typeof productStickerSummary != 'function') {
+ var summaryBadge = new productStickerSummary();
+ summaryBadge.showSummary(
+ {
+ 'tsId': '%tsid%',
+ 'sku': ['%sku%'],
+ 'element': '#ts_product_widget',
+ 'starColor' : '#FFDC0F',
+ 'starSize' : '14px',
+ 'fontSize' : '12px',
+ 'showRating' : true,
+ 'scrollToReviews' : false
+ }
+ );
++}
+ </script>
+ HTML;
+     }
+ }
+diff --git a/vendor/trustedshops/trustedshops/etc/config.xml b/vendor/trustedshops/trustedshops/etc/config.xml
+index 2e218ac5..4a3778fb 100644
+--- a/vendor/trustedshops/trustedshops/etc/config.xml
++++ b/vendor/trustedshops/trustedshops/etc/config.xml
+@@ -127,33 +127,35 @@ _ts.src
+ ='//widgets.trustedshops.com/reviews/tsSticker/tsProductSticker.js';
+ me.parentNode.insertBefore(_ts, me);
+ _tsProductReviewsConfig.script = _ts;
+ </script>
+                 ]]></review_code>
+                 <rating_code><![CDATA[
+ <script type="text/javascript"
+ src="//widgets.trustedshops.com/reviews/tsSticker/tsProductStickerSummary.
+ js"></script>
+ <script>
++if (typeof productStickerSummary != 'function') {
+ var summaryBadge = new productStickerSummary();
+ summaryBadge.showSummary(
+ {
+ 'tsId': '%tsid%',
+ 'sku': ['%sku%'],
+ 'element': '#ts_product_widget',
+ 'starColor' : '#FFDC0F',
+ 'starSize' : '14px',
+ 'fontSize' : '12px',
+ 'showRating' : true,
+ 'scrollToReviews' : false
+ }
+ );
++}
+ </script>
+             ]]></rating_code>
+             </product>
+         </trustedshops_trustedshops>
+         <trustedshops_trustedshops_reviews>
+             <trigger_api>
+                 <trigger_api_active>0</trigger_api_active>
+                 <trigger_status>complete</trigger_status>
+             </trigger_api>
+             <order_export>
+diff --git a/vendor/trustedshops/trustedshops/view/frontend/templates/rating.phtml b/vendor/trustedshops/trustedshops/view/frontend/templates/rating.phtml
+index 0c561f45..0769c4ab 100644
+--- a/vendor/trustedshops/trustedshops/view/frontend/templates/rating.phtml
++++ b/vendor/trustedshops/trustedshops/view/frontend/templates/rating.phtml
+@@ -9,26 +9,28 @@
+  */
+ ?>
+ <?php /** @var \Trustedshops\Trustedshops\Block\Rating $block */ ?>
+ <?php if ($block->isActive()) : ?>
+     <?php if ($block->isExpert()) : ?>
+         <?= /* @noEscape */ $block->getCode() ?>
+     <?php else : ?>
+         <script type="text/javascript"
+                 src="//widgets.trustedshops.com/reviews/tsSticker/tsProductStickerSummary.js"></script>
+         <script type="text/javascript">
+-            var summaryBadge = new productStickerSummary();
+-            summaryBadge.showSummary(
+-                {
+-                    'tsId': '<?= $block->escapeHtml($block->getTsId()) ?>',
+-                    'sku': ['<?= $block->escapeHtml($block->getProductSku(true)) ?>'],
+-                    'element': '#ts_product_widget',
+-                    'starColor': '<?= $block->escapeHtml($block->getStarColor()) ?>',
+-                    'starSize': '<?= $block->escapeHtml($block->getStarSize()) ?>',
+-                    'fontSize': '<?= $block->escapeHtml($block->getFontSize()) ?>',
+-                    'showRating': true,
+-                    'scrollToReviews': false
+-                }
+-            );
++            if (typeof productStickerSummary != 'function') {
++                var summaryBadge = new productStickerSummary();
++                summaryBadge.showSummary(
++                    {
++                        'tsId': '<?= $block->escapeHtml($block->getTsId()) ?>',
++                        'sku': ['<?= $block->escapeHtml($block->getProductSku(true)) ?>'],
++                        'element': '#ts_product_widget',
++                        'starColor': '<?= $block->escapeHtml($block->getStarColor()) ?>',
++                        'starSize': '<?= $block->escapeHtml($block->getStarSize()) ?>',
++                        'fontSize': '<?= $block->escapeHtml($block->getFontSize()) ?>',
++                        'showRating': true,
++                        'scrollToReviews': false
++                    }
++                );
++            }
+         </script>
+     <?php endif; ?>
+ <?php endif; ?>
