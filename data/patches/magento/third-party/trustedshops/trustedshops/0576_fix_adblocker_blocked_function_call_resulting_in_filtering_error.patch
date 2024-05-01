@@ -13,7 +13,7 @@ index 6de0d7c3..5a352f8a 100644
  src="//widgets.trustedshops.com/reviews/tsSticker/tsProductStickerSummary.
  js"></script>
  <script>
-+if (typeof productStickerSummary != 'function') {
++if (typeof productStickerSummary == 'function') {
  var summaryBadge = new productStickerSummary();
  summaryBadge.showSummary(
  {
@@ -47,7 +47,7 @@ index 2e218ac5..4a3778fb 100644
  src="//widgets.trustedshops.com/reviews/tsSticker/tsProductStickerSummary.
  js"></script>
  <script>
-+if (typeof productStickerSummary != 'function') {
++if (typeof productStickerSummary == 'function') {
  var summaryBadge = new productStickerSummary();
  summaryBadge.showSummary(
  {
@@ -100,7 +100,7 @@ index 0c561f45..0769c4ab 100644
 -                    'scrollToReviews': false
 -                }
 -            );
-+            if (typeof productStickerSummary != 'function') {
++            if (typeof productStickerSummary == 'function') {
 +                var summaryBadge = new productStickerSummary();
 +                summaryBadge.showSummary(
 +                    {
