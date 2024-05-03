@@ -1,0 +1,25 @@
+Index: vendor/tig/postnl-magento2/view/frontend/templates/customer/address/Postcode.phtml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/tig/postnl-magento2/view/frontend/templates/customer/address/Postcode.phtml b/vendor/tig/postnl-magento2/view/frontend/templates/customer/address/Postcode.phtml
+--- a/vendor/tig/postnl-magento2/view/frontend/templates/customer/address/Postcode.phtml	
++++ b/vendor/tig/postnl-magento2/view/frontend/templates/customer/address/Postcode.phtml	(date 1714638475736)
+@@ -170,10 +170,14 @@
+             houseNumberValue = $('.field.street').find('.control input:eq('+streetLineId+')').val(),
+             houseAdditionValue = $('.field.street').find('.control input:eq('+(streetLineId + 1)+')').val();
+         if (!houseAdditionValue) {
+-            houseNumberValue = <?= $block->escapeJs($houseNumber); ?>;
++            <?php if (!empty($houseNumber)): ?>
++                houseNumberValue = <?= $block->escapeJs($houseNumber); ?>;
++            <?php endif; ?>
+         }
+         if (!houseAdditionValue) {
+-            houseAdditionValue = <?= $block->escapeJs($addition); ?>;
++            <?php if (!empty($addition)):  ?>
++                houseAdditionValue = <?= $block->escapeJs($addition); ?>;
++            <?php endif; ?>
+         }
+ 
+         var housenumberElement = $('.field.zip').clone();
