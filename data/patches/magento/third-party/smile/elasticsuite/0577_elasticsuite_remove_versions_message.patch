@@ -1,0 +1,16 @@
+Index: vendor/smile/elasticsuite/src/module-elasticsuite-core/etc/adminhtml/di.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/smile/elasticsuite/src/module-elasticsuite-core/etc/adminhtml/di.xml b/vendor/smile/elasticsuite/src/module-elasticsuite-core/etc/adminhtml/di.xml
+--- a/vendor/smile/elasticsuite/src/module-elasticsuite-core/etc/adminhtml/di.xml	
++++ b/vendor/smile/elasticsuite/src/module-elasticsuite-core/etc/adminhtml/di.xml	(date 1714657972000)
+@@ -21,7 +21,6 @@
+     <type name="Magento\Framework\Notification\MessageList">
+         <arguments>
+             <argument name="messages" xsi:type="array">
+-                <item name="elasticsuite" xsi:type="string">Smile\ElasticsuiteCore\Model\System\Message\NotificationAboutVersions</item>
+                 <item name="elasticsuite_cluster_replicas_misconfig_warning" xsi:type="string">Smile\ElasticsuiteCore\Model\System\Message\WarningAboutClusterReplicasMisconfig</item>
+             </argument>
+         </arguments>
