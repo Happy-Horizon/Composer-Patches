@@ -1,0 +1,61 @@
+Index: vendor/magento/module-quote-graph-ql/Model/Resolver/MergeCarts.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/magento/module-quote-graph-ql/Model/Resolver/MergeCarts.php b/vendor/magento/module-quote-graph-ql/Model/Resolver/MergeCarts.php
+--- a/vendor/magento/module-quote-graph-ql/Model/Resolver/MergeCarts.php	
++++ b/vendor/magento/module-quote-graph-ql/Model/Resolver/MergeCarts.php	(date 1726475385659)
+@@ -149,27 +149,31 @@
+ 
+         $storeId = (int)$context->getExtensionAttributes()->getStore()->getId();
+         // passing customerId as null enforces source cart should always be a guestcart
+-        $guestCart = $this->getCartForUser->execute(
+-            $guestMaskedCartId,
+-            null,
+-            $storeId
+-        );
+-        $customerCart = $this->getCartForUser->execute(
+-            $customerMaskedCartId,
+-            $currentUserId,
+-            $storeId
+-        );
+-        if ($this->cartQuantityValidator->validateFinalCartQuantities($customerCart, $guestCart)) {
+-            $guestCart = $this->getCartForUser->execute(
+-                $guestMaskedCartId,
+-                null,
+-                $storeId
+-            );
+-        }
+-        $customerCart->merge($guestCart);
+-        $guestCart->setIsActive(false);
+-        $this->cartRepository->save($customerCart);
+-        $this->cartRepository->save($guestCart);
++        try {
++            $guestCart = $this->getCartForUser->execute(
++                $guestMaskedCartId,
++                null,
++                $storeId
++            );
++            $customerCart = $this->getCartForUser->execute(
++                $customerMaskedCartId,
++                $currentUserId,
++                $storeId
++            );
++            if ($this->cartQuantityValidator->validateFinalCartQuantities($customerCart, $guestCart)) {
++                $guestCart = $this->getCartForUser->execute(
++                    $guestMaskedCartId,
++                    null,
++                    $storeId
++                );
++            }
++            $customerCart->merge($guestCart);
++            $guestCart->setIsActive(false);
++            $this->cartRepository->save($guestCart);
++        } catch (\Exception $exception) {
++            $customerCart = $this->getCartForUser->execute($customerMaskedCartId, $currentUserId, $storeId);
++        }
++        $this->cartRepository->save($customerCart);
+         return [
+             'model' => $customerCart,
+         ];
