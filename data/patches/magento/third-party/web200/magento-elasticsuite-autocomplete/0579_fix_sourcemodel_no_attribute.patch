@@ -1,0 +1,16 @@
+Index: vendor/web200/magento-elasticsuite-autocomplete/src/module-elasticsuite-autocomplete/Model/Indexer/Product/Fulltext/Datasource/AdditionalAttributes.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/web200/magento-elasticsuite-autocomplete/src/module-elasticsuite-autocomplete/Model/Indexer/Product/Fulltext/Datasource/AdditionalAttributes.php b/vendor/web200/magento-elasticsuite-autocomplete/src/module-elasticsuite-autocomplete/Model/Indexer/Product/Fulltext/Datasource/AdditionalAttributes.php
+--- a/vendor/web200/magento-elasticsuite-autocomplete/src/module-elasticsuite-autocomplete/Model/Indexer/Product/Fulltext/Datasource/AdditionalAttributes.php	
++++ b/vendor/web200/magento-elasticsuite-autocomplete/src/module-elasticsuite-autocomplete/Model/Indexer/Product/Fulltext/Datasource/AdditionalAttributes.php	(date 1742297336690)
+@@ -170,6 +170,7 @@
+     {
+         $sourceModel  = $this->objectManager->get($attribute->getSourceModel());
+         $options      = [];
++        $sourceModel->setAttribute($attribute);
+         $optionsArray = $sourceModel->toOptionArray();
+         foreach ($optionsArray as $row) {
+             $options[$row['value']] = $row['label'];
