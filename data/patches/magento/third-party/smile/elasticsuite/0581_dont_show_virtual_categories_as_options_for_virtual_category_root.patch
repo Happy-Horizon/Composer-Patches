@@ -1,0 +1,16 @@
+diff --git a/vendor/smile/elasticsuite/src/module-elasticsuite-virtual-category/Model/Category/Attribute/Source/VirtualCategoryRoot/CollectionFactory.php b/vendor/smile/elasticsuite/src/module-elasticsuite-virtual-category/Model/Category/Attribute/Source/VirtualCategoryRoot/CollectionFactory.php
+--- a/vendor/smile/elasticsuite/src/module-elasticsuite-virtual-category/Model/Category/Attribute/Source/VirtualCategoryRoot/CollectionFactory.php
++++ b/vendor/smile/elasticsuite/src/module-elasticsuite-virtual-category/Model/Category/Attribute/Source/VirtualCategoryRoot/CollectionFactory.php	(date 1745585540656)
+@@ -56,6 +56,12 @@
+
+         if ($this->getCurrentCategory() && $this->getCurrentCategory()->getLevel() >= 2) {
+             $collection->addAttributeToFilter('entity_id', ['neq' => (int) $this->getCurrentCategory()->getId()]);
++            // Don't show virtual categories in the tree, since nested virtual category have major performance issues
++            $collection->addAttributeToFilter(
++                [
++                    ['attribute' => 'is_virtual_category', 'null' => true],
++                    ['attribute' => 'is_virtual_category', 'eq' => 0]
++                ]);
+
+             $rootPath      = array_slice($this->getCurrentCategory()->getPathIds(), 0, 2);
+             $pathCondition = implode('/', $rootPath) . '%';
