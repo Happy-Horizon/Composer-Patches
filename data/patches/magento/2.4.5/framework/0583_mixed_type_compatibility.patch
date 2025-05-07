@@ -1,0 +1,68 @@
+Index: vendor/magento/framework/Code/Generator/EntityAbstract.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/magento/framework/Code/Generator/EntityAbstract.php b/vendor/magento/framework/Code/Generator/EntityAbstract.php
+--- a/vendor/magento/framework/Code/Generator/EntityAbstract.php
++++ b/vendor/magento/framework/Code/Generator/EntityAbstract.php	(date 1746615140598)
+@@ -352,7 +352,7 @@
+             $typeName = $parameterType;
+         }
+
+-        if ($parameter->allowsNull()) {
++        if ($parameter->allowsNull() && $typeName !== 'mixed') {
+             $typeName = '?' . $typeName;
+         }
+
+Index: vendor/magento/framework/Async/Code/Generator/ProxyDeferredGenerator.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/magento/framework/Async/Code/Generator/ProxyDeferredGenerator.php b/vendor/magento/framework/Async/Code/Generator/ProxyDeferredGenerator.php
+--- a/vendor/magento/framework/Async/Code/Generator/ProxyDeferredGenerator.php
++++ b/vendor/magento/framework/Async/Code/Generator/ProxyDeferredGenerator.php	(date 1746615127359)
+@@ -246,7 +246,7 @@
+         $returnTypeValue = null;
+         $returnType = $method->getReturnType();
+         if ($returnType) {
+-            $returnTypeValue = ($returnType->allowsNull() ? '?' : '');
++            $returnTypeValue = ($returnType->allowsNull() && $returnType->getName() !== 'mixed' ? '?' : '');
+             $returnTypeValue .= ($returnType->getName() === 'self')
+                 ? $this->_getFullyQualifiedClassName($method->getDeclaringClass()->getName())
+                 : $returnType->getName();
+Index: vendor/magento/framework/Interception/Code/Generator/Interceptor.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/magento/framework/Interception/Code/Generator/Interceptor.php b/vendor/magento/framework/Interception/Code/Generator/Interceptor.php
+--- a/vendor/magento/framework/Interception/Code/Generator/Interceptor.php
++++ b/vendor/magento/framework/Interception/Code/Generator/Interceptor.php	(date 1746615162279)
+@@ -212,7 +212,7 @@
+         $returnTypeValue = null;
+         $returnType = $method->getReturnType();
+         if ($returnType) {
+-            $returnTypeValue = ($returnType->allowsNull() ? '?' : '');
++            $returnTypeValue = ($returnType->allowsNull() && $returnType->getName() !== 'mixed' ? '?' : '');
+             $returnTypeValue .= ($returnType->getName() === 'self')
+                 ? $this->_getFullyQualifiedClassName($method->getDeclaringClass()->getName())
+                 : $returnType->getName();
+Index: vendor/magento/framework/ObjectManager/Code/Generator/Proxy.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/magento/framework/ObjectManager/Code/Generator/Proxy.php b/vendor/magento/framework/ObjectManager/Code/Generator/Proxy.php
+--- a/vendor/magento/framework/ObjectManager/Code/Generator/Proxy.php
++++ b/vendor/magento/framework/ObjectManager/Code/Generator/Proxy.php	(date 1746615197044)
+@@ -287,7 +287,7 @@
+         $returnTypeValue = null;
+         $returnType = $method->getReturnType();
+         if ($returnType) {
+-            $returnTypeValue = ($returnType->allowsNull() ? '?' : '');
++            $returnTypeValue = ($returnType->allowsNull() && $returnType->getName() !== 'mixed' ? '?' : '');
+             $returnTypeValue .= ($returnType->getName() === 'self')
+                 ? $this->_getFullyQualifiedClassName($method->getDeclaringClass()->getName())
+                 : $returnType->getName();
