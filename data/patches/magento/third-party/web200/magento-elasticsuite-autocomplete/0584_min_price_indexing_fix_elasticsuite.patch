@@ -1,0 +1,25 @@
+Index: vendor/web200/magento-elasticsuite-autocomplete/src/module-elasticsuite-autocomplete/Model/Indexer/Product/Fulltext/Datasource/ConfigurablePrice.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/web200/magento-elasticsuite-autocomplete/src/module-elasticsuite-autocomplete/Model/Indexer/Product/Fulltext/Datasource/ConfigurablePrice.php b/vendor/web200/magento-elasticsuite-autocomplete/src/module-elasticsuite-autocomplete/Model/Indexer/Product/Fulltext/Datasource/ConfigurablePrice.php
+--- a/vendor/web200/magento-elasticsuite-autocomplete/src/module-elasticsuite-autocomplete/Model/Indexer/Product/Fulltext/Datasource/ConfigurablePrice.php
++++ b/vendor/web200/magento-elasticsuite-autocomplete/src/module-elasticsuite-autocomplete/Model/Indexer/Product/Fulltext/Datasource/ConfigurablePrice.php	(date 1751376927092)
+@@ -131,6 +131,7 @@
+     protected function getMinFinalPrice(array $parentIds, int $websiteId, bool $inStock): array
+     {
+         $connection = $this->resource->getConnection();
++        $inStock = $inStock ? '1' : '0';
+         $select     = $connection->select()->from(
+             ['parent' => $connection->getTableName('catalog_product_entity')],
+             []
+@@ -144,7 +145,7 @@
+             []
+         )->join(
+             ['csi' => $connection->getTableName('cataloginventory_stock_item')],
+-            'csi.product_id = link.child_id AND csi.is_in_stock=' . $inStock ? '1' : '0',
++            'csi.product_id = link.child_id AND csi.is_in_stock=' . $inStock,
+             []
+         )->columns([
+             new \Zend_Db_Expr('t.customer_group_id'),
