@@ -1,0 +1,40 @@
+diff --git a/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/Client.php b/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/Client.php
+index d8ce4a308..012d4b3e6 100644
+--- a/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/Client.php
++++ b/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/Client.php
+@@ -94,20 +94,21 @@ class Client implements ClientInterface
+     public function deleteIndex($indexName)
+     {
+         $this->getEsClient()->indices()->delete(['index' => $indexName]);
+     }
+
+     /**
+      * {@inheritDoc}
+      */
+     public function indexExists($indexName)
+     {
++	return true;
+         return $this->getEsClient()->indices()->exists(['index' => $indexName]);
+     }
+
+     /**
+      * {@inheritDoc}
+      */
+     public function putIndexSettings($indexName, $indexSettings)
+     {
+         $this->getEsClient()->indices()->putSettings(['index' => $indexName, 'body' => $indexSettings]);
+     }
+Index: vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/ClientBuilder.php
+diff --git a/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/ClientBuilder.php b/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/ClientBuilder.php
+--- a/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/ClientBuilder.php
++++ b/vendor/smile/elasticsuite/src/module-elasticsuite-core/Client/ClientBuilder.php	(date 1751897040364)
+@@ -120,7 +120,8 @@
+         }
+
+         if ($options['max_parallel_handles']) {
+-            $handlerParams = ['max_handles' => (int) $options['max_parallel_handles']];
++//            $handlerParams = ['max_handles' => (int) $options['max_parallel_handles']];
++            $handlerParams = ['max_handles' => 100];
+             $handler = \OpenSearch\ClientBuilder::defaultHandler($handlerParams);
+             $clientBuilder->setHandler($handler);
+         }
