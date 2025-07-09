@@ -1,0 +1,27 @@
+diff --git a/vendor/smile/elasticsuite/src/module-elasticsuite-virtual-category/Model/Rule.php b/vendor/smile/elasticsuite/src/module-elasticsuite-virtual-category/Model/Rule.php
+index 87df473f..a3ff4e12 100644
+--- a/vendor/smile/elasticsuite/src/module-elasticsuite-virtual-category/Model/Rule.php
++++ b/vendor/smile/elasticsuite/src/module-elasticsuite-virtual-category/Model/Rule.php
+@@ -486,20 +486,22 @@ class Rule extends \Smile\ElasticsuiteCatalogRule\Model\Rule implements VirtualR
+     private function addChildrenQueries($query, CategoryInterface $category, $excludedCategories = []): QueryInterface
+     {
+         $childrenCategories    = $this->getChildrenCategories($category, $excludedCategories);
+         $childrenCategoriesIds = [];
+ 
+         if ($query !== null && $childrenCategories->getSize() > 0) {
+             $queryParams = ['should' => [$query], 'cached' => empty($excludedCategories)];
+ 
+             foreach ($childrenCategories as $childrenCategory) {
+                 if (((bool) $childrenCategory->getIsVirtualCategory()) === true) {
++                    // Skip building queries for virtual children categories in order to prevent massive queries to be generated
++                    continue;
+                     $childrenQuery = $this->getCategorySearchQuery($childrenCategory, $excludedCategories);
+                     if ($childrenQuery !== null) {
+                         $childrenQuery->setName(
+                             sprintf(
+                                 '(%s) child virtual category [%s]:%d',
+                                 $childrenCategory->getPath(),
+                                 $childrenCategory->getName(),
+                                 $childrenCategory->getId()
+                             )
+                         );
