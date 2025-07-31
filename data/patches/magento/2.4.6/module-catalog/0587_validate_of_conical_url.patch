@@ -1,0 +1,26 @@
+diff --git a/vendor/magento/module-catalog/Model/Category.php b/vendor/magento/module-catalog/Model/Category.php
+index 959964aa..5f07df3e 100644
+--- a/vendor/magento/module-catalog/Model/Category.php
++++ b/vendor/magento/module-catalog/Model/Category.php
+@@ -608,20 +608,21 @@ class Category extends \Magento\Catalog\Model\AbstractModel implements
+                 $this->setData('url', $this->getUrlInstance()->getDirectUrl($this->getRequestPath()));
+                 Profiler::stop('REWRITE: ' . __METHOD__);
+                 return $this->getData('url');
+             }
+ 
+             $rewrite = $this->urlFinder->findOneByData(
+                 [
+                     UrlRewrite::ENTITY_ID => $this->getId(),
+                     UrlRewrite::ENTITY_TYPE => CategoryUrlRewriteGenerator::ENTITY_TYPE,
+                     UrlRewrite::STORE_ID => $this->getStoreId(),
++                    UrlRewrite::REDIRECT_TYPE => 0
+                 ]
+             );
+             if ($rewrite) {
+                 $this->setData('url', $this->getUrlInstance()->getDirectUrl($rewrite->getRequestPath()));
+                 Profiler::stop('REWRITE: ' . __METHOD__);
+                 return $this->getData('url');
+             }
+ 
+             $this->setData('url', $this->getCategoryIdUrl());
+             Profiler::stop('REWRITE: ' . __METHOD__);
