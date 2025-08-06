@@ -1,0 +1,17 @@
+Index: vendor/snowdog/frontools/package.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/snowdog/frontools/package.json b/vendor/snowdog/frontools/package.json
+--- a/vendor/snowdog/frontools/package.json	
++++ b/vendor/snowdog/frontools/package.json	(date 1754477734991)
+@@ -35,7 +35,7 @@
+     "gulp-sass": "^5.0.0",
+     "gulp-sass-lint": "^1.4.0",
+     "gulp-sourcemaps": "^3.0.0",
+-    "gulp-svg-sprite": "^1.5.0",
++    "gulp-svg-sprite": "^2.0.0",
+     "gulp-uglify": "^3.0.2",
+     "js-yaml": "^4.1.0",
+     "magepack": "^2.7.2",
