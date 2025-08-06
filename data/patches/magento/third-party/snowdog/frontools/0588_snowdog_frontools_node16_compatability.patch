@@ -5,7 +5,7 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/vendor/snowdog/frontools/package.json b/vendor/snowdog/frontools/package.json
 --- a/vendor/snowdog/frontools/package.json	
-+++ b/vendor/snowdog/frontools/package.json	(date 1754477734991)
++++ b/vendor/snowdog/frontools/package.json	(date 1636317744000)
 @@ -35,7 +35,7 @@
      "gulp-sass": "^5.0.0",
      "gulp-sass-lint": "^1.4.0",
@@ -15,3 +15,12 @@ diff --git a/vendor/snowdog/frontools/package.json b/vendor/snowdog/frontools/pa
      "gulp-uglify": "^3.0.2",
      "js-yaml": "^4.1.0",
      "magepack": "^2.7.2",
+@@ -43,7 +43,7 @@
+     "marked-terminal": "^4.2.0",
+     "merge-stream": "^2.0.0",
+     "minimist": "^1.2.5",
+-    "node-sass": "^6.0.1",
++    "node-sass": "^9.0.0",
+     "postcss-reporter": "^7.0.4",
+     "progress": "^2.0.3",
+     "run-sequence": "^2.2.1",
