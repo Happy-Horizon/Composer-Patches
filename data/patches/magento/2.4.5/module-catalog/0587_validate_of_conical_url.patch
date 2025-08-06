@@ -1,0 +1,16 @@
+Index: vendor/magento/module-catalog/Model/Category.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/magento/module-catalog/Model/Category.php b/vendor/magento/module-catalog/Model/Category.php
+--- a/vendor/magento/module-catalog/Model/Category.php
++++ b/vendor/magento/module-catalog/Model/Category.php	(date 1754308651043)
+@@ -615,6 +615,7 @@
+                     UrlRewrite::ENTITY_ID => $this->getId(),
+                     UrlRewrite::ENTITY_TYPE => CategoryUrlRewriteGenerator::ENTITY_TYPE,
+                     UrlRewrite::STORE_ID => $this->getStoreId(),
++                    UrlRewrite::REDIRECT_TYPE => 0,
+                 ]
+             );
+             if ($rewrite) {
