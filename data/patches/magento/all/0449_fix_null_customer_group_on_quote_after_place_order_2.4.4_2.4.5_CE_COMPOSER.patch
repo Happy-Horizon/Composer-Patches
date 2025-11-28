@@ -1,0 +1,17 @@
+Index: vendor/magento/module-quote/Model/QuoteManagement.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/magento/module-quote/Model/QuoteManagement.php b/vendor/magento/module-quote/Model/QuoteManagement.php
+--- a/vendor/magento/module-quote/Model/QuoteManagement.php	
++++ b/vendor/magento/module-quote/Model/QuoteManagement.php	(date 1679931465634)
+@@ -424,7 +424,7 @@
+                 }
+             }
+             $quote->setCustomerIsGuest(true);
+-            $groupId = $customer ? $customer->getGroupId() : GroupInterface::NOT_LOGGED_IN_ID;
++            $groupId = $customerId ? $customer->getGroupId() : GroupInterface::NOT_LOGGED_IN_ID;
+             $quote->setCustomerGroupId($groupId);
+         }
+ 

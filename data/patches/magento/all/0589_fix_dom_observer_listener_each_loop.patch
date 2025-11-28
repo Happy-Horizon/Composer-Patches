@@ -1,0 +1,27 @@
+diff --git a/vendor/magento/module-ui/view/base/web/js/lib/view/utils/dom-observer.js b/vendor/magento/module-ui/view/base/web/js/lib/view/utils/dom-observer.js
+index bcb8e97f..ea13611d 100644
+--- a/vendor/magento/module-ui/view/base/web/js/lib/view/utils/dom-observer.js
++++ b/vendor/magento/module-ui/view/base/web/js/lib/view/utils/dom-observer.js
+@@ -142,21 +142,21 @@ define([
+     /**
+      * Calls handlers associated with an added node.
+      * Adds listeners for the node removal.
+      *
+      * @param {HTMLElement} node - Added node.
+      */
+     function processAdded(node) {
+         _.each(watchers.selectors, function (listeners, selector) {
+             for (let data of listeners) {
+                 if (!data.ctx.contains(node) || !$(node, data.ctx).is(selector)) {
+-                    break;
++                    continue;
+                 }
+ 
+                 if (data.type === 'add') {
+                     trigger(node, data);
+                 } else if (data.type === 'remove') {
+                     addRemovalListener(node, data);
+                 }
+             }
+         });
+     }

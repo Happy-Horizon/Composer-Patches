@@ -1,0 +1,17 @@
+Index: vendor/magento/module-catalog-graph-ql/Model/Config/FilterAttributeReader.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/magento/module-catalog-graph-ql/Model/Config/FilterAttributeReader.php b/vendor/magento/module-catalog-graph-ql/Model/Config/FilterAttributeReader.php
+--- a/vendor/magento/module-catalog-graph-ql/Model/Config/FilterAttributeReader.php	
++++ b/vendor/magento/module-catalog-graph-ql/Model/Config/FilterAttributeReader.php	(date 1732806108200)
+@@ -112,7 +112,7 @@
+             'select' => self::FILTER_EQUAL_TYPE,
+             'multiselect' => self::FILTER_EQUAL_TYPE,
+             'boolean' => self::FILTER_EQUAL_TYPE,
+-            'text' => self::FILTER_MATCH_TYPE,
++            'text' => self::FILTER_EQUAL_TYPE,
+             'textarea' => self::FILTER_MATCH_TYPE,
+         ];
+ 

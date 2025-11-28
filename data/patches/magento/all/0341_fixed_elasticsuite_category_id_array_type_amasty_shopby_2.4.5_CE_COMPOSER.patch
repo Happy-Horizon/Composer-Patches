@@ -1,0 +1,28 @@
+diff --git a/vendor/magento/module-elasticsearch/Model/ResourceModel/Fulltext/Collection/SearchResultApplier.php b/vendor/magento/module-elasticsearch/Model/ResourceModel/Fulltext/Collection/SearchResultApplier.php
+index 97cb92ab..480d54ec 100644
+--- a/vendor/magento/module-elasticsearch/Model/ResourceModel/Fulltext/Collection/SearchResultApplier.php
++++ b/vendor/magento/module-elasticsearch/Model/ResourceModel/Fulltext/Collection/SearchResultApplier.php
+@@ -180,20 +180,23 @@ class SearchResultApplier implements SearchResultApplierInterface
+             foreach ($searchCriteria->getFilterGroups() as $filterGroup) {
+                 foreach ($filterGroup->getFilters() as $filter) {
+                     if ($filter->getField() === 'category_ids') {
+                         $categoryId = $filter->getValue();
+                         break 2;
+                     }
+                 }
+             }
+ 
+             if ($categoryId) {
++                if (is_array($categoryId)) {
++                    $categoryId = $categoryId[0];
++                }
+                 $resultSet = $this->categoryProductByCustomSortOrder($categoryId);
+                 foreach ($resultSet as $item) {
+                     $ids[] = (int)$item['entity_id'];
+                 }
+             }
+         }
+ 
+         return $ids;
+     }
+ 

@@ -1,0 +1,12 @@
+diff --git a/vendor/magento/module-quote-graph-ql/Model/Resolver/ShippingAddress/SelectedShippingMethod.php b/vendor/magento/module-quote-graph-ql/Model/Resolver/ShippingAddress/SelectedShippingMethod.php
+--- a/vendor/magento/module-quote-graph-ql/Model/Resolver/ShippingAddress/SelectedShippingMethod.php
++++ b/vendor/magento/module-quote-graph-ql/Model/Resolver/ShippingAddress/SelectedShippingMethod.php	(date 1714550113375)
+@@ -71,7 +71,7 @@
+             'carrier_title' => $selectedShippingMethod->getCarrierTitle() ?? '',
+             'method_title' => $selectedShippingMethod->getMethodTitle() ?? '',
+             'amount' => [
+-                'value' => $address->getShippingAmount(),
++                'value' => $address->getShippingInclTax(),
+                 'currency' => $cart->getQuoteCurrencyCode(),
+             ],
+             'price_excl_tax' => [

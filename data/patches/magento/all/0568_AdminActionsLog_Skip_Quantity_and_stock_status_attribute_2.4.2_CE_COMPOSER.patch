@@ -1,0 +1,29 @@
+diff --git a/vendor/amasty/adminactionslog/Logging/Util/DetailsBuilder.php b/vendor/amasty/adminactionslog/Logging/Util/DetailsBuilder.php
+index fc0086bb..46b4570b 100644
+--- a/vendor/amasty/adminactionslog/Logging/Util/DetailsBuilder.php
++++ b/vendor/amasty/adminactionslog/Logging/Util/DetailsBuilder.php
+@@ -36,20 +36,24 @@ class DetailsBuilder
+      * @param array $beforeData
+      * @param array $afterData
+      * @return LogEntry\LogDetail[]
+      */
+     public function build(string $modelName, array $beforeData, array $afterData): array
+     {
+         $detailList = [];
+         $allDataKeys = array_keys(array_merge($beforeData, $afterData));
+ 
+         foreach ($allDataKeys as $dataKey) {
++            if ($dataKey == 'quantity_and_stock_status') {
++                continue;
++            }
++
+             $oldValue = $beforeData[$dataKey] ?? null;
+             $newValue = $afterData[$dataKey] ?? null;
+ 
+             if ($oldValue != $newValue) {
+                 $detailList[] = $this->detailFactory->create(['data' => [
+                     LogEntry\LogDetail::MODEL => $this->classNameNormalizer->execute($modelName),
+                     LogEntry\LogDetail::NAME => $dataKey,
+                     LogEntry\LogDetail::OLD_VALUE => $oldValue,
+                     LogEntry\LogDetail::NEW_VALUE => $newValue,
+                 ]]);

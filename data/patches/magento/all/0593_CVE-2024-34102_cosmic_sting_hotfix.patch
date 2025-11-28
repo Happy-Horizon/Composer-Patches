@@ -1,0 +1,11 @@
+diff --git a/vendor/magento/module-jwt-user-token/Model/SecretBasedJwksFactory.php b/vendor/magento/module-jwt-user-token/Model/SecretBasedJwksFactory.php
+--- a/vendor/magento/module-jwt-user-token/Model/SecretBasedJwksFactory.php	(revision 022e64b08a88658667bc2d6b922eada2b7910965)
++++ b/vendor/magento/module-jwt-user-token/Model/SecretBasedJwksFactory.php	(revision 8d2b0c1c6b421cdcd7f62a48a5edc9b0211d92a2)
+@@ -35,6 +35,7 @@
+     public function __construct(DeploymentConfig $deploymentConfig, JwkFactory $jwkFactory)
+     {
+         $this->keys = preg_split('/\s+/s', trim((string)$deploymentConfig->get('crypt/key')));
++        $this->keys = [end($this->keys)];
+         //Making sure keys are large enough.
+         foreach ($this->keys as &$key) {
+             $key = str_pad($key, 2048, '&', STR_PAD_BOTH);

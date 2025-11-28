@@ -1,0 +1,49 @@
+diff --git a/vendor/magento/module-inventory-catalog/Setup/Patch/Schema/CreateLegacyStockStatusView.php b/vendor/magento/module-inventory-catalog/Setup/Patch/Schema/CreateLegacyStockStatusView.php
+index eec200ce0..78e78f83d 100644
+--- a/vendor/magento/module-inventory-catalog/Setup/Patch/Schema/CreateLegacyStockStatusView.php
++++ b/vendor/magento/module-inventory-catalog/Setup/Patch/Schema/CreateLegacyStockStatusView.php
+@@ -65,7 +65,7 @@ class CreateLegacyStockStatusView implements SchemaPatchInterface
+         $viewToLegacyIndex = $this->stockIndexTableNameResolver->execute($defaultStockId);
+         $legacyStockStatusTable = $this->schemaSetup->getTable('cataloginventory_stock_status');
+         $productTable = $this->schemaSetup->getTable('catalog_product_entity');
+-        $sql = "CREATE
++        $sql = "CREATE OR REPLACE
+                 SQL SECURITY INVOKER
+                 VIEW {$viewToLegacyIndex}
+                   AS
+diff --git a/vendor/magento/module-inventory-catalog/Setup/Operation/AssignDefaultSourceToDefaultStock.php b/vendor/magento/module-inventory-catalog/Setup/Operation/AssignDefaultSourceToDefaultStock.php
+index 50892ec1c..68e963c3e 100644
+--- a/vendor/magento/module-inventory-catalog/Setup/Operation/AssignDefaultSourceToDefaultStock.php
++++ b/vendor/magento/module-inventory-catalog/Setup/Operation/AssignDefaultSourceToDefaultStock.php
+@@ -60,6 +60,6 @@ class AssignDefaultSourceToDefaultStock
+             StockSourceLinkInterface::STOCK_ID => $this->defaultStockProvider->getId(),
+             StockSourceLinkInterface::PRIORITY => 1,
+         ];
+-        $connection->insert($this->resource->getTableName('inventory_source_stock_link'), $stockSourceLinkData);
++        $connection->insertOnDuplicate($this->resource->getTableName('inventory_source_stock_link'), $stockSourceLinkData);
+     }
+ }
+diff --git a/vendor/magento/module-inventory-catalog/Setup/Operation/CreateDefaultSource.php b/vendor/magento/module-inventory-catalog/Setup/Operation/CreateDefaultSource.php
+index fd1762f0f..cd335d2df 100644
+--- a/vendor/magento/module-inventory-catalog/Setup/Operation/CreateDefaultSource.php
++++ b/vendor/magento/module-inventory-catalog/Setup/Operation/CreateDefaultSource.php
+@@ -56,6 +56,6 @@ class CreateDefaultSource
+             SourceInterface::COUNTRY_ID => 'US',
+             SourceInterface::POSTCODE => '00000',
+         ];
+-        $connection->insert($this->resource->getTableName('inventory_source'), $sourceData);
++        $connection->insertOnDuplicate($this->resource->getTableName('inventory_source'), $sourceData);
+     }
+ }
+diff --git a/vendor/magento/module-inventory-catalog/Setup/Operation/CreateDefaultStock.php b/vendor/magento/module-inventory-catalog/Setup/Operation/CreateDefaultStock.php
+index bce475fca..7f72d53db 100644
+--- a/vendor/magento/module-inventory-catalog/Setup/Operation/CreateDefaultStock.php
++++ b/vendor/magento/module-inventory-catalog/Setup/Operation/CreateDefaultStock.php
+@@ -50,6 +50,6 @@ class CreateDefaultStock
+             StockInterface::STOCK_ID => $this->defaultStockProvider->getId(),
+             StockInterface::NAME => 'Default Stock',
+         ];
+-        $connection->insert($this->resource->getTableName('inventory_stock'), $stockData);
++        $connection->insertOnDuplicate($this->resource->getTableName('inventory_stock'), $stockData);
+     }
+ }

@@ -1,0 +1,34 @@
+diff --git a/vendor/adyen/module-payment/Controller/Process/Result.php b/vendor/adyen/module-payment/Controller/Process/Result.php
+index e4c4c45..73069e9 100755
+--- a/vendor/adyen/module-payment/Controller/Process/Result.php
++++ b/vendor/adyen/module-payment/Controller/Process/Result.php
+@@ -253,21 +253,28 @@ class Result extends Action
+             $this->_redirect($successPath, $redirectParams);
+         } else {
+             $this->_adyenLogger->addAdyenResult(
+                 sprintf(
+                     'Payment for order %s was unsuccessful, ' .
+                     'it will be cancelled when the OFFER_CLOSED notification has been processed.',
+                     $this->_order->getIncrementId()
+                 )
+             );
+             $this->replaceCart($response);
+-            $this->_redirect($failPath, ['_query' => ['utm_nooverride' => '1']]);
++            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
++            $helper = $objectManager->get('Experius\GalaxyPayment\Helper\Data');
++            $this->_redirect($failPath, ['_query' => [
++                'utm_nooverride' => '1',
++                'transactionid' => $this->_order->getIncrementId(),
++                'hash' => $helper->encryptOrder($this->_order->getIncrementId()),
++                'type' => 'cancelPayment',
++            ]]);
+         }
+     }
+ 
+     /**
+      * @param $response
+      */
+     protected function replaceCart($response)
+     {
+         $this->_session->restoreQuote();
+ 

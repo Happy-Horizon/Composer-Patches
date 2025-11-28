@@ -1,0 +1,19 @@
+Index: vendor/magento/module-sales/Model/Order/Creditmemo/Total/Tax.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/magento/module-sales/Model/Order/Creditmemo/Total/Tax.php b/vendor/magento/module-sales/Model/Order/Creditmemo/Total/Tax.php
+--- a/vendor/magento/module-sales/Model/Order/Creditmemo/Total/Tax.php	
++++ b/vendor/magento/module-sales/Model/Order/Creditmemo/Total/Tax.php	(date 1690204084505)
+@@ -134,8 +134,8 @@
+             $baseShippingDiscountTaxCompensationAmount = 0;
+             $shippingDelta = $baseOrderShippingAmount - $baseOrderShippingRefundedAmount;
+ 
+-            if ($shippingDelta > $creditmemo->getBaseShippingAmount() ||
+-                $this->isShippingIncludeTaxWithTaxAfterDiscount($order->getStoreId())) {
++            if ($orderShippingAmount > 0 && ($shippingDelta > $creditmemo->getBaseShippingAmount() ||
++                $this->isShippingIncludeTaxWithTaxAfterDiscount($order->getStoreId()))) {
+                 $part = $creditmemo->getShippingAmount() / $orderShippingAmount;
+                 $basePart = $creditmemo->getBaseShippingAmount() / $baseOrderShippingAmount;
+                 $shippingTaxAmount = $order->getShippingTaxAmount() * $part;

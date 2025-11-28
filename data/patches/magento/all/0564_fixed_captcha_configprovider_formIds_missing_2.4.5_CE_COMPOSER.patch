@@ -1,0 +1,27 @@
+diff --git a/vendor/magento/module-captcha/Model/Checkout/ConfigProvider.php b/vendor/magento/module-captcha/Model/Checkout/ConfigProvider.php
+index 34ee62044..ba883c92f 100644
+--- a/vendor/magento/module-captcha/Model/Checkout/ConfigProvider.php
++++ b/vendor/magento/module-captcha/Model/Checkout/ConfigProvider.php
+@@ -26,21 +26,21 @@ class ConfigProvider implements \Magento\Checkout\Model\ConfigProviderInterface
+     protected $formIds;
+ 
+     /**
+      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+      * @param \Magento\Captcha\Helper\Data $captchaData
+      * @param array $formIds
+      */
+     public function __construct(
+         \Magento\Store\Model\StoreManagerInterface $storeManager,
+         \Magento\Captcha\Helper\Data $captchaData,
+-        array $formIds
++        array $formIds = []
+     ) {
+         $this->storeManager = $storeManager;
+         $this->captchaData = $captchaData;
+         $this->formIds = $formIds;
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function getConfig()

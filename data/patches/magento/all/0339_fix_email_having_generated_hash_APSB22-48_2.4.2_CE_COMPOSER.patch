@@ -1,0 +1,27 @@
+diff --git a/vendor/magento/framework/Filter/Template.php b/vendor/magento/framework/Filter/Template.php
+index 7eff730a4..053129845 100644
+--- a/vendor/magento/framework/Filter/Template.php
++++ b/vendor/magento/framework/Filter/Template.php
+@@ -217,21 +217,21 @@ class Template implements \Zend_Filter_Interface
+
+         foreach ($deferredDirectivesResults as $result) {
+             $value = str_replace($result['directive'], $result['output'], $value);
+         }
+
+         if ($this->filteringDepthMeter->showMark() > 1) {
+             // Signing own deferred directives (if any).
+             $signature = $this->signatureProvider->get();
+
+             foreach ($templateDirectivesResults as $result) {
+-                if ($result['directive'] === $result['output']) {
++                if ($result['directive'] === $result['output'] && strpos($result['output'], 'inlinecss') === false) {
+                     $value = str_replace(
+                         $result['output'],
+                         $signature . $result['output'] . $signature,
+                         $value
+                     );
+                 }
+             }
+         }
+
+         $value = $this->afterFilter($value);

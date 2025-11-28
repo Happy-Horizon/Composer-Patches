@@ -1,0 +1,21 @@
+diff --git a/vendor/theiconic/php-ga-measurement-protocol/src/Parameters/CompoundParameterCollection.php b/vendor/theiconic/php-ga-measurement-protocol/src/Parameters/CompoundParameterCollection.php
+index 5a3a02a88..5752ae1a6 100644
+--- a/vendor/theiconic/php-ga-measurement-protocol/src/Parameters/CompoundParameterCollection.php
++++ b/vendor/theiconic/php-ga-measurement-protocol/src/Parameters/CompoundParameterCollection.php
+@@ -85,15 +85,16 @@ abstract class CompoundParameterCollection implements IteratorAggregate
+             array_push($readablesItems, $item->getReadableParameters());
+         }
+
+         return $readablesItems;
+     }
+
+     /**
+      * @internal
+      * @inheritDoc
+      */
++    #[\ReturnTypeWillChange]
+     public function getIterator()
+     {
+         return new \ArrayIterator($this->items);
+     }
+ }

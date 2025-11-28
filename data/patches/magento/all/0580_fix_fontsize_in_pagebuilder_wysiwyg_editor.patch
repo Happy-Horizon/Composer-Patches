@@ -1,0 +1,27 @@
+diff --git a/vendor/magento/module-page-builder/Model/Wysiwyg/DefaultConfigProvider.php b/vendor/magento/module-page-builder/Model/Wysiwyg/DefaultConfigProvider.php
+index a179e74e..e1fb7f2e 100644
+--- a/vendor/magento/module-page-builder/Model/Wysiwyg/DefaultConfigProvider.php
++++ b/vendor/magento/module-page-builder/Model/Wysiwyg/DefaultConfigProvider.php
+@@ -35,21 +35,21 @@ class DefaultConfigProvider implements \Magento\Framework\Data\Wysiwyg\ConfigPro
+      * Returns configuration data
+      *
+      * @param \Magento\Framework\DataObject $config
+      * @return \Magento\Framework\DataObject
+      */
+     public function getConfig(\Magento\Framework\DataObject $config): \Magento\Framework\DataObject
+     {
+         $config->addData(
+             [
+                 'tinymce' => [
+-                    'toolbar' => 'undo redo | styles | fontsizeselect | lineheight | forecolor backcolor ' .
++                    'toolbar' => 'undo redo | styles | fontsize | lineheight | forecolor backcolor ' .
+                         '| bold italic underline | alignleft aligncenter alignright | numlist bullist ' .
+                         '| link image table charmap',
+ 
+                     'plugins' => implode(
+                         ' ',
+                         [
+                             'advlist',
+                             'autolink',
+                             'lists',
+                             'link',

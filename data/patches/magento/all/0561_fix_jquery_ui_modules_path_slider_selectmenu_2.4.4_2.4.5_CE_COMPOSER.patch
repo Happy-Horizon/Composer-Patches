@@ -1,0 +1,18 @@
+Index: vendor/magento/module-theme/view/base/requirejs-config.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/magento/module-theme/view/base/requirejs-config.js b/vendor/magento/module-theme/view/base/requirejs-config.js
+--- a/vendor/magento/module-theme/view/base/requirejs-config.js	
++++ b/vendor/magento/module-theme/view/base/requirejs-config.js	(date 1686727232794)
+@@ -39,7 +39,8 @@
+             'jquery-ui-modules/progressbar': 'jquery/ui-modules/widgets/progressbar',
+             'jquery-ui-modules/resizable': 'jquery/ui-modules/widgets/resizable',
+             'jquery-ui-modules/selectable': 'jquery/ui-modules/widgets/selectable',
+-            'jquery-ui-modules/slider': 'jquery/ui-modules/widgets/selectmenu',
++            'jquery-ui-modules/selectmenu': 'jquery/ui-modules/widgets/selectmenu',
++            'jquery-ui-modules/slider': 'jquery/ui-modules/widgets/slider',
+             'jquery-ui-modules/sortable': 'jquery/ui-modules/widgets/sortable',
+             'jquery-ui-modules/spinner': 'jquery/ui-modules/widgets/spinner',
+             'jquery-ui-modules/tabs': 'jquery/ui-modules/widgets/tabs',

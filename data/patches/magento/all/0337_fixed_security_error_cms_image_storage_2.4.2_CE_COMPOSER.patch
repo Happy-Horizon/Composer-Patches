@@ -1,0 +1,33 @@
+diff --git a/vendor/magento/module-cms/Model/Wysiwyg/Images/Storage.php b/vendor/magento/module-cms/Model/Wysiwyg/Images/Storage.php
+index 2c94e2e..1cba0f8 100644
+--- a/vendor/magento/module-cms/Model/Wysiwyg/Images/Storage.php
++++ b/vendor/magento/module-cms/Model/Wysiwyg/Images/Storage.php
+@@ -429,26 +429,26 @@ class Storage extends \Magento\Framework\DataObject
+      * @throws \Magento\Framework\Exception\LocalizedException
+      */
+     public function createDirectory($name, $path)
+     {
+         if (!preg_match(self::DIRECTORY_NAME_REGEXP, $name)) {
+             throw new \Magento\Framework\Exception\LocalizedException(
+                 __('Please rename the folder using only Latin letters, numbers, underscores and dashes.')
+             );
+         }
+
+-        $relativePath = $this->_directory->getRelativePath($path);
++        $relativePath = (string) $this->_directory->getRelativePath($path);
+         if (!$this->_directory->isDirectory($relativePath) || !$this->_directory->isWritable($relativePath)) {
+             $path = $this->_cmsWysiwygImages->getStorageRoot();
+         }
+
+-        $newPath = rtrim($path, '/') . '/' . $name;
++        $newPath = rtrim((string)$path, '/') . '/' . $name;
+         $relativeNewPath = $this->_directory->getRelativePath($newPath);
+         if ($this->_directory->isDirectory($relativeNewPath)) {
+             throw new \Magento\Framework\Exception\LocalizedException(
+                 __('We found a directory with the same name. Please try another folder name.')
+             );
+         }
+
+         $this->_directory->create($relativeNewPath);
+         try {
+             if ($this->_coreFileStorageDb->checkDbUsage()) {

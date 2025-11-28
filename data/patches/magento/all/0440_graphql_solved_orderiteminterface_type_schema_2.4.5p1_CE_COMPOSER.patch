@@ -1,0 +1,27 @@
+diff --git a/vendor/magento/module-sales-graph-ql/etc/schema.graphqls b/vendor/magento/module-sales-graph-ql/etc/schema.graphqls
+index e6eb8efa2..57ac24b73 100644
+--- a/vendor/magento/module-sales-graph-ql/etc/schema.graphqls
++++ b/vendor/magento/module-sales-graph-ql/etc/schema.graphqls
+@@ -32,21 +32,21 @@ input CustomerOrdersFilterInput @doc(description: "Identifies the filter to use
+     number: FilterStringTypeInput @doc(description: "Filters by order number.")
+ }
+
+ type CustomerOrders @doc(description: "The collection of orders that match the conditions defined in the filter.") {
+     items: [CustomerOrder]! @doc(description: "An array of customer orders.")
+     page_info: SearchResultPageInfo @doc(description: "Contains pagination metadata.")
+     total_count: Int @doc(description: "The total count of customer orders.")
+ }
+
+ type CustomerOrder @doc(description: "Contains details about each of the customer's orders.") {
+-    id: ID! @doc(description: "The unique ID for a `CustomerOrder` object.")
++    id: String! @doc(description: "The unique ID for a `CustomerOrder` object")
+     order_date: String! @doc(description: "The date the order was placed.")
+     status: String! @doc(description: "The current status of the order.")
+     number: String! @doc(description: "The order number.")
+     items: [OrderItemInterface] @doc(description: "An array containing the items purchased in this order.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\OrderItems")
+     total: OrderTotal @doc(description: "Details about the calculated totals for this order.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\OrderTotal")
+     invoices: [Invoice]! @doc(description: "A list of invoices for the order.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\Invoices")
+     shipments: [OrderShipment] @doc(description: "A list of shipments for the order.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\Shipments")
+     credit_memos: [CreditMemo] @doc(description: "A list of credit memos.") @resolver(class: "Magento\\SalesGraphQl\\Model\\Resolver\\CreditMemos")
+     payment_methods: [OrderPaymentMethod] @doc(description: "Payment details for the order.")
+     shipping_address: OrderAddress @doc(description: "The shipping address for the order.")

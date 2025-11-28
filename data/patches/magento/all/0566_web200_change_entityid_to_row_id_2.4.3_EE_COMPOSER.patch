@@ -1,0 +1,78 @@
+diff --git a/vendor/web200/magento-elasticsuite-autocomplete/src/module-elasticsuite-autocomplete/Model/Indexer/Product/Fulltext/Datasource/AdditionalAttributes.php b/vendor/web200/magento-elasticsuite-autocomplete/src/module-elasticsuite-autocomplete/Model/Indexer/Product/Fulltext/Datasource/AdditionalAttributes.php
+index ae3c8c8f..995530ff 100644
+--- a/vendor/web200/magento-elasticsuite-autocomplete/src/module-elasticsuite-autocomplete/Model/Indexer/Product/Fulltext/Datasource/AdditionalAttributes.php
++++ b/vendor/web200/magento-elasticsuite-autocomplete/src/module-elasticsuite-autocomplete/Model/Indexer/Product/Fulltext/Datasource/AdditionalAttributes.php
+@@ -105,21 +105,21 @@ class AdditionalAttributes implements DatasourceInterface
+             foreach (array_keys($indexData) as $productId) {
+                 $indexData[$productId][$attributeCode] = '';
+             }
+ 
+             $attribute = $this->eavAttributeRepositoryInterface->get(Product::ENTITY, $attributeCode);
+             $values    = $this->getValueFromAttributes((int)$storeId, $attribute, array_keys($indexData));
+             if ($attribute->getSourceModel() !== null) {
+                 $values = $this->loadSourceModelValue($values, $attribute);
+             }
+             foreach ($values as $value) {
+-                $indexData[(int)$value['entity_id']][$attributeCode] = $value['value'];
++                $indexData[(int)$value['row_id']][$attributeCode] = $value['value'];
+             }
+         }
+ 
+         $this->appEmulation->stopEnvironmentEmulation();
+ 
+         return $indexData;
+     }
+ 
+     /**
+      * Get request path data
+@@ -137,46 +137,47 @@ class AdditionalAttributes implements DatasourceInterface
+         }
+ 
+         $connection = $this->resource->getConnection();
+         $tableName  = $connection->getTableName('catalog_product_entity_' . $attribute->getBackendType());
+         $select     = $connection->select()->from(
+             ['cpe_default' => $tableName],
+             []
+         )->joinLeft(
+             ['cpe' => $tableName],
+             'cpe.attribute_id = cpe_default.attribute_id AND
+-            cpe.entity_id = cpe_default.entity_id AND
++            cpe.row_id = cpe_default.row_id AND
+             cpe.store_id = ' . $storeId,
+             []
+         )->columns([
+             'value'     => new \Zend_Db_Expr('IFNULL(`cpe`.`value`, cpe_default.value)'),
+-            'entity_id' => new \Zend_Db_Expr('IFNULL(`cpe`.`entity_id`, cpe_default.entity_id)'),
++            'row_id' => new \Zend_Db_Expr('IFNULL(`cpe`.`row_id`, cpe_default.row_id)'),
+         ])
+             ->where('cpe_default.store_id = 0')
+-            ->where('cpe_default.entity_id IN (?)', $productIds)
++            ->where('cpe_default.row_id IN (?)', $productIds)
+             ->where('cpe_default.attribute_id = ?', $attribute->getId());
+ 
+         return $connection->fetchAll($select);
+     }
+ 
+     /**
+      * Load source model value
+      *
+      * @param array              $values
+      * @param AttributeInterface $attribute
+      *
+      * @return mixed
+      */
+     protected function loadSourceModelValue(array $values, AttributeInterface $attribute): array
+     {
+         $sourceModel  = $this->objectManager->get($attribute->getSourceModel());
+         $options      = [];
++        $sourceModel->setAttribute($attribute);
+         $optionsArray = $sourceModel->toOptionArray();
+         foreach ($optionsArray as $row) {
+             $options[$row['value']] = $row['label'];
+         }
+ 
+         foreach ($values as &$value) {
+             if (isset($options[$value['value']])) {
+                 $value['value'] = (string)$options[$value['value']];
+             }
+         }

@@ -1,0 +1,28 @@
+diff --git a/vendor/magento/module-customer/Model/ResourceModel/CustomerRepository.php b/vendor/magento/module-customer/Model/ResourceModel/CustomerRepository.php
+--- a/vendor/magento/module-customer/Model/ResourceModel/CustomerRepository.php
++++ b/vendor/magento/module-customer/Model/ResourceModel/CustomerRepository.php	(date 1675181342735)
+@@ -204,7 +204,7 @@
+         $prevCustomerData = $prevCustomerDataArr = null;
+         if ($customer->getId()) {
+             $prevCustomerData = $this->getById($customer->getId());
+-            $prevCustomerDataArr = $prevCustomerData->__toArray();
++            $prevCustomerDataArr = $this->prepareCustomerData($prevCustomerData->__toArray());
+         }
+         /** @var $customer \Magento\Customer\Model\Data\Customer */
+         $customerArr = $customer->__toArray();
+@@ -528,4 +528,15 @@
+             $customerModel->setGroupId($prevCustomerDataArr['group_id']);
+         }
+     }
++
++    private function prepareCustomerData(array $customerData): array
++    {
++        if (isset($customerData[CustomerInterface::CUSTOM_ATTRIBUTES])) {
++            foreach ($customerData[CustomerInterface::CUSTOM_ATTRIBUTES] as $attribute) {
++                $customerData[$attribute['attribute_code']] = $attribute['value'];
++            }
++            unset($customerData[CustomerInterface::CUSTOM_ATTRIBUTES]);
++        }
++        return $customerData;
++    }
+ }

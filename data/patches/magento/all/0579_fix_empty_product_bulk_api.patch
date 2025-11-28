@@ -1,0 +1,16 @@
+Index: vendor/magento/module-catalog/Model/ProductRepository.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/magento/module-catalog/Model/ProductRepository.php b/vendor/magento/module-catalog/Model/ProductRepository.php
+--- a/vendor/magento/module-catalog/Model/ProductRepository.php	
++++ b/vendor/magento/module-catalog/Model/ProductRepository.php	(date 1736435056164)
+@@ -576,6 +576,7 @@
+             $product->setCanSaveCustomOptions(true);
+         }
+ 
++        $product->getAttributes();
+         $validationResult = $this->resourceModel->validate($product);
+         if (true !== $validationResult) {
+             throw new \Magento\Framework\Exception\CouldNotSaveException(

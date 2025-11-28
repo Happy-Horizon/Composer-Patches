@@ -1,0 +1,27 @@
+diff --git a/vendor/tinxit/b2bpricing-magento2/Model/Data/Salesprice.php b/vendor/tinxit/b2bpricing-magento2/Model/Data/Salesprice.php
+index 6c243fc4..0667616d 100644
+--- a/vendor/tinxit/b2bpricing-magento2/Model/Data/Salesprice.php
++++ b/vendor/tinxit/b2bpricing-magento2/Model/Data/Salesprice.php
+@@ -351,21 +351,21 @@ class Salesprice
+ 
+         if ($customerId) {
+             $customerGroupQuery = "OR (`sales_type` = 'Customer Price Group' and ";
+             //$allCustomerQuery = '';
+             $useNAV_Price_Group = $this->_b2bpricingHelper->getConfig("tinxit_b2bpricing/general/use_nav_customer_price_group");
+             if (! $useNAV_Price_Group) {
+                 $customerGroupId    = $this->_b2bpricingHelper->getGroupId();
+                 $customerGroupQuery .= " `sales_id` = $customerGroupId )";
+             } else {
+                 $customerGroupId    = $this->_b2bpricingHelper->getNAVCustomerPriceGroup();
+-                $customerGroupQuery .= " `sales_code` IN ('" . str_replace(',', "','", $customerGroupId) . "') )";
++                $customerGroupQuery .= " `sales_code` IN ('" . str_replace(',', "','", (string)$customerGroupId) . "') )";
+             }
+         }
+ 
+         if ($qty) {
+             $qty_query = "AND (`minimum_qty` <= $qty OR `minimum_qty` IS NULL)";
+         } else {
+             $qty_query = "AND (`minimum_qty` <= 1 OR `minimum_qty` IS NULL)";
+         }
+ 
+         if ($uom_code !== null) {

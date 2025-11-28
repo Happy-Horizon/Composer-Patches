@@ -1,0 +1,22 @@
+diff --git a/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItemsResolver.php b/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItemsResolver.php
+--- a/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItemsResolver.php
++++ b/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItemsResolver.php	(date 1743634726000)
+@@ -56,6 +56,7 @@
+         ?array $args = null
+     ) {
+         if (!isset($value['model'])) {
++            return;
+             throw new LocalizedException(__('Missing key "model" in Wishlist value data'));
+         }
+         /** @var Wishlist $wishlist */
+diff --git a/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItems.php b/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItems.php
+--- a/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItems.php
++++ b/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItems.php	(date 1743634726000)
+@@ -55,6 +55,7 @@
+         ?array $args = null
+     ) {
+         if (!isset($value['model'])) {
++            return;
+             throw new LocalizedException(__('Missing key "model" in Wishlist value data'));
+         }
+         /** @var Wishlist $wishlist */

@@ -1,0 +1,27 @@
+diff --git a/vendor/magento/module-catalog-widget/Block/Product/ProductsList.php b/vendor/magento/module-catalog-widget/Block/Product/ProductsList.php
+index 7e6693ce..e1aa6a05 100644
+--- a/vendor/magento/module-catalog-widget/Block/Product/ProductsList.php
++++ b/vendor/magento/module-catalog-widget/Block/Product/ProductsList.php
+@@ -190,21 +190,21 @@ class ProductsList extends AbstractProduct implements BlockInterface, IdentityIn
+     protected function _construct()
+     {
+         parent::_construct();
+         $this->addColumnCountLayoutDepend('empty', 6)
+             ->addColumnCountLayoutDepend('1column', 5)
+             ->addColumnCountLayoutDepend('2columns-left', 4)
+             ->addColumnCountLayoutDepend('2columns-right', 4)
+             ->addColumnCountLayoutDepend('3columns', 3);
+ 
+         $this->addData([
+-            'cache_lifetime' => 86400,
++            'cache_lifetime' => 0,
+             'cache_tags' => [
+                 Product::CACHE_TAG,
+             ],
+         ]);
+     }
+ 
+     /**
+      * Get key pieces for caching block content
+      *
+      * @return array

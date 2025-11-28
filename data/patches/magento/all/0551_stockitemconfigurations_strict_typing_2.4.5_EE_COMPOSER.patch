@@ -1,0 +1,143 @@
+diff --git a/vendor/magento/module-inventory-configuration/Model/StockItemConfiguration.php b/vendor/magento/module-inventory-configuration/Model/StockItemConfiguration.php
+index 6d53f3994..78b7439cd 100644
+--- a/vendor/magento/module-inventory-configuration/Model/StockItemConfiguration.php
++++ b/vendor/magento/module-inventory-configuration/Model/StockItemConfiguration.php
+@@ -108,21 +108,21 @@ class StockItemConfiguration extends AbstractExtensibleModel implements StockIte
+     public function setUseConfigMinQty(bool $useConfigMinQty): void
+     {
+         $this->stockItem = $this->stockItem->setUseConfigMinQty($useConfigMinQty);
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function getMinQty(): float
+     {
+-        return $this->stockItem->getMinQty();
++        return (float)$this->stockItem->getMinQty();
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function setMinQty(float $minQty): void
+     {
+         $this->stockItem->setMinQty($minQty);
+     }
+ 
+@@ -140,21 +140,21 @@ class StockItemConfiguration extends AbstractExtensibleModel implements StockIte
+     public function setUseConfigMinSaleQty(bool $useConfigMinSaleQty): void
+     {
+         $this->stockItem->setUseConfigMinSaleQty($useConfigMinSaleQty);
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function getMinSaleQty(): float
+     {
+-        return $this->stockItem->getMinSaleQty();
++        return (float)$this->stockItem->getMinSaleQty();
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function setMinSaleQty(float $minSaleQty): void
+     {
+         $this->stockItem->setMinSaleQty($minSaleQty);
+     }
+ 
+@@ -172,21 +172,21 @@ class StockItemConfiguration extends AbstractExtensibleModel implements StockIte
+     public function setUseConfigMaxSaleQty(bool $useConfigMaxSaleQty): void
+     {
+         $this->stockItem->setUseConfigMaxSaleQty($useConfigMaxSaleQty);
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function getMaxSaleQty(): float
+     {
+-        return $this->stockItem->getMaxSaleQty();
++        return (float)$this->stockItem->getMaxSaleQty();
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function setMaxSaleQty(float $maxSaleQty): void
+     {
+         $this->stockItem->setMaxSaleQty($maxSaleQty);
+     }
+ 
+@@ -204,21 +204,21 @@ class StockItemConfiguration extends AbstractExtensibleModel implements StockIte
+     public function setUseConfigBackorders(bool $useConfigBackorders): void
+     {
+         $this->stockItem->setUseConfigBackorders($useConfigBackorders);
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function getBackorders(): int
+     {
+-        return $this->stockItem->getBackorders();
++        return (int)$this->stockItem->getBackorders();
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function setBackorders(int $backOrders): void
+     {
+         $this->stockItem->setBackorders($backOrders);
+     }
+ 
+@@ -236,21 +236,21 @@ class StockItemConfiguration extends AbstractExtensibleModel implements StockIte
+     public function setUseConfigNotifyStockQty(bool $useConfigNotifyStockQty): void
+     {
+         $this->stockItem->setUseConfigNotifyStockQty($useConfigNotifyStockQty);
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function getNotifyStockQty(): float
+     {
+-        return $this->stockItem->getNotifyStockQty();
++        return (float)$this->stockItem->getNotifyStockQty();
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function setNotifyStockQty(float $notifyStockQty): void
+     {
+         $this->stockItem->setNotifyStockQty($notifyStockQty);
+     }
+ 
+@@ -272,21 +272,21 @@ class StockItemConfiguration extends AbstractExtensibleModel implements StockIte
+ 
+     /**
+      * @inheritdoc
+      */
+     public function getQtyIncrements(): float
+     {
+         $qtyIncrements = $this->stockItem->getQtyIncrements();
+         if (false === $qtyIncrements) {
+             return 0;
+         }
+-        return $qtyIncrements;
++        return (float)$qtyIncrements;
+     }
+ 
+     /**
+      * @inheritdoc
+      */
+     public function setQtyIncrements(float $qtyIncrements): void
+     {
+         $this->stockItem->setQtyIncrements($qtyIncrements);
+     }
+ 
+ 
