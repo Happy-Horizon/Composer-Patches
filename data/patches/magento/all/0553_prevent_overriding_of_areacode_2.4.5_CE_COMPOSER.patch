@@ -1,0 +1,27 @@
+diff --git a/vendor/magento/module-message-queue/Console/StartConsumerCommand.original b/vendor/magento/module-message-queue/Console/StartConsumerCommand.php
+index 75c5e9c4e..d0a93266e 100644
+--- a/vendor/magento/module-message-queue/Console/StartConsumerCommand.php
++++ b/vendor/magento/module-message-queue/Console/StartConsumerCommand.php
+@@ -81,21 +81,21 @@ class StartConsumerCommand extends Command
+         if ($multiProcess && !$this->lockManager->lock(md5($consumerName . '-' . $multiProcess),0)) { //phpcs:ignore
+             $output->writeln('<error>Consumer with the same name is running</error>');
+             return \Magento\Framework\Console\Cli::RETURN_FAILURE;
+         }
+
+         if ($singleThread && !$this->lockManager->lock(md5($consumerName),0)) { //phpcs:ignore
+             $output->writeln('<error>Consumer with the same name is running</error>');
+             return \Magento\Framework\Console\Cli::RETURN_FAILURE;
+         }
+
+-        $this->appState->setAreaCode($areaCode ?? 'global');
++        // $this->appState->setAreaCode($areaCode ?? 'global');
+
+         $consumer = $this->consumerFactory->get($consumerName, $batchSize);
+         $consumer->process($numberOfMessages);
+
+         if ($singleThread) {
+             $this->lockManager->unlock(md5($consumerName)); //phpcs:ignore
+         }
+         if ($multiProcess) {
+             $this->lockManager->unlock(md5($consumerName . '-' . $multiProcess)); //phpcs:ignore
+         }

@@ -1,0 +1,14 @@
+diff --git a/vendor/magento/module-catalog-graph-ql/DataProvider/Product/SearchCriteriaBuilder.php b/vendor/magento/module-catalog-graph-ql/DataProvider/Product/SearchCriteriaBuilder.php
+--- a/vendor/magento/module-catalog-graph-ql/DataProvider/Product/SearchCriteriaBuilder.php
++++ b/vendor/magento/module-catalog-graph-ql/DataProvider/Product/SearchCriteriaBuilder.php
+@@ -139,10 +139,6 @@
+      */
+     private function addVisibilityFilter(SearchCriteriaInterface $searchCriteria, bool $isSearch, bool $isFilter): void
+     {
+-        if ($isFilter && $isSearch) {
+-            // Index already contains products filtered by visibility: catalog, search, both
+-            return;
+-        }
+         $visibilityIds = $isSearch
+             ? $this->visibility->getVisibleInSearchIds()
+             : $this->visibility->getVisibleInCatalogIds();

@@ -1,0 +1,24 @@
+diff --git a/vendor/dotdigital/dotdigital-magento2-extension-enterprise/Plugin/GroupedProductTypePlugin.php b/vendor/dotdigital/dotdigital-magento2-extension-enterprise/Plugin/GroupedProductTypePlugin.php
+index 77416918..c9acb781 100644
+--- a/vendor/dotdigital/dotdigital-magento2-extension-enterprise/Plugin/GroupedProductTypePlugin.php
++++ b/vendor/dotdigital/dotdigital-magento2-extension-enterprise/Plugin/GroupedProductTypePlugin.php
+@@ -27,18 +27,18 @@ class GroupedProductTypePlugin
+      * After get parent
+      *
+      * @param Grouped $groupedType
+      * @param array $parentRowIds
+      * @return array
+      */
+     public function afterGetParentIdsByChild(Grouped $groupedType, array $parentRowIds)
+     {
+         $parentEntityIds = [];
+         $collection = $this->productCollectionFactory->create()
+-            ->addFieldToFilter('row_id', ['in' => $parentRowIds]);
++            ->addFieldToFilter('entity_id', ['in' => $parentRowIds]);
+
+         foreach ($collection as $row) {
+             $parentEntityIds[] = $row->getEntityId();
+         }
+         return !empty($parentEntityIds) ? $parentEntityIds : $parentRowIds;
+     }
+ }

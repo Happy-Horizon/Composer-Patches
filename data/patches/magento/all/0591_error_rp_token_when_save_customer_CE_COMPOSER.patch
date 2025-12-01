@@ -1,0 +1,53 @@
+diff --git a/vendor/magento/module-eav/Model/Attribute/Data/Text.php b/vendor/magento/module-eav/Model/Attribute/Data/Text.php
+index c41a65a6..eb6f3922 100644
+--- a/vendor/magento/module-eav/Model/Attribute/Data/Text.php
++++ b/vendor/magento/module-eav/Model/Attribute/Data/Text.php
+@@ -73,21 +73,23 @@ class Text extends \Magento\Eav\Model\Attribute\Data\AbstractData
+         }
+ 
+         if (empty($value) && $value !== '0' && $attribute->getDefaultValue() === null) {
+             $label = __($attribute->getStoreLabel());
+             $errors[] = __('"%1" is a required value.', $label);
+ 
+             return $errors;
+         }
+ 
+         // if string with diacritics encode it.
+-        $value = $this->encodeDiacritics($value);
++        if ($this->shouldEncodeDiacritics($attribute->getAttributeCode())) {
++            $value = $this->encodeDiacritics($value);
++        }
+ 
+         $validateLengthResult = $this->validateLength($attribute, $value);
+         $errors = array_merge($errors, $validateLengthResult);
+ 
+         $validateInputRuleResult = $this->validateInputRule($value);
+         $errors = array_merge($errors, $validateInputRuleResult);
+ 
+         if (count($errors) == 0) {
+             return true;
+         }
+@@ -184,11 +186,23 @@ class Text extends \Magento\Eav\Model\Attribute\Data\AbstractData
+      * @return array|string
+      */
+     private function encodeDiacritics($value): array|string
+     {
+         $encoded = $value;
+         if (is_string($value)) {
+             $encoded = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $value);
+         }
+         return $encoded;
+     }
++
++    /**
++     * @param string $attributeCode
++     * @return bool
++     */
++    private function shouldEncodeDiacritics(string $attributeCode): bool
++    {
++        return !in_array(
++            $attributeCode,
++            ['rp_token']
++        );
++    }
+ }

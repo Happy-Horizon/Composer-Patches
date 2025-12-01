@@ -1,0 +1,27 @@
+diff --git a/vendor/magento/module-catalog-graph-ql/DataProvider/Product/SearchCriteriaBuilder.php b/vendor/magento/module-catalog-graph-ql/DataProvider/Product/SearchCriteriaBuilder.php
+index d67a50875..73eea9b41 100644
+--- a/vendor/magento/module-catalog-graph-ql/DataProvider/Product/SearchCriteriaBuilder.php
++++ b/vendor/magento/module-catalog-graph-ql/DataProvider/Product/SearchCriteriaBuilder.php
+@@ -115,21 +115,21 @@ class SearchCriteriaBuilder
+
+         if ($isSearch) {
+             $this->addFilter($searchCriteria, 'search_term', $args['search']);
+         }
+
+         if (!$searchCriteria->getSortOrders()) {
+             $this->addDefaultSortOrder($searchCriteria, $args, $isSearch);
+         }
+
+         $this->addEntityIdSort($searchCriteria);
+-        $this->addVisibilityFilter($searchCriteria, $isSearch, !empty($args['filter']));
++        $this->addVisibilityFilter($searchCriteria, ($isSearch || isset($args['filter']['url_key'])), !empty($args['filter']));
+
+         $searchCriteria->setCurrentPage($args['currentPage']);
+         $searchCriteria->setPageSize($args['pageSize']);
+
+         return $searchCriteria;
+     }
+
+     /**
+      * Add filter by visibility
+      *

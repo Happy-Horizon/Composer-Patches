@@ -1,0 +1,27 @@
+diff --git a/vendor/magento/module-customer/Ui/Component/Listing/Columns.php b/vendor/magento/module-customer/Ui/Component/Listing/Columns.php
+index 9bc164d7..d457f90c 100644
+--- a/vendor/magento/module-customer/Ui/Component/Listing/Columns.php
++++ b/vendor/magento/module-customer/Ui/Component/Listing/Columns.php
+@@ -151,21 +151,21 @@ class Columns extends \Magento\Ui\Component\Listing\Columns
+     {
+         $component = $this->components[$attributeData[AttributeMetadata::ATTRIBUTE_CODE]];
+         $this->addOptions($component, $attributeData);
+
+         if ($attributeData[AttributeMetadata::BACKEND_TYPE] != 'static') {
+             if ($attributeData[AttributeMetadata::IS_USED_IN_GRID]) {
+                 $config = array_merge(
+                     $component->getData('config'),
+                     [
+                         'name' => $newAttributeCode,
+-                        'dataType' => $attributeData[AttributeMetadata::BACKEND_TYPE],
++                        'dataType' => $attributeData[AttributeMetadata::FRONTEND_INPUT],
+                         'visible' => (bool)$attributeData[AttributeMetadata::IS_VISIBLE_IN_GRID]
+                     ]
+                 );
+                 if ($attributeData[AttributeMetadata::IS_FILTERABLE_IN_GRID]) {
+                     $config['filter'] = $this->getFilterType($attributeData[AttributeMetadata::FRONTEND_INPUT]);
+                 }
+                 $component->setData('config', $config);
+             }
+         } else {
+             if ($attributeData['entity_type_code'] == CustomerMetadataInterface::ENTITY_TYPE_CUSTOMER

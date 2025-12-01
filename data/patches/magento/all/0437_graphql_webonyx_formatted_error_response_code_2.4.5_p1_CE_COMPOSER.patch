@@ -1,0 +1,57 @@
+diff --git a/vendor/webonyx/graphql-php/src/Error/Error.php b/vendor/webonyx/graphql-php/src/Error/Error.php
+index 1e3ee00..90e31bd 100644
+--- a/vendor/webonyx/graphql-php/src/Error/Error.php
++++ b/vendor/webonyx/graphql-php/src/Error/Error.php
+@@ -93,21 +93,21 @@ class Error extends Exception implements JsonSerializable, ClientAware
+      */
+     public function __construct(
+         $message = '',
+         $nodes = null,
+         ?Source $source = null,
+         array $positions = [],
+         $path = null,
+         $previous = null,
+         array $extensions = []
+     ) {
+-        parent::__construct($message, 0, $previous);
++        parent::__construct($message, $previous ? $previous->getCode() : 0, $previous);
+
+         // Compute list of blame nodes.
+         if ($nodes instanceof Traversable) {
+             $nodes = iterator_to_array($nodes);
+         } elseif ($nodes !== null && ! is_array($nodes)) {
+             $nodes = [$nodes];
+         }
+
+         $this->nodes      = $nodes;
+         $this->source     = $source;
+diff --git a/vendor/webonyx/graphql-php/src/Error/FormattedError.php b/vendor/webonyx/graphql-php/src/Error/FormattedError.php
+index 4748b69..ffd9fab 100644
+--- a/vendor/webonyx/graphql-php/src/Error/FormattedError.php
++++ b/vendor/webonyx/graphql-php/src/Error/FormattedError.php
+@@ -206,20 +206,25 @@ class FormattedError
+                 $formattedError['path'] = $exception->path;
+             }
+             if (count($exception->getExtensions() ?? []) > 0) {
+                 $formattedError['extensions'] = $exception->getExtensions() + $formattedError['extensions'];
+             }
+         }
+
+         if ($debug !== DebugFlag::NONE) {
+             $formattedError = self::addDebugEntries($formattedError, $exception, $debug);
+         }
++        $formattedError['code'] = $exception->getCode() ?: 502;
++
++        if (!empty($exception->path) && in_array('cart', $exception->path)) {
++            $formattedError['code'] = 209;
++        }
+
+         return $formattedError;
+     }
+
+     /**
+      * Decorates spec-compliant $formattedError with debug entries according to $debug flags
+      * (@see \GraphQL\Error\DebugFlag for available flags)
+      *
+      * @param mixed[] $formattedError
+      *

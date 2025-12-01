@@ -74,6 +74,7 @@ Patches will be hosted at https://patches.happyhorizon.dev/
 
 # Creating composer.patches.json
 
+DEPRECATED
 On version pages (for example https://patches.happyhorizon.dev/patches/magento/2.4.6), it will be possible to automatically generate a `composer.patches.json` file for that version.
 
 It's also possible to generate a `composer.patches.json` file for third party vendor patches (for example http://patches.happyhorizon.dev/patches/magento/third-party/smile).  

@@ -1,0 +1,26 @@
+diff --git a/vendor/smile/elasticsuite/src/module-elasticsuite-catalog/view/frontend/web/js/attribute-filter.js b/vendor/smile/elasticsuite/src/module-elasticsuite-catalog/view/frontend/web/js/attribute-filter.js
+index e6d7d730..8588e967 100644
+--- a/vendor/smile/elasticsuite/src/module-elasticsuite-catalog/view/frontend/web/js/attribute-filter.js
++++ b/vendor/smile/elasticsuite/src/module-elasticsuite-catalog/view/frontend/web/js/attribute-filter.js
+@@ -151,20 +151,21 @@ define([
+         },
+         
+         /**
+          * Callback for the "Show more" button
+          */
+         onShowMore: function () {
+             if (this.hasMoreItems) {
+                 this.loadAdditionalItems(this.onShowMore.bind(this));
+             } else {
+                 this.expanded(true);
++                this.hasMoreItems  = true;
+             }
+         },
+ 
+         /**
+          * Index the text to be searched.
+          */
+         slugify: function(text) {
+           return text.toString().toLowerCase()
+             .replace(/\s+/g, '-')                                              // Replace spaces with -
+             .replace(/[^\w\u0400-\u052F\u2DE0-\u2DFF\uA640-\uA69F'\-]+/g, '')  // Remove all non-word chars

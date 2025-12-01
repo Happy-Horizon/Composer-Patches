@@ -1,0 +1,30 @@
+diff --git a/vendor/magento/module-catalog/Controller/Adminhtml/Product/Gallery/Upload.php b/vendor/magento/module-catalog/Controller/Adminhtml/Product/Gallery/Upload.php
+index d43b313..5dabd48 100644
+--- a/vendor/magento/module-catalog/Controller/Adminhtml/Product/Gallery/Upload.php
++++ b/vendor/magento/module-catalog/Controller/Adminhtml/Product/Gallery/Upload.php
+@@ -101,22 +101,24 @@ class Upload extends \Magento\Backend\App\Action implements HttpPostActionInterf
+             $this->_eventManager->dispatch(
+                 'catalog_product_gallery_upload_image_after',
+                 ['result' => $result, 'action' => $this]
+             );
+
+             unset($result['tmp_name']);
+             unset($result['path']);
+
+             $result['url'] = $this->productMediaConfig->getTmpMediaUrl($result['file']);
+             $result['file'] = $result['file'] . '.tmp';
+-        } catch (\Exception $e) {
++        } catch (LocalizedException $e) {
+             $result = ['error' => $e->getMessage(), 'errorcode' => $e->getCode()];
++        } catch (\Throwable $e) {
++            $result = ['error' => 'Something went wrong while saving the file(s).', 'errorcode' => 0];
+         }
+
+         /** @var \Magento\Framework\Controller\Result\Raw $response */
+         $response = $this->resultRawFactory->create();
+         $response->setHeader('Content-type', 'text/plain');
+         $response->setContents(json_encode($result));
+         return $response;
+     }
+
+     /**

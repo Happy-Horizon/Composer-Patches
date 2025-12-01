@@ -1,0 +1,19 @@
+Index: lib/web/jquery/jquery-ui.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/web/jquery/jquery-ui.js b/lib/web/jquery/jquery-ui.js
+--- a/lib/web/jquery/jquery-ui.js
++++ b/lib/web/jquery/jquery-ui.js	(date 1709899441719)
+@@ -8117,6 +8117,10 @@
+ 		inst.dpDiv.css( { position: "absolute", display: "block", top: "-1000px" } );
+ 		$.datepicker._updateDatepicker( inst );
+
++		// fix for positioning for datepicker in modal-slide
++		var rect = input.getBoundingClientRect();
++		offset.top = isFixed ? rect.top + input.offsetHeight + $("body").scrollTop() : offset.top;
++
+ 		// fix width for dynamic number of date pickers
+ 		// and adjust position before showing
+ 		offset = $.datepicker._checkOffset( inst, offset, isFixed );

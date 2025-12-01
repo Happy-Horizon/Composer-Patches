@@ -1,0 +1,44 @@
+diff --git a/vendor/sapient/module-worldpay/etc/db_schema.xml b/vendor/sapient/module-worldpay/etc/db_schema.xml
+index c039d28d..f16fa71f 100644
+--- a/vendor/sapient/module-worldpay/etc/db_schema.xml
++++ b/vendor/sapient/module-worldpay/etc/db_schema.xml
+@@ -1,15 +1,15 @@
+ <?xml version="1.0"?>
+ <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+   <table name="worldpay_payment" resource="default" engine="innodb" comment="Payment Table">
+     <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Id"/>
+-    <column xsi:type="varchar" name="order_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Order Id" length="25"/>
++    <column xsi:type="varchar" name="order_id" nullable="false" comment="Order Id" length="25"/>
+     <column xsi:type="varchar" name="payment_status" nullable="true" length="255" comment="Payment Status"/>
+     <column xsi:type="varchar" name="payment_model" nullable="false" length="25" comment="Payment Model"/>
+     <column xsi:type="varchar" name="payment_type" nullable="false" length="255" comment="Payment Type"/>
+     <column xsi:type="boolean" name="mac_verified" nullable="true" comment="MAC Verified"/>
+     <column xsi:type="varchar" name="merchant_id" nullable="true" length="255" comment="Merchant Id"/>
+     <column xsi:type="boolean" name="3d_verified" nullable="true" comment="3D Secure Verified"/>
+     <column xsi:type="int" name="risk_score" padding="11" unsigned="false" nullable="true" identity="false" comment="Risk Score"/>
+     <column xsi:type="text" name="method" nullable="true" comment="Method"/>
+     <column xsi:type="text" name="card_number" nullable="true" comment="Card Number"/>
+     <column xsi:type="text" name="avs_result" nullable="true" comment="AVS Result"/>
+@@ -90,21 +90,21 @@
+     </constraint>
+     <index referenceId="WORLDPAY_TOKEN_TOKEN_CODE" indexType="btree">
+       <column name="token_code"/>
+     </index>
+     <index referenceId="WORLDPAY_TOKEN_CUSTOMER_ID" indexType="btree">
+       <column name="customer_id"/>
+     </index>
+   </table>
+   <table name="worldpay_notification_history" resource="default" engine="innodb" comment="Worldpay Notification History">
+     <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Id"/>
+-    <column xsi:type="varchar" name="order_id" padding="10" unsigned="true" nullable="true" identity="false" comment="Worldpay order id" onCreate="migrateDataFrom(order_id)" length="255"/>
++    <column xsi:type="varchar" name="order_id" nullable="true" comment="Worldpay order id" onCreate="migrateDataFrom(order_id)" length="255"/>
+     <column xsi:type="varchar" name="status" nullable="true" length="255" comment="Status"/>
+     <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created At"/>
+     <constraint xsi:type="primary" referenceId="PRIMARY">
+       <column name="id"/>
+     </constraint>
+     <index referenceId="WORLDPAY_NOTIFICATION_HISTORY_ORDER_ID" indexType="btree">
+       <column name="order_id"/>
+     </index>
+   </table>
+   <table name="worldpay_recurring_plans" resource="default" engine="innodb" comment="Worldpay Recurring Plans">

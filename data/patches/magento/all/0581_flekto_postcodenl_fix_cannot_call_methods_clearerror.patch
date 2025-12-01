@@ -1,0 +1,19 @@
+diff --git a/vendor/postcode-nl/api-magento2-module/view/frontend/requirejs-config.js b/vendor/postcode-nl/api-magento2-module/view/frontend/requirejs-config.js
+index 17d53bc7..e8f6c64d 100644
+--- a/vendor/postcode-nl/api-magento2-module/view/frontend/requirejs-config.js
++++ b/vendor/postcode-nl/api-magento2-module/view/frontend/requirejs-config.js
+@@ -1,9 +1,14 @@
+ var config = {
++    shim: {
++        'Flekto_Postcode/js/view/customer/address/autofill': {
++            deps: ['Magento_Directory/js/region-updater']
++        }
++    },
+     config: {
+         mixins: {
+             'Magento_Ui/js/lib/validation/validator': {
+                 'Flekto_Postcode/js/validation/validator-mixin': true,
+             },
+         },
+     },
+ };

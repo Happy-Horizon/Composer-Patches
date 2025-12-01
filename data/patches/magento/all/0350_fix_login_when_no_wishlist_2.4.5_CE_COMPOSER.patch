@@ -1,0 +1,66 @@
+diff --git a/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItems.php b/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItems.php
+index f3a611b..bbc7903 100644
+--- a/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItems.php
++++ b/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItems.php
+@@ -49,20 +49,21 @@ class WishlistItems implements ResolverInterface
+      * @inheritdoc
+      */
+     public function resolve(
+         Field $field,
+         $context,
+         ResolveInfo $info,
+         array $value = null,
+         array $args = null
+     ) {
+         if (!isset($value['model'])) {
++            return;
+             throw new LocalizedException(__('Missing key "model" in Wishlist value data'));
+         }
+         /** @var Wishlist $wishlist */
+         $wishlist = $value['model'];
+ 
+         /** @var WishlistItemCollection $wishlistItemCollection */
+         $wishlistItemsCollection = $this->getWishListItems($wishlist, $args);
+         $wishlistItems = $wishlistItemsCollection->getItems();
+ 
+         $data = [];
+@@ -108,11 +109,11 @@ class WishlistItems implements ResolverInterface
+             ->setVisibilityFilter();
+         if ($currentPage > 0) {
+             $wishlistItemCollection->setCurPage($currentPage);
+         }
+ 
+         if ($pageSize > 0) {
+             $wishlistItemCollection->setPageSize($pageSize);
+         }
+         return $wishlistItemCollection;
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItemsResolver.php b/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItemsResolver.php
+index 36a03da..3f9de05 100644
+--- a/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItemsResolver.php
++++ b/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItemsResolver.php
+@@ -49,20 +49,21 @@ class WishlistItemsResolver implements ResolverInterface
+      * @inheritdoc
+      */
+     public function resolve(
+         Field $field,
+         $context,
+         ResolveInfo $info,
+         array $value = null,
+         array $args = null
+     ) {
+         if (!isset($value['model'])) {
++            return [];
+             throw new LocalizedException(__('Missing key "model" in Wishlist value data'));
+         }
+         /** @var Wishlist $wishlist */
+         $wishlist = $value['model'];
+ 
+         $wishlistItems = $this->getWishListItems($wishlist);
+ 
+         $data = [];
+         foreach ($wishlistItems as $wishlistItem) {
+             $data[] = [

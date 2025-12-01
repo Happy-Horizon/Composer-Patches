@@ -1,0 +1,52 @@
+diff --git a/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItems.php b/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItems.php
+index ed53653f..7072c656 100644
+--- a/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItems.php
++++ b/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItems.php
+@@ -48,20 +48,21 @@ class WishlistItems implements ResolverInterface
+      * @inheritdoc
+      */
+     public function resolve(
+         Field $field,
+         $context,
+         ResolveInfo $info,
+         ?array $value = null,
+         ?array $args = null
+     ) {
+         if (!isset($value['model'])) {
++            return;
+             throw new LocalizedException(__('Missing key "model" in Wishlist value data'));
+         }
+         /** @var Wishlist $wishlist */
+         $wishlist = $value['model'];
+ 
+         if ($context->getExtensionAttributes()->getStore() instanceof StoreInterface) {
+             $args['store_id'] = $context->getExtensionAttributes()->getStore()->getId();
+         }
+ 
+         /** @var WishlistItemCollection $wishlistItemCollection */
+diff --git a/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItemsResolver.php b/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItemsResolver.php
+index 0ef94f3a..57f14efa 100644
+--- a/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItemsResolver.php
++++ b/vendor/magento/module-wishlist-graph-ql/Model/Resolver/WishlistItemsResolver.php
+@@ -49,20 +49,21 @@ class WishlistItemsResolver implements ResolverInterface
+      * @inheritdoc
+      */
+     public function resolve(
+         Field $field,
+         $context,
+         ResolveInfo $info,
+         ?array $value = null,
+         ?array $args = null
+     ) {
+         if (!isset($value['model'])) {
++            return [];
+             throw new LocalizedException(__('Missing key "model" in Wishlist value data'));
+         }
+         /** @var Wishlist $wishlist */
+         $wishlist = $value['model'];
+ 
+         $wishlistItems = $this->getWishListItems($wishlist);
+ 
+         $data = [];
+         foreach ($wishlistItems as $wishlistItem) {
+             $data[] = [

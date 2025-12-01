@@ -1,0 +1,146 @@
+diff --git a/vendor/anowave/ec/Block/Plugin.php b/vendor/anowave/ec/Block/Plugin.php
+index 33f3ac0b..5c021d1a 100644
+--- a/vendor/anowave/ec/Block/Plugin.php
++++ b/vendor/anowave/ec/Block/Plugin.php
+@@ -283,21 +283,21 @@ class Plugin
+ 	 * @param AbstractBlock $block
+ 	 * @param string $content
+ 	 * 
+ 	 * @return string
+ 	 */
+ 	protected function augmentCheckoutBlock($block, $content)
+ 	{
+ 		return $content .= $block->getLayout()->createBlock('Anowave\Ec\Block\Track')->setTemplate('checkout.phtml')->setData
+ 		(
+ 			[
+-				'checkout_push' => $this->_helper->getCheckoutPush($block, $this->_coreRegistry)
++				'checkout_push' => $this->_helper->getCheckoutPush($block, $this->_coreRegistry)
+ 			]
+ 		)
+ 		->toHtml();
+ 	}
+ 	
+ 	/**
+ 	 * Modify cart output
+ 	 *
+ 	 * @param AbstractBlock $block
+ 	 * @param string $content
+@@ -382,23 +382,23 @@ class Plugin
+ 		 * @var array $impressions
+ 		 */
+ 		$impressions = 
+ 		[
+ 			'event' 	=> 'widgetViewNonInteractive',
+ 			'ecommerce' => 
+ 			[
+ 				'currencyCode' 	=> $this->_helper->getCurrency(),
+ 				'actionField'	=> 
+ 				[
+-					'list' => $category
++					'list' => $category
+ 				],
+-				'impressions' 	=> []
++				'impressions' 	=> []
+ 			]
+ 		];
+ 		
+ 		foreach ($query->query($this->_helper->getListWidgetSelector()) as $key => $element)
+ 		{
+ 			if (isset($products[$key]))
+ 			{
+ 				foreach ($query->query($this->_helper->getListWidgetClickSelector(), $element) as $a)
+ 				{
+ 					$click = $a->getAttribute('onclick');
+@@ -895,21 +895,21 @@ class Plugin
+ 				/**
+ 				 * Apply direct "Add to cart" tracking for listings
+ 				 */
+ 				if ('' !== $selector = $this->_helper->getCartCategorySelector())
+ 				{
+ 					/**
+ 					 * Skip tracking for configurable and grouped products from listings
+ 					 */
+ 					if (!in_array($products[$key]->getTypeId(), 
+ 					[
+-						\Magento\GroupedProduct\Model\Product\Type\Grouped::TYPE_CODE
++						\Magento\GroupedProduct\Model\Product\Type\Grouped::TYPE_CODE
+ 					]))
+ 					{
+ 						foreach (@$query->query($selector, $element) as $a)
+ 						{
+ 							$click = $a->getAttribute('onclick');
+ 						
+ 							$a->setAttribute('data-id', 		$this->_helper->escapeDataArgument($products[$key]->getSku()));
+ 							$a->setAttribute('data-name', 		$this->_helper->escapeDataArgument($products[$key]->getName()));
+ 							$a->setAttribute('data-price', 		$this->_helper->escapeDataArgument($this->_helper->getPrice($products[$key])));
+ 							$a->setAttribute('data-category',   $this->_helper->escapeDataArgument($this->_helper->getCategory($category)));
+@@ -940,21 +940,21 @@ class Plugin
+ 										if (!$this->swatchTypeChecker->isSwatchAttribute($attribute->getProductAttribute()))
+ 										{
+ 											$swatch = false;
+ 										}
+ 										else
+ 										{
+ 											$swatch_attributes[] = 
+ 											[
+ 												'attribute_id' 		=> $attribute->getProductAttribute()->getAttributeId(),
+ 												'attribute_code' 	=> $attribute->getProductAttribute()->getAttributeCode(),
+-												'attribute_label' 	=> $this->_helper->useDefaultValues() ? $attribute->getProductAttribute()->getFrontendLabel() : $attribute->getProductAttribute()->getStoreLabel()
++												'attribute_label' 	=> $this->_helper->useDefaultValues() ? $attribute->getProductAttribute()->getFrontendLabel() : $attribute->getProductAttribute()->getStoreLabel()
+ 											];
+ 										}
+ 									}
+ 									
+ 									if ($swatch)
+ 									{
+ 										$a->setAttribute('data-event','addToCartSwatch');
+ 										
+ 										/**
+ 										 * Product has swatch attributes only
+@@ -1036,32 +1036,20 @@ class Plugin
+ 		/**
+ 		 * Remove empty spaces
+ 		 */
+ 		$content = trim($content);
+ 		
+ 		if (!strlen($content))
+ 		{
+ 			return $content;
+ 		}
+ 		
+-		/**
+-		 * Load cache
+-		 *
+-		 * @var string
+-		 */
+-		$cache = $this->cache->load(\Anowave\Ec\Model\Cache::CACHE_LISTING . $block->getNameInLayout());
+-		
+-		if ($cache)
+-		{
+-			return $cache;
+-		}
+-		
+ 		/**
+ 		 * Retrieve list of impression product(s)
+ 		 *
+ 		 * @var array
+ 		 */
+ 		$products = [];
+ 		
+ 		if ($block->getItems())
+ 		{
+     		foreach ($block->getItems() as $product)
+@@ -2214,11 +2202,11 @@ class Plugin
+ 			{
+ 				foreach ($placeholders as $placeholder => $value)
+ 				{
+ 					$content = str_replace($placeholder,$value, $content);
+ 				}
+ 			}
+ 		}
+ 		
+ 		return $content;
+ 	}
+-}
+\ No newline at end of file
++}

@@ -1,0 +1,66 @@
+diff --git a/vendor/erusev/parsedown/Parsedown.php b/vendor/erusev/parsedown/Parsedown.php
+--- a/vendor/erusev/parsedown/Parsedown.php
++++ b/vendor/erusev/parsedown/Parsedown.php
+@@ -398,7 +398,7 @@
+         }
+     }
+ 
+-    protected function blockCommentContinue($Line, array $Block)
++    protected function blockCommentContinue($Line,?array $Block)
+     {
+         if (isset($Block['closed']))
+         {
+@@ -575,7 +575,7 @@
+         }
+     }
+ 
+-    protected function blockListContinue($Line, array $Block)
++    protected function blockListContinue($Line,?array $Block)
+     {
+         if ($Block['indent'] === $Line['indent'] and preg_match('/^'.$Block['pattern'].'(?:[ ]+(.*)|$)/', $Line['text'], $matches))
+         {
+@@ -668,7 +668,7 @@
+         }
+     }
+ 
+-    protected function blockQuoteContinue($Line, array $Block)
++    protected function blockQuoteContinue($Line,?array $Block)
+     {
+         if ($Line['text'][0] === '>' and preg_match('/^>[ ]?(.*)/', $Line['text'], $matches))
+         {
+@@ -712,7 +712,7 @@
+     #
+     # Setext
+ 
+-    protected function blockSetextHeader($Line, array $Block = null)
++    protected function blockSetextHeader($Line, ?array $Block = null)
+     {
+         if ( ! isset($Block) or isset($Block['type']) or isset($Block['interrupted']))
+         {
+@@ -782,7 +782,7 @@
+         }
+     }
+ 
+-    protected function blockMarkupContinue($Line, array $Block)
++    protected function blockMarkupContinue($Line,?array $Block)
+     {
+         if (isset($Block['closed']))
+         {
+@@ -850,7 +850,7 @@
+     #
+     # Table
+ 
+-    protected function blockTable($Line, array $Block = null)
++    protected function blockTable($Line,?array $Block = null)
+     {
+         if ( ! isset($Block) or isset($Block['type']) or isset($Block['interrupted']))
+         {
+@@ -957,7 +957,7 @@
+         }
+     }
+ 
+-    protected function blockTableContinue($Line, array $Block)
++    protected function blockTableContinue($Line,?array $Block)
+     {
+         if (isset($Block['interrupted']))
+         {

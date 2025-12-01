@@ -1,0 +1,17 @@
+Index: vendor/magento/framework/Image/Adapter/Gd2.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/magento/framework/Image/Adapter/Gd2.php b/vendor/magento/framework/Image/Adapter/Gd2.php
+--- a/vendor/magento/framework/Image/Adapter/Gd2.php	
++++ b/vendor/magento/framework/Image/Adapter/Gd2.php	(date 1730289897048)
+@@ -343,7 +343,7 @@
+         // fill image with indexed non-alpha transparency
+         $transparentColor = false;
+ 
+-        if ($transparentIndex >= 0 && $transparentIndex <= imagecolorstotal($this->_imageHandler)) {
++        if ($transparentIndex >= 0 && $transparentIndex < imagecolorstotal($this->_imageHandler)) {
+             list($red, $green, $blue) = array_values(imagecolorsforindex($this->_imageHandler, $transparentIndex));
+             $transparentColor = imagecolorallocate($imageResourceTo, (int) $red, (int) $green, (int) $blue);
+         }

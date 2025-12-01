@@ -1,0 +1,26 @@
+diff --git a/vendor/magento/module-quote/Model/Cart/ProductReader.php b/vendor/magento/module-quote/Model/Cart/ProductReader.php
+index 6a333e8b..1dd12797 100644
+--- a/vendor/magento/module-quote/Model/Cart/ProductReader.php
++++ b/vendor/magento/module-quote/Model/Cart/ProductReader.php
+@@ -55,20 +55,21 @@ class ProductReader implements ProductReaderInterface
+     public function loadProducts(array $skus, int $storeId): void
+     {
+         $this->productCollection = $this->productCollectionFactory->create();
+ 
+         $this->productCollection->addAttributeToSelect($this->quoteConfig->getProductAttributes());
+         $this->productCollection->setStoreId($storeId);
+         $this->productCollection->addStoreFilter($storeId);
+         $this->productCollection->addFieldToFilter(ProductInterface::SKU, ['in' => $skus]);
+         $this->productCollection->joinAttribute('status', 'catalog_product/status', 'entity_id', null, 'inner');
+         $this->productCollection->joinAttribute('visibility', 'catalog_product/visibility', 'entity_id', null, 'inner');
++        $this->productCollection->addOptionsToResult();
+         $this->productCollection->load();
+         foreach ($this->productCollection->getItems() as $productItem) {
+             $this->productsBySku[$productItem->getData(ProductInterface::SKU)] = $productItem;
+         }
+     }
+ 
+     /**
+      * @inheritDoc
+      */
+     public function getProductBySku(string $sku) : ?ProductInterface

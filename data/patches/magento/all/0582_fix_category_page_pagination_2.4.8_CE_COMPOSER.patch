@@ -1,0 +1,106 @@
+diff --git a/vendor/magento/module-catalog/Model/Layer.php b/vendor/magento/module-catalog/Model/Layer.php
+--- a/vendor/magento/module-catalog/Model/Layer.php
++++ b/vendor/magento/module-catalog/Model/Layer.php
+@@ -9,6 +9,11 @@
+ use Magento\Framework\Exception\NoSuchEntityException;
+ use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory as AttributeCollectionFactory;
+ use Magento\Framework\ObjectManager\ResetAfterRequestInterface;
++use Magento\Catalog\Helper\Product\ProductList;
++use Magento\Framework\App\Http\Context;
++use Magento\Framework\App\RequestInterface;
++use Magento\Framework\DB\Select;
++use Magento\Framework\App\ObjectManager;
+
+ /**
+  * Catalog view layer model
+diff --git a/vendor/magento/module-catalog/Model/Layer.php b/vendor/magento/module-catalog/Model/Layer.php
+--- a/vendor/magento/module-catalog/Model/Layer.php
++++ b/vendor/magento/module-catalog/Model/Layer.php
+@@ -82,14 +82,33 @@
+     protected $categoryRepository;
+
+     /**
++     * @var CollectionFactory
++     */
++    protected $collectionFactory;
++
++    /**
++     * @var ProductList
++     */
++    protected $productListHelper;
++
++    /**
++     * @var RequestInterface
++     */
++    protected $request;
++
++    /**
++     * Layer constructor.
+      * @param Layer\ContextInterface $context
+      * @param Layer\StateFactory $layerStateFactory
+      * @param AttributeCollectionFactory $attributeCollectionFactory
+-     * @param \Magento\Catalog\Model\ResourceModel\Product $catalogProduct
++     * @param ResourceModel\Product $catalogProduct
+      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+      * @param \Magento\Framework\Registry $registry
+      * @param CategoryRepositoryInterface $categoryRepository
+      * @param array $data
++     * @param CollectionFactory $collectionFactory
++     * @param ProductList $productListHelper
++     * @param RequestInterface $request
+      */
+     public function __construct(
+         \Magento\Catalog\Model\Layer\ContextInterface $context,
+@@ -99,7 +118,9 @@
+         \Magento\Store\Model\StoreManagerInterface $storeManager,
+         \Magento\Framework\Registry $registry,
+         CategoryRepositoryInterface $categoryRepository,
+-        array $data = []
++        array $data = [],
++        ?ProductList $productListHelper = null,
++        ?RequestInterface $request = null
+     ) {
+         $this->_layerStateFactory = $layerStateFactory;
+         $this->_attributeCollectionFactory = $attributeCollectionFactory;
+@@ -110,6 +131,8 @@
+         $this->collectionProvider = $context->getCollectionProvider();
+         $this->stateKeyGenerator = $context->getStateKey();
+         $this->collectionFilter = $context->getCollectionFilter();
++        $this->productListHelper = $productListHelper ?: ObjectManager::getInstance()->create(ProductList::class);
++        $this->request = $request ?: ObjectManager::getInstance()->create(RequestInterface::class);;
+         parent::__construct($data);
+     }
+
+@@ -133,6 +156,22 @@
+      */
+     public function getProductCollection()
+     {
++        $page = $this->request->getParam('p')
++            ? $this->request->getParam('p')
++            : 1;
++        $listMode = $this->request->getParam('product_list_mode')
++            ? $this->request->getParam('product_list_mode')
++            : $this->productListHelper->getDefaultViewMode();
++        $listLimit = $this->request->getParam('product_list_limit')
++            ? $this->request->getParam('product_list_limit')
++            : $this->productListHelper->getDefaultLimitPerPageValue($listMode);
++        $listDirection = $this->request->getParam('product_list_dir')
++            ? $this->request->getParam('product_list_dir')
++            : Select::SQL_ASC;
++        $listOrder = $this->request->getParam('product_list_order')
++            ? $this->request->getParam('product_list_order')
++            : $this->productListHelper->getDefaultSortField();
++
+         if (isset($this->_productCollections[$this->getCurrentCategory()->getId()])) {
+             $collection = $this->_productCollections[$this->getCurrentCategory()->getId()];
+         } else {
+@@ -141,6 +180,9 @@
+             $this->_productCollections[$this->getCurrentCategory()->getId()] = $collection;
+         }
+
++        $collection->setOrder($listOrder, $listDirection);
++        $collection->setPage($page, $listLimit);
++
+         return $collection;
+     }
+

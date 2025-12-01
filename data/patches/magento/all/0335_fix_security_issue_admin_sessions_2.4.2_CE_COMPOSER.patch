@@ -1,0 +1,35 @@
+diff --git a/vendor/magento/module-security/Model/AdminSessionsManager.php b/vendor/magento/module-security/Model/AdminSessionsManager.php
+index 7503fe0..ba90524 100644
+--- a/vendor/magento/module-security/Model/AdminSessionsManager.php
++++ b/vendor/magento/module-security/Model/AdminSessionsManager.php
+@@ -166,22 +166,29 @@ class AdminSessionsManager
+
+     /**
+      * Get current session record
+      *
+      * @return AdminSessionInfo
+      * @since 100.1.0
+      */
+     public function getCurrentSession()
+     {
+         if (!$this->currentSession) {
++            $adminSessionInfoId = $this->authSession->getAdminSessionInfoId();
++            if (!$adminSessionInfoId) {
++                $this->createNewSession();
++                $adminSessionInfoId = $this->authSession->getAdminSessionInfoId();
++                $this->logoutOtherUserSessions();
++            }
++
+             $this->currentSession = $this->adminSessionInfoFactory->create();
+-            $this->currentSession->load($this->authSession->getSessionId(), 'session_id');
++            $this->currentSession->load($adminSessionInfoId, 'id');
+         }
+
+         return $this->currentSession;
+     }
+
+     /**
+      * Get logout reason message by status
+      *
+      * @param int $statusCode
+      * @return string
