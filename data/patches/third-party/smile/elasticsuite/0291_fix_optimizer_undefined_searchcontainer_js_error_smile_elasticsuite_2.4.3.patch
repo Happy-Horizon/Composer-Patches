@@ -1,0 +1,28 @@
+diff --git a/vendor/smile/elasticsuite/src/module-elasticsuite-catalog-optimizer/view/adminhtml/web/js/components/form/optimizer/optimizer-preview-type.js b/vendor/smile/elasticsuite/src/module-elasticsuite-catalog-optimizer/view/adminhtml/web/js/components/form/optimizer/optimizer-preview-type.js
+index bdc6e741..d668559e 100644
+--- a/vendor/smile/elasticsuite/src/module-elasticsuite-catalog-optimizer/view/adminhtml/web/js/components/form/optimizer/optimizer-preview-type.js
++++ b/vendor/smile/elasticsuite/src/module-elasticsuite-catalog-optimizer/view/adminhtml/web/js/components/form/optimizer/optimizer-preview-type.js
+@@ -13,21 +13,22 @@
+ define([
+     'underscore',
+     'uiRegistry',
+     'Magento_Ui/js/form/element/select',
+     'Magento_Ui/js/modal/modal'
+ ], function (_, uiRegistry, Select, modal) {
+     'use strict';
+
+     return Select.extend({
+         defaults: {
+-            displayedForValues : {}
++            displayedForValues : {},
++            searchContainers : []
+         },
+
+         /**
+          * Component initializing
+          *
+          * @returns {exports}
+          */
+         initialize: function () {
+             this._super();
+             this.onContainersUpdate(this.searchContainers);
