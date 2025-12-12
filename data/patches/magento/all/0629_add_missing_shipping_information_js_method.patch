@@ -1,0 +1,33 @@
+diff --git a/vendor/magento/module-payment-services-paypal/view/frontend/web/js/view/shipping-information-mixin.js b/vendor/magento/module-payment-services-paypal/view/frontend/web/js/view/shipping-information-mixin.js
+index 66add25f..a57c4101 100644
+--- a/vendor/magento/module-payment-services-paypal/view/frontend/web/js/view/shipping-information-mixin.js
++++ b/vendor/magento/module-payment-services-paypal/view/frontend/web/js/view/shipping-information-mixin.js
+@@ -20,17 +20,28 @@ define([
+ 
+         /**
+          * Override the core back behaviour to call Fastlane if required.
+          */
+         back: function () {
+             if (fastlaneModel.profileData()) {
+                 fastlaneModel.displayChangeShipping();
+             } else {
+                 this._super();
+             }
++        },
++
++        /**
++         * Since 2.4.7-p8 the accompanying template, view/frontend/web/template/shipping-information.html, tries to use this method from the Magento_InventoryInStorePickupFrontend module.
++         * But since the Inventory (MSI) modules are disabled for Poot, this method isn't loaded and thus causes a KnockoutJS error.
++         * By adding this here this template and module can keep working without needing the Inventory module.
++         *
++         * Magento github issue: https://github.com/Magento/magento2/issues/40346
++         */
++        isStorePickup: function () {
++            return false;
+         }
+     };
+ 
+     return function (shippingInformation) {
+         return shippingInformation.extend(mixin);
+     };
+ });
