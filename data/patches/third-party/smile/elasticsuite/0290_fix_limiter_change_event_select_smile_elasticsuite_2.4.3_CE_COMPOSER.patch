@@ -1,0 +1,27 @@
+diff --git a/vendor/web200/magento-elasticsuite-ajax/view/frontend/web/js/elasticsuite-ajax.js b/vendor/web200/magento-elasticsuite-ajax/view/frontend/web/js/elasticsuite-ajax.js
+index da9c12b8..ff7186cf 100644
+--- a/vendor/web200/magento-elasticsuite-ajax/view/frontend/web/js/elasticsuite-ajax.js
++++ b/vendor/web200/magento-elasticsuite-ajax/view/frontend/web/js/elasticsuite-ajax.js
+@@ -102,21 +102,21 @@ define([
+             });
+         },
+         _bindToolbar: function () {
+             let self = this;
+ 
+             $(document).on('click', self.options.modeControl, function (e) {
+                 self.updateLayer(self.current_href, 'product_list_mode', $(e.currentTarget).data('value'));
+                 e.preventDefault();
+             });
+ 
+-            $(document).on('click', self.options.limitControl, function (e) {
++            $(document).on('change', self.options.limitControl, function (e) {
+                 self.updateLayer(self.current_href, 'product_list_limit', e.currentTarget.options[e.currentTarget.selectedIndex].value);
+                 e.preventDefault();
+             });
+ 
+             $(document).on('click', self.options.directionControl, function (e) {
+                 self.updateLayer(self.current_href, 'product_list_dir', $(e.currentTarget).data('value'));
+                 e.preventDefault();
+             });
+ 
+             $(document).on('change', self.options.orderControl, function (e) {
