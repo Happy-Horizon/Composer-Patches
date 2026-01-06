@@ -1,0 +1,26 @@
+diff --git a/vendor/web200/magento-elasticsuite-ajax/view/frontend/web/js/elasticsuite-ajax.js b/vendor/web200/magento-elasticsuite-ajax/view/frontend/web/js/elasticsuite-ajax.js
+index ff7186cf..26ccfff2 100644
+--- a/vendor/web200/magento-elasticsuite-ajax/view/frontend/web/js/elasticsuite-ajax.js
++++ b/vendor/web200/magento-elasticsuite-ajax/view/frontend/web/js/elasticsuite-ajax.js
+@@ -181,20 +181,21 @@ define([
+             });
+         },
+         _afterUpdateLayer: function(response, newUrl) {
+             let self = this;
+             history.pushState({ }, document.title, newUrl);
+             elasticsuiteUrl.reload();
+             elasticsuiteUrl.reloadAttributeFilter();
+             self.options.items.size = response.size;
+             self.options.items.pageSize = response.pageSize;
+             self.options.items.curPage = response.curPage;
++            self.current_href = window.location.href;
+             $(self.options.listFilterContainer).replaceWith(response.listFilterOptions);
+             $('.category-list-view').html(response.productList);
+             $(self.options.listFilterContainer).trigger('contentUpdated');
+             _.each(response.filterItems, function(items, filterName) {
+                 uiRegistry.filter(function(component){
+                     if (component.name === filterName) {
+                         uiRegistry.get(component).reloadItems(items)
+                     }
+                 });
+             });
