@@ -1,0 +1,66 @@
+diff --git a/vendor/magento/module-sales/Model/Order/Creditmemo/Validation/QuantityValidator.php b/vendor/magento/module-sales/Model/Order/Creditmemo/Validation/QuantityValidator.php
+index 939b892a..eb2423a3 100644
+--- a/vendor/magento/module-sales/Model/Order/Creditmemo/Validation/QuantityValidator.php
++++ b/vendor/magento/module-sales/Model/Order/Creditmemo/Validation/QuantityValidator.php
+@@ -125,30 +125,31 @@ class QuantityValidator implements ValidatorInterface
+         CreditmemoItemInterface $item,
+         array $invoiceQtysRefundLimits
+     ) {
+         if (!isset($orderItemsById[$item->getOrderItemId()])) {
+             return __(
+                 'The creditmemo contains product SKU "%1" that is not part of the original order.',
+                 $item->getSku()
+             );
+         }
+         $orderItem = $orderItemsById[$item->getOrderItemId()];
++        $qtyRequested = (float)$item->getQty();
+ 
+-        if (!$this->isValidDecimalRefundQty($orderItem->getIsQtyDecimal(), $item->getQty())) {
++        if (!$this->isValidDecimalRefundQty($orderItem->getIsQtyDecimal(), $qtyRequested)) {
+             return __(
+                 'We found an invalid quantity to refund item "%1".',
+                 $orderItem->getSku()
+             );
+         }
+ 
+-        if (!$this->canRefundItem($orderItem, $item->getQty(), $invoiceQtysRefundLimits) ||
+-            !$this->isQtyAvailable($orderItem, $item->getQty())
++        if (!$this->canRefundItem($orderItem, $qtyRequested, $invoiceQtysRefundLimits) ||
++            !$this->isQtyAvailable($orderItem, $qtyRequested)
+         ) {
+             return __(
+                 'The quantity to creditmemo must not be greater than the unrefunded quantity'
+                 . ' for product SKU "%1".',
+                 $orderItem->getSku()
+             );
+         }
+     }
+ 
+     /**
+diff --git a/vendor/magento/module-sales/Model/Order/CreditmemoFactory.php b/vendor/magento/module-sales/Model/Order/CreditmemoFactory.php
+index 2fd6f9e1..991a1194 100644
+--- a/vendor/magento/module-sales/Model/Order/CreditmemoFactory.php
++++ b/vendor/magento/module-sales/Model/Order/CreditmemoFactory.php
+@@ -131,21 +131,21 @@ class CreditmemoFactory
+         foreach ($invoice->getAllItems() as $invoiceItem) {
+             /** @var OrderItemInterface $orderItem */
+             $orderItem = $invoiceItem->getOrderItem();
+ 
+             if (!$this->canRefundItem($orderItem, $qtyList, $invoiceRefundLimitsQtyList)) {
+                 continue;
+             }
+ 
+             $qty = min(
+                 $this->getQtyToRefund($orderItem, $qtyList, $invoiceRefundLimitsQtyList),
+-                $invoiceItem->getQty()
++                (float)$invoiceItem->getQty()
+             );
+             $totalQty += $qty;
+             $item = $this->convertor->itemToCreditmemoItem($orderItem);
+             $item->setQty($qty);
+             $creditmemo->addItem($item);
+         }
+         $creditmemo->setTotalQty($totalQty);
+ 
+         $this->initData($creditmemo, $data);
+         if (!isset($data['shipping_amount'])) {
