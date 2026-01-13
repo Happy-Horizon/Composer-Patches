@@ -1,0 +1,27 @@
+diff --git a/vendor/magento/module-grouped-product-graph-ql/Model/Resolver/Product/Price/Provider.php b/vendor/magento/module-grouped-product-graph-ql/Model/Resolver/Product/Price/Provider.php
+index b2336a0..91b5809 100644
+--- a/vendor/magento/module-grouped-product-graph-ql/Model/Resolver/Product/Price/Provider.php
++++ b/vendor/magento/module-grouped-product-graph-ql/Model/Resolver/Product/Price/Provider.php
+@@ -72,20 +72,22 @@ class Provider implements ProviderInterface
+      * Get minimal amount for cheapest product in group
+      *
+      * @param SaleableInterface $product
+      * @param string $priceType
+      * @return AmountInterface
+      */
+     private function getMinimalProductAmount(SaleableInterface $product, string $priceType): AmountInterface
+     {
+         if (empty($this->minimalProductAmounts[$product->getId()][$priceType])) {
+             $products = $product->getTypeInstance()->getAssociatedProducts($product);
++            /** Experius Edit - prevent errors when no associated products are found */
++            $this->minimalProductAmounts[$product->getId()][$priceType] = $product->getPriceInfo()->getPrice($priceType)->getAmount();
+             $minPrice = null;
+             foreach ($products as $item) {
+                 $item->setQty(PriceInfoInterface::PRODUCT_QUANTITY_DEFAULT);
+                 $price = $item->getPriceInfo()->getPrice($priceType);
+                 $priceValue = $price->getValue();
+                 if (($priceValue !== false) && ($priceValue <= ($minPrice === null ? $priceValue : $minPrice))) {
+                     $minPrice = $price->getValue();
+                     $this->minimalProductAmounts[$product->getId()][$priceType] = $price->getAmount();
+                 }
+             }
