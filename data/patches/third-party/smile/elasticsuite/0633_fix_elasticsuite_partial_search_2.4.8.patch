@@ -1,0 +1,90 @@
+Index: vendor/smile/elasticsuite/src/module-elasticsuite-catalog/Model/ResourceModel/Product/Fulltext/Collection.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/smile/elasticsuite/src/module-elasticsuite-catalog/Model/ResourceModel/Product/Fulltext/Collection.php b/vendor/smile/elasticsuite/src/module-elasticsuite-catalog/Model/ResourceModel/Product/Fulltext/Collection.php
+--- a/vendor/smile/elasticsuite/src/module-elasticsuite-catalog/Model/ResourceModel/Product/Fulltext/Collection.php
++++ b/vendor/smile/elasticsuite/src/module-elasticsuite-catalog/Model/ResourceModel/Product/Fulltext/Collection.php	(date 1768905900089)
+@@ -16,6 +16,8 @@
+ use Smile\ElasticsuiteCatalog\Model\Search\Request\Field\Mapper as RequestFieldMapper;
+ use Smile\ElasticsuiteCore\Search\Adapter\Elasticsuite\Response\QueryResponse;
+ use Smile\ElasticsuiteCore\Search\Request\BucketInterface;
++use Magento\Search\Model\QueryFactory;
++use Smile\ElasticsuiteCore\Model\Autocomplete\Terms\DataProvider as TermDataProvider;
+ use Smile\ElasticsuiteCore\Search\Request\QueryInterface;
+ use Smile\ElasticsuiteCore\Search\RequestInterface;
+
+@@ -101,6 +103,18 @@
+      */
+     private $requestFieldMapper;
+
++    /**
++     * Query factory
++     *
++     * @var QueryFactory
++     */
++    private $queryFactory;
++
++    /**
++     * @var TermDataProvider
++     */
++    private $termDataProvider;
++
+     /**
+      * Constructor.
+      *
+@@ -154,6 +168,8 @@
+         \Smile\ElasticsuiteCore\Search\Request\Builder $requestBuilder,
+         \Magento\Search\Model\SearchEngine $searchEngine,
+         RequestFieldMapper $requestFieldMapper,
++        QueryFactory $queryFactory,
++        TermDataProvider $termDataProvider,
+         ?\Magento\Framework\DB\Adapter\AdapterInterface $connection = null,
+         $searchRequestName = 'catalog_view_container'
+     ) {
+@@ -184,6 +200,8 @@
+         $this->searchEngine       = $searchEngine;
+         $this->requestFieldMapper = $requestFieldMapper;
+         $this->searchRequestName  = $searchRequestName;
++        $this->queryFactory       = $queryFactory;
++        $this->termDataProvider   = $termDataProvider;
+     }
+
+     /**
+@@ -350,6 +368,7 @@
+      */
+     public function setSearchQuery($query)
+     {
++        $terms = $this->getQueryText();
+-        $this->query = $query;
++        $this->query = $terms;
+         $this->_isFiltersRendered = false;
+
+@@ -370,6 +389,26 @@
+         return $this->setSearchQuery($query);
+     }
+
++
++    /**
++     * @return array|null[]|string[]
++     */
++    private function getQueryText()
++    {
++        $terms = array_map(
++            function ($termItem) {
++               return $termItem->getTitle();
++            },
++            $this->termDataProvider->getItems()
++        );
++
++        if (empty($terms)) {
++            $terms = [$this->queryFactory->get()->getQueryText()];
++        }
++
++        return $terms;
++    }
++
+     /**
+      * Return field faceted data from faceted search result.
+      *
