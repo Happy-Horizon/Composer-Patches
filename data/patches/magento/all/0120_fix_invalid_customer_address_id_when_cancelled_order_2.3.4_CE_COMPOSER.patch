@@ -1,0 +1,27 @@
+diff --git a/vendor/magento/module-quote/Model/Quote.php b/vendor/magento/module-quote/Model/Quote.php
+index 4158c9a..039170b 100644
+--- a/vendor/magento/module-quote/Model/Quote.php
++++ b/vendor/magento/module-quote/Model/Quote.php
+@@ -993,20 +993,22 @@ class Quote extends AbstractExtensibleModel implements \Magento\Quote\Api\Data\C
+         $customerDataFlatArray = $this->objectFactory->create(
+             $this->extensibleDataObjectConverter->toFlatArray(
+                 $customer,
+                 [],
+                 \Magento\Customer\Api\Data\CustomerInterface::class
+             )
+         );
+         $customer->setAddresses($origAddresses);
+         $this->_objectCopyService->copyFieldsetToTarget('customer_account', 'to_quote', $customerDataFlatArray, $this);
+
++        $this->setCustomerIsGuest(false);
++
+         return $this;
+     }
+
+     /**
+      * Retrieve customer model object
+      *
+      * @return \Magento\Customer\Api\Data\CustomerInterface|\Magento\Framework\Api\ExtensibleDataInterface
+      */
+     public function getCustomer()
+     {
