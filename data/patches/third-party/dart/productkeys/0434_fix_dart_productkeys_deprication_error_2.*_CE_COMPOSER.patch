@@ -1,0 +1,27 @@
+diff --git a/vendor/dart/productkeys/view/adminhtml/templates/order/view/productkeys.phtml b/vendor/dart/productkeys/view/adminhtml/templates/order/view/productkeys.phtml
+index e7a40cfa8..26fff6c14 100644
+--- a/vendor/dart/productkeys/view/adminhtml/templates/order/view/productkeys.phtml
++++ b/vendor/dart/productkeys/view/adminhtml/templates/order/view/productkeys.phtml
+@@ -101,21 +101,21 @@ $_order = $block->getOrder() ?>
+             </tr>
+         </thead>
+         <?php $_items = $_order->getAllVisibleItems(); ?>
+         <?php $i = 0;
+         foreach ($_items as $_item) {
+             $i++;
+             $item_id = $_item->getItemId();
+             $qty = (int) $_item->getQtyOrdered();
+             $prd_name = $_item->getName();
+             $keyType = $_item->getProductKeyType();
+-            $prd_keys = preg_replace('/\s+/', ' ', trim($_item->getProductKeys()));
++            $prd_keys = preg_replace('/\s+/', ' ', trim((string)$_item->getProductKeys()));
+             ?>
+             <tbody class="<?= $i%2 ? 'even' : 'odd' ?>">
+                 <td><input type="checkbox" name="item_id" value="<?= $block->escapeHtml($item_id); ?>"/></td>
+                 <td><?= $block->escapeHtml($qty); ?></td>
+                 <td><?= $block->escapeHtml($prd_name); ?></td>
+                 <td><?= $block->escapeHtml($keyType); ?></td>
+                 <td><?= str_replace(',', '<br/>', $prd_keys); ?></td>
+                 <td>
+                     <?php $funcVal = "'".$item_id."', '".$_order->getBillingAddress()->getName()."','".$prd_name."',
+                     '".$qty."', '".$keyType."', '".$prd_keys."', '".$_item->getProductKeyIds()."',
