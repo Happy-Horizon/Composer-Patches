@@ -1,0 +1,15 @@
+diff --git a/vendor/magento/module-payment-services-paypal/view/frontend/web/js/view/shipping-mixin.js b/vendor/magento/module-payment-services-paypal/view/frontend/web/js/view/shipping-mixin.js
+--- a/vendor/magento/module-payment-services-paypal/view/frontend/web/js/view/shipping-mixin.js	
++++ b/vendor/magento/module-payment-services-paypal/view/frontend/web/js/view/shipping-mixin.js	(date 1769520174795)
+@@ -8,9 +8,9 @@
+          * @param {*} shippingMethod
+          */
+         selectShippingMethod: function (shippingMethod) {
+-            this._super(shippingMethod);
+-
+             window.checkoutConfig.selectedShippingMethod = shippingMethod;
++
++            return this._super(shippingMethod);
+         },
+     };
+ 
