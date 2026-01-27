@@ -1,0 +1,19 @@
+Index: vendor/smile/elasticsuite/src/module-elasticsuite-swatches/etc/di.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/smile/elasticsuite/src/module-elasticsuite-swatches/etc/di.xml b/vendor/smile/elasticsuite/src/module-elasticsuite-swatches/etc/di.xml
+--- a/vendor/smile/elasticsuite/src/module-elasticsuite-swatches/etc/di.xml	
++++ b/vendor/smile/elasticsuite/src/module-elasticsuite-swatches/etc/di.xml	(date 1769505779377)
+@@ -43,4 +43,10 @@
+         </arguments>
+     </type>
+ 
++    <type name="Magento\Swatches\Model\Plugin\ProductImage">
++        <arguments>
++            <argument name="swatchesHelperData" xsi:type="object">Smile\ElasticsuiteSwatches\Helper\Swatches</argument>
++        </arguments>
++    </type>
++
+ </config>
