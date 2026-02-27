@@ -1,0 +1,56 @@
+diff --git a/vendor/magento/module-customer/Model/Validator/City.php b/vendor/magento/module-customer/Model/Validator/City.php
+index 0b53551d..e75fe540 100644
+--- a/vendor/magento/module-customer/Model/Validator/City.php
++++ b/vendor/magento/module-customer/Model/Validator/City.php
+@@ -16,21 +16,21 @@ use Magento\Framework\Validator\AbstractValidator;
+ class City extends AbstractValidator
+ {
+     /**
+      * Allowed characters:
+      *
+      * \p{L}: Unicode letters.
+      * \p{M}: Unicode marks (diacritic marks, accents, etc.).
+      * ': Apostrophe mark.
+      * \s: Whitespace characters (spaces, tabs, newlines, etc.).
+      */
+-    private const PATTERN_CITY = '/(?:[\p{L}\p{M}\s\-\']{1,100})/u';
++    private const PATTERN_CITY = '/^[\p{L}\p{M}\d\s\-_\'’\.,&\(\)\/]{1,100}$/u';
+ 
+     /**
+      * Validate city fields.
+      *
+      * @param Customer $customer
+      * @return bool
+      */
+     public function isValid($customer)
+     {
+         if (!$this->isValidCity($customer->getCity())) {
+diff --git a/vendor/magento/module-customer/Model/Validator/Telephone.php b/vendor/magento/module-customer/Model/Validator/Telephone.php
+index 0c85cb51..1b544f6e 100644
+--- a/vendor/magento/module-customer/Model/Validator/Telephone.php
++++ b/vendor/magento/module-customer/Model/Validator/Telephone.php
+@@ -16,22 +16,22 @@ use Magento\Framework\Validator\AbstractValidator;
+ class Telephone extends AbstractValidator
+ {
+     /**
+      * Allowed char:
+      *
+      * \() :Matches open and close parentheses
+      * \+: Matches the plus sign.
+      * \-: Matches the hyphen.
+      * \d: Digits (0-9).
+      */
+-    private const PATTERN_TELEPHONE = '/(?:[\d\s\+\-\()]{1,20})/u';
+-    
++    private const PATTERN_TELEPHONE = '/^[\d\s\+\-\()]{1,20}$/u';
++
+     /**
+      * Validate telephone fields.
+      *
+      * @param Customer $customer
+      * @return bool
+      */
+     public function isValid($customer)
+     {
+         if (!$this->isValidTelephone($customer->getTelephone())) {
+             parent::_addMessages([[
