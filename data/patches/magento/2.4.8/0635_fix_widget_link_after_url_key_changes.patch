@@ -1,0 +1,16 @@
+Index: vendor/magento/module-catalog/Block/Widget/Link.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/vendor/magento/module-catalog/Block/Widget/Link.php b/vendor/magento/module-catalog/Block/Widget/Link.php
+--- a/vendor/magento/module-catalog/Block/Widget/Link.php
++++ b/vendor/magento/module-catalog/Block/Widget/Link.php	(date 1777380722598)
+@@ -81,6 +81,7 @@
+                 UrlRewrite::ENTITY_ID => $rewriteData[1],
+                 UrlRewrite::ENTITY_TYPE => $rewriteData[0],
+                 UrlRewrite::STORE_ID => $store->getId(),
++                UrlRewrite::REDIRECT_TYPE => 0,
+             ];
+             if (!empty($rewriteData[2]) && $rewriteData[0] == ProductUrlRewriteGenerator::ENTITY_TYPE) {
+                 $filterData[UrlRewrite::METADATA]['category_id'] = $rewriteData[2];
