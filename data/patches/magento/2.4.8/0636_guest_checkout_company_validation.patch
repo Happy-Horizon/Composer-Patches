@@ -1,0 +1,11 @@
+diff --git a/vendor/magento/module-quote/Model/CustomerManagement.php b/vendor/magento/module-quote/Model/CustomerManagement.php
+--- a/vendor/magento/module-quote/Model/CustomerManagement.php
++++ b/vendor/magento/module-quote/Model/CustomerManagement.php
+@@ -169,6 +169,7 @@ class CustomerManagement
+             $customerAddress->setPostcode($billingAddress->getPostcode());
+             $customerAddress->setTelephone($billingAddress->getTelephone());
+             $customerAddress->setCountryId($billingAddress->getCountryId());
++            $customerAddress->setCompany($billingAddress->getCompany());
+             $customerAddress->setCustomAttributes($billingAddress->getCustomAttributes());
+             $addresses[] = $customerAddress;
+         }
