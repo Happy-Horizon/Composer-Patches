@@ -1,0 +1,57 @@
+diff --git a/vendor/magento/framework/Image/Adapter/Gd2.php b/vendor/magento/framework/Image/Adapter/Gd2.php
+index 037a2eb5..3fd6fdca 100644
+--- a/vendor/magento/framework/Image/Adapter/Gd2.php
++++ b/vendor/magento/framework/Image/Adapter/Gd2.php
+@@ -337,22 +337,27 @@ class Gd2 extends AbstractAdapter
+      * @param int $transparentIndex
+      *
+      * @return void
+      */
+     private function applyTransparency(&$imageResourceTo, $transparentIndex): void
+     {
+         // fill image with indexed non-alpha transparency
+         $transparentColor = false;
+ 
+         if ($transparentIndex >= 0 && $transparentIndex <= imagecolorstotal($this->_imageHandler)) {
+-            list($red, $green, $blue) = array_values(imagecolorsforindex($this->_imageHandler, $transparentIndex));
+-            $transparentColor = imagecolorallocate($imageResourceTo, (int) $red, (int) $green, (int) $blue);
++            try {
++                $colorsForIndex = imagecolorsforindex($this->_imageHandler, $transparentIndex);
++                list($red, $green, $blue) = array_values($colorsForIndex);
++                $transparentColor = imagecolorallocate($imageResourceTo, (int) $red, (int) $green, (int) $blue);
++                // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
++            } catch (\ValueError $e) {
++            }
+         }
+         if (false === $transparentColor) {
+             throw new \InvalidArgumentException('Failed to allocate transparent color for image.');
+         }
+         if (!imagefill($imageResourceTo, 0, 0, $transparentColor)) {
+             throw new \InvalidArgumentException('Failed to fill image with transparency.');
+         }
+         imagecolortransparent($imageResourceTo, $transparentColor);
+     }
+ 
+@@ -380,21 +385,21 @@ class Gd2 extends AbstractAdapter
+      * @SuppressWarnings(PHPMD.BooleanGetMethodName)
+      */
+     private function _getTransparency($imageResource, $fileType, &$isAlpha = false, &$isTrueColor = false)
+     {
+         $isAlpha = false;
+         $isTrueColor = false;
+         // assume that transparency is supported by gif/png only
+         if (IMAGETYPE_GIF === $fileType || IMAGETYPE_PNG === $fileType) {
+             // check for specific transparent color
+             $transparentIndex = imagecolortransparent($imageResource);
+-            if ($transparentIndex >= 0) {
++            if ($transparentIndex >= 0 && $transparentIndex < imagecolorstotal($imageResource)) {
+                 return $transparentIndex;
+             } elseif (IMAGETYPE_PNG === $fileType) {
+                 // assume that truecolor PNG has transparency
+                 $isAlpha = $this->checkAlpha($this->_fileName);
+                 $isTrueColor = true;
+                 // -1
+                 return $transparentIndex;
+             }
+         }
+         if (IMAGETYPE_JPEG === $fileType) {
