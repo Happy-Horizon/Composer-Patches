@@ -24,29 +24,3 @@ index 69f67efb5..14130839d 100644
          return $url;
      }
  }
-diff --git a/vendor/smile/elasticsuite/src/module-elasticsuite-catalog/view/frontend/web/js/range-slider-widget.js b/vendor/smile/elasticsuite/src/module-elasticsuite-catalog/view/frontend/web/js/range-slider-widget.js
-index ec3dc5f4e..00e1760a3 100644
---- a/vendor/smile/elasticsuite/src/module-elasticsuite-catalog/view/frontend/web/js/range-slider-widget.js
-+++ b/vendor/smile/elasticsuite/src/module-elasticsuite-catalog/view/frontend/web/js/range-slider-widget.js
-@@ -13,20 +13,21 @@
- 
- 
- /*jshint browser:true jquery:true*/
- /*global alert*/
- 
- define([
-     'jquery',
-     'Magento_Catalog/js/price-utils',
-     'mage/template',
-     'Smile_ElasticsuiteCatalog/js/slider',
-+    'jquery/ui',
-     'Magento_Ui/js/modal/modal',
-     'Smile_ElasticsuiteCatalog/js/jquery.ui.touch-punch.min'
- ], function ($, priceUtil, mageTemplate) {
- 
-     "use strict";
- 
-     $.widget('smileEs.rangeSlider', {
- 
-         options: {
-             fromLabel      : '[data-role=from-label]',
