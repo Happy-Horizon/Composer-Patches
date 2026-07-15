@@ -1,0 +1,31 @@
+diff --git a/vendor/magento/module-catalog-staging/view/adminhtml/ui_component/staging_update_edit_product_grid.xml b/vendor/magento/module-catalog-staging/view/adminhtml/ui_component/staging_update_edit_product_grid.xml
+index 0b8067634381..afcc22748b1a 100644
+--- a/vendor/magento/module-catalog-staging/view/adminhtml/ui_component/staging_update_edit_product_grid.xml
++++ b/vendor/magento/module-catalog-staging/view/adminhtml/ui_component/staging_update_edit_product_grid.xml
+@@ -78,11 +78,11 @@
+                 <sortable>false</sortable>
+             </settings>
+         </column>
+-        <column name="name" sortOrder="30">
++        <column name="name" component="Magento_Ui/js/grid/cells/sanitizedHtml" sortOrder="30">
+             <settings>
+                 <filter>text</filter>
+                 <addField>true</addField>
+-                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
++                <bodyTmpl>ui/grid/cells/sanitizedHtml</bodyTmpl>
+                 <label translate="true">Name</label>
+             </settings>
+         </column>
+@@ -102,10 +102,10 @@
+                 <label translate="true">Attribute Set</label>
+             </settings>
+         </column>
+-        <column name="sku" sortOrder="60">
++        <column name="sku" component="Magento_Ui/js/grid/cells/sanitizedHtml" sortOrder="60">
+             <settings>
+                 <filter>text</filter>
+-                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
++                <bodyTmpl>ui/grid/cells/sanitizedHtml</bodyTmpl>
+                 <label translate="true">SKU</label>
+             </settings>
+         </column>

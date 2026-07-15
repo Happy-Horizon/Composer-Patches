@@ -1,0 +1,84 @@
+diff --git a/vendor/magento/module-gift-card-account/Model/GuestCart/GiftCardAccountManagement.php b/vendor/magento/module-gift-card-account/Model/GuestCart/GiftCardAccountManagement.php
+index cc5c56b2b043..ad6897ea27f5 100644
+--- a/vendor/magento/module-gift-card-account/Model/GuestCart/GiftCardAccountManagement.php
++++ b/vendor/magento/module-gift-card-account/Model/GuestCart/GiftCardAccountManagement.php
+@@ -20,14 +20,16 @@
+ use Magento\GiftCardAccount\Api\GuestGiftCardAccountManagementInterface;
+ use Magento\GiftCardAccount\Api\GiftCardAccountManagementInterface;
+ use Magento\Quote\Model\QuoteIdMaskFactory;
++use Magento\Framework\App\ObjectManager;
++use Magento\Quote\Model\GuestCart\GetGuestCart;
+ 
+ /**
+- * Class GiftCardAccountManagement
++ * Gift card account management class for guest carts.
+  */
+ class GiftCardAccountManagement implements GuestGiftCardAccountManagementInterface
+ {
+     /**
+-     * @var \Magento\GiftCardAccount\Api\GiftCardAccountManagementInterface
++     * @var GiftCardAccountManagementInterface
+      */
+     protected $giftCartAccountManagement;
+ 
+@@ -37,43 +39,54 @@ class GiftCardAccountManagement implements GuestGiftCardAccountManagementInterfa
+     protected $quoteIdMaskFactory;
+ 
+     /**
+-     * @param \Magento\GiftCardAccount\Api\GiftCardAccountManagementInterface $giftCartAccountManagement
++     * @var GetGuestCart|null
++     */
++    private $getGuestCart;
++
++    /**
++     * @param GiftCardAccountManagementInterface $giftCartAccountManagement
+      * @param QuoteIdMaskFactory $quoteIdMaskFactory
++     * @param GetGuestCart|null $getGuestCart
+      */
+     public function __construct(
+-        \Magento\GiftCardAccount\Api\GiftCardAccountManagementInterface $giftCartAccountManagement,
+-        QuoteIdMaskFactory $quoteIdMaskFactory
++        GiftCardAccountManagementInterface $giftCartAccountManagement,
++        QuoteIdMaskFactory $quoteIdMaskFactory,
++        ?GetGuestCart $getGuestCart = null
+     ) {
+         $this->giftCartAccountManagement = $giftCartAccountManagement;
+         $this->quoteIdMaskFactory = $quoteIdMaskFactory;
++        $this->getGuestCart = $getGuestCart ?? ObjectManager::getInstance()->get(GetGuestCart::class);
+     }
+ 
+     /**
+-     * {@inheritDoc}
++     * @inheritDoc
+      */
+     public function addGiftCard(
+         $cartId,
+         \Magento\GiftCardAccount\Api\Data\GiftCardAccountInterface $giftCardAccountData
+     ) {
+         $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
++        $this->getGuestCart->execute($cartId, (int)$quoteIdMask->getQuoteId());
+         return $this->giftCartAccountManagement->saveByQuoteId($quoteIdMask->getQuoteId(), $giftCardAccountData);
+     }
+ 
+     /**
+-     * {@inheritDoc}
++     * @inheritDoc
+      */
+     public function checkGiftCard($cartId, $giftCardCode)
+     {
+         $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
++        $this->getGuestCart->execute($cartId, (int)$quoteIdMask->getQuoteId());
+         return $this->giftCartAccountManagement->checkGiftCard($quoteIdMask->getQuoteId(), $giftCardCode);
+     }
+ 
+     /**
+-     * {@inheritDoc}
++     * @inheritDoc
+      */
+     public function deleteByQuoteId($cartId, $giftCardCode)
+     {
+         $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
++        $this->getGuestCart->execute($cartId, (int)$quoteIdMask->getQuoteId());
+         return $this->giftCartAccountManagement->deleteByQuoteId($quoteIdMask->getQuoteId(), $giftCardCode);
+     }
+ }

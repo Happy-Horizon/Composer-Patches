@@ -1,0 +1,49 @@
+diff --git a/vendor/magento/module-gift-registry/Model/GuestCart/ShippingMethodManagement.php b/vendor/magento/module-gift-registry/Model/GuestCart/ShippingMethodManagement.php
+index 3b479ec37e9b..bd949976267a 100644
+--- a/vendor/magento/module-gift-registry/Model/GuestCart/ShippingMethodManagement.php
++++ b/vendor/magento/module-gift-registry/Model/GuestCart/ShippingMethodManagement.php
+@@ -19,6 +19,8 @@
+ 
+ use Magento\GiftRegistry\Api\ShippingMethodManagementInterface;
+ use Magento\Quote\Model\QuoteIdMaskFactory;
++use Magento\Framework\App\ObjectManager;
++use Magento\Quote\Model\GuestCart\GetGuestCart;
+ 
+ /**
+  * Shipping method read service.
+@@ -36,23 +38,32 @@ class ShippingMethodManagement implements \Magento\GiftRegistry\Api\GuestCart\Sh
+     protected $quoteIdMaskFactory;
+ 
++    /**
++     * @var GetGuestCart|null
++     */
++    private $getGuestCart;
++
+     /**
+      * @param ShippingMethodManagementInterface $shippingMethodManagement
+      * @param QuoteIdMaskFactory $quoteIdMaskFactory
++     * @param GetGuestCart|null $getGuestCart
+      */
+     public function __construct(
+         ShippingMethodManagementInterface $shippingMethodManagement,
+-        QuoteIdMaskFactory $quoteIdMaskFactory
++        QuoteIdMaskFactory $quoteIdMaskFactory,
++        ?GetGuestCart $getGuestCart = null
+     ) {
+         $this->shippingMethodManagement = $shippingMethodManagement;
+         $this->quoteIdMaskFactory = $quoteIdMaskFactory;
++        $this->getGuestCart = $getGuestCart ?? ObjectManager::getInstance()->get(GetGuestCart::class);
+     }
+ 
+     /**
+-     * {@inheritDoc}
++     * @inheritDoc
+      */
+     public function estimateByRegistryId($cartId, $registryId)
+     {
+         $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
++        $this->getGuestCart->execute($cartId, (int)$quoteIdMask->getQuoteId());
+         return $this->shippingMethodManagement->estimateByRegistryId($quoteIdMask->getQuoteId(), $registryId);
+     }
+ }
+

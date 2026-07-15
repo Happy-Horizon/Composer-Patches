@@ -1,0 +1,51 @@
+diff --git a/vendor/magento/module-gift-registry/Model/GuestCart/ShippingMethodManagement.php b/vendor/magento/module-gift-registry/Model/GuestCart/ShippingMethodManagement.php
+index b4b785385b54..f027ab276fed 100644
+--- a/vendor/magento/module-gift-registry/Model/GuestCart/ShippingMethodManagement.php
++++ b/vendor/magento/module-gift-registry/Model/GuestCart/ShippingMethodManagement.php
+@@ -6,8 +17,11 @@
++declare(strict_types=1);
+ 
+ namespace Magento\GiftRegistry\Model\GuestCart;
+ 
+ use Magento\GiftRegistry\Api\ShippingMethodManagementInterface;
+ use Magento\Quote\Model\QuoteIdMaskFactory;
++use Magento\Framework\App\ObjectManager;
++use Magento\Quote\Model\GuestCart\GetGuestCart;
+ 
+ /**
+  * Shipping method read service.
+@@ -25,23 +39,32 @@ class ShippingMethodManagement implements \Magento\GiftRegistry\Api\GuestCart\Sh
+     protected $quoteIdMaskFactory;
+ 
++    /**
++     * @var GetGuestCart|null
++     */
++    private $getGuestCart;
++
+     /**
+      * @param ShippingMethodManagementInterface $shippingMethodManagement
+      * @param QuoteIdMaskFactory $quoteIdMaskFactory
++     * @param GetGuestCart|null $getGuestCart
+      */
+     public function __construct(
+         ShippingMethodManagementInterface $shippingMethodManagement,
+-        QuoteIdMaskFactory $quoteIdMaskFactory
++        QuoteIdMaskFactory $quoteIdMaskFactory,
++        ?GetGuestCart $getGuestCart = null
+     ) {
+         $this->shippingMethodManagement = $shippingMethodManagement;
+         $this->quoteIdMaskFactory = $quoteIdMaskFactory;
++        $this->getGuestCart = $getGuestCart ?? ObjectManager::getInstance()->get(GetGuestCart::class);
+     }
+ 
+     /**
+-     * {@inheritDoc}
++     * @inheritDoc
+      */
+     public function estimateByRegistryId($cartId, $registryId)
+     {
+         $quoteIdMask = $this->quoteIdMaskFactory->create()->load($cartId, 'masked_id');
++        $this->getGuestCart->execute($cartId, (int)$quoteIdMask->getQuoteId());
+         return $this->shippingMethodManagement->estimateByRegistryId($quoteIdMask->getQuoteId(), $registryId);
+     }
+ }
