@@ -1,0 +1,52 @@
+diff --git a/vendor/magento/module-company-credit/Ui/Component/History/Listing/Column/Comment.php b/vendor/magento/module-company-credit/Ui/Component/History/Listing/Column/Comment.php
+index 273aecb664dd..12ebcf3fa92f 100644
+--- a/vendor/magento/module-company-credit/Ui/Component/History/Listing/Column/Comment.php
++++ b/vendor/magento/module-company-credit/Ui/Component/History/Listing/Column/Comment.php
+@@ -174,16 +174,18 @@ private function renderSystemComment($type, $data)
+     private function renderExceedLimitComment(array $commentData)
+     {
++        $userName = $this->escaper->escapeHtml((string)($commentData['user_name'] ?? ''));
++        $companyName = $this->escaper->escapeHtml((string)($commentData['company_name'] ?? ''));
+         if ($commentData['value']) {
+             $commentsString = __(
+                 '%1 made an update. %2 can exceed the Credit Limit.',
+-                $commentData['user_name'],
+-                $commentData['company_name']
++                $userName,
++                $companyName
+             );
+         } else {
+             $commentsString = __(
+                 '%1 made an update. %2 cannot exceed the Credit Limit.',
+-                $commentData['user_name'],
+-                $commentData['company_name']
++                $userName,
++                $companyName
+             );
+         }
+         return $commentsString;
+@@ -200,7 +202,8 @@ private function renderOrderComment($orderId)
+         try {
+             $order = $this->orderLocator->getOrderByIncrementId($orderId);
+             $url = $this->urlBuilder->getUrl('sales/order/view', ['order_id' => $order->getEntityId()]);
+-            $link = '<a href="' . $url . '"">' . $order->getIncrementId() . '</a>';
++            $link = '<a href="' . $this->escaper->escapeUrl($url) . '">'
++                . $this->escaper->escapeHtml((string)$order->getIncrementId()) . '</a>';
+             $commentsString = __('Order # %1', $link);
+         } catch (NoSuchEntityException $e) {
+             // If order not found then don't render comment.
+@@ -219,10 +222,10 @@ private function renderChangeCurrencyComment(array $data)
+     {
+         return __(
+             '%1 changed the credit currency from %2 to %3 at the conversion rate of %2/%3 %4.',
+-            $data['user_name'],
+-            $data['currency_from'],
+-            $data['currency_to'],
+-            $data['currency_rate']
++            $this->escaper->escapeHtml((string)($data['user_name'] ?? '')),
++            $this->escaper->escapeHtml((string)($data['currency_from'] ?? '')),
++            $this->escaper->escapeHtml((string)($data['currency_to'] ?? '')),
++            $this->escaper->escapeHtml((string)($data['currency_rate'] ?? ''))
+         );
+     }
+ }
