@@ -1,4 +1,3 @@
-
 diff --git a/vendor/magento/framework/Filter/DirectiveProcessor/DependDirective.php b/vendor/magento/framework/Filter/DirectiveProcessor/DependDirective.php
 index f557f74..83345ac 100644
 --- a/vendor/magento/framework/Filter/DirectiveProcessor/DependDirective.php
@@ -145,4 +144,4 @@ index f2fe398..a7d6790 100644
 +
          return $result;
      }
- 
+
