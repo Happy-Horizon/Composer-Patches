@@ -26,4 +26,3 @@ index bdc6e741..d668559e 100644
          initialize: function () {
              this._super();
              this.onContainersUpdate(this.searchContainers);
-             
