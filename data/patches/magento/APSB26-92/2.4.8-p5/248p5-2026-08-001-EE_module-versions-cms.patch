@@ -1,0 +1,105 @@
+diff --git a/vendor/magento/module-versions-cms/Block/Adminhtml/Cms/Hierarchy/Widget/Chooser.php b/vendor/magento/module-versions-cms/Block/Adminhtml/Cms/Hierarchy/Widget/Chooser.php
+index ba7839071533..893abd0e20d7 100644
+--- a/vendor/magento/module-versions-cms/Block/Adminhtml/Cms/Hierarchy/Widget/Chooser.php
++++ b/vendor/magento/module-versions-cms/Block/Adminhtml/Cms/Hierarchy/Widget/Chooser.php
+@@ -6,5 +6,8 @@
+ namespace Magento\VersionsCms\Block\Adminhtml\Cms\Hierarchy\Widget;
+ 
++use Magento\Framework\App\ObjectManager;
++use Magento\Framework\Serialize\Serializer\JsonHexTag;
++
+ /**
+  * Class Chooser
+  * Cms Pages Hierarchy Grid Block
+@@ -30,5 +33,10 @@ class Chooser extends \Magento\Backend\Block\Template
+     protected $_jsonEncoder;
+ 
++    /**
++     * @var JsonHexTag
++     */
++    private JsonHexTag $jsonHexTagSerializer;
++
+     /**
+      * Path to template file in theme.
+      *
+@@ -43,15 +51,19 @@ class Chooser extends \Magento\Backend\Block\Template
+      * @param \Magento\Framework\Json\EncoderInterface $jsonEncoder
+      * @param \Magento\VersionsCms\Model\Hierarchy\NodeFactory $nodeFactory
+      * @param array $data
++     * @param JsonHexTag|null $jsonHexTagSerializer
+      */
+     public function __construct(
+         \Magento\Backend\Block\Template\Context $context,
+         \Magento\Framework\Json\EncoderInterface $jsonEncoder,
+         \Magento\VersionsCms\Model\Hierarchy\NodeFactory $nodeFactory,
+-        array $data = []
++        array $data = [],
++        ?JsonHexTag $jsonHexTagSerializer = null
+     ) {
+         $this->_jsonEncoder = $jsonEncoder;
+         $this->_nodeFactory = $nodeFactory;
++        $this->jsonHexTagSerializer = $jsonHexTagSerializer
++            ?? ObjectManager::getInstance()->get(JsonHexTag::class);
+         parent::__construct($context, $data);
+     }
+ 
+@@ -114,6 +126,6 @@ public function prepareElementHtml(\Magento\Framework\Data\Form\Element\Abstract
+     public function getNodesJson()
+     {
+-        return $this->_jsonEncoder->encode($this->getNodes());
++        return $this->jsonHexTagSerializer->serialize($this->getNodes());
+     }
+ 
+     /**
+@@ -158,8 +170,8 @@ public function getCMSHierarchyTree($tree): string
+     {
+         $html = "<ul>";
+         foreach ($tree as $category) {
+-            $html .= "<li id='" . $category['node_id'] . "' >";
+-            $html .= "<span>" . $category['label'] . "</span>";
++            $html .= "<li id='" . $this->_escaper->escapeHtmlAttr($category['node_id']) . "' >";
++            $html .= "<span>" . $this->_escaper->escapeHtml($category['label']) . "</span>";
+             if (array_key_exists("children", $category)) {
+                 $html .= $this->getCMSHierarchyTree($category["children"]);
+             }
+diff --git a/vendor/magento/module-versions-cms/view/adminhtml/templates/hierarchy/edit.phtml b/vendor/magento/module-versions-cms/view/adminhtml/templates/hierarchy/edit.phtml
+index cf6f069b6a6d..a92d218c689c 100644
+--- a/vendor/magento/module-versions-cms/view/adminhtml/templates/hierarchy/edit.phtml
++++ b/vendor/magento/module-versions-cms/view/adminhtml/templates/hierarchy/edit.phtml
+@@ -113,7 +113,8 @@ $hierarchyHelper = $block->getData('hierarchyHelper');
+                     jQuery(directoryTreeSelector).jstree({
+                         core: {
+                             data: this.treeRoot,
+-                            check_callback: true
++                            check_callback: true,
++                            force_text: true
+                         },
+                         plugins : [ 'dnd' ]
+                     });
+@@ -258,7 +259,7 @@ $hierarchyHelper = $block->getData('hierarchyHelper');
+ 
+                 getEditPageAnchorHtml: function(pageId, pageTitle) {
+                     var editUrl = '<a href="{$editPageUrl}page_id/';
+-                    return editUrl + pageId + '/" target="_blank">' + pageTitle + '</a>';
++                    return editUrl + pageId + '/" target="_blank">' + pageTitle.escapeHTML() + '</a>';
+                 },
+ 
+                 getNodePreviewUrlInfo: function(node) {
+@@ -358,7 +359,7 @@ script;
+                             $('node_preview').up('.field').show();
+                             $('node_preview').writeAttribute('target', '_blank');
+                             $('node_preview').writeAttribute('href', nodeUrlInfo.url);
+-                            $('node_preview').innerHTML = nodeUrlInfo.path;
++                            $('node_preview').textContent = nodeUrlInfo.path;
+                         }
+                     } else {
+                         $('node_preview').up('.field').hide();
+@@ -372,7 +373,7 @@ script;
+                             node.original.page_id,
+                             node.text.replace('\'', '&#039;').replace('"', '&quot;')
+                         );
+-                        $('node_identifier_text').innerHTML = node.original.identifier;
++                        $('node_identifier_text').textContent = node.original.identifier;
+                     }
+ 
+                     this.nodePropReset();

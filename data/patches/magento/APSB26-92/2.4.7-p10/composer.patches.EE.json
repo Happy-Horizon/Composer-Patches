@@ -1,0 +1,10 @@
+{
+  "patches": {
+    "magento/module-gift-registry": {
+      "247p10-2026-08-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-92/2.4.7-p10/247p10-2026-08-001-EE_module-gift-registry.patch"
+    },
+    "magento/module-versions-cms": {
+      "247p10-2026-08-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-92/2.4.7-p10/247p10-2026-08-001-EE_module-versions-cms.patch"
+    }
+  }
+}

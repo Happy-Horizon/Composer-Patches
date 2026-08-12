@@ -1,0 +1,115 @@
+diff --git a/vendor/magento/module-company-graph-ql/Model/Company/UpdateCompanyAccount.php b/vendor/magento/module-company-graph-ql/Model/Company/UpdateCompanyAccount.php
+index c049520d1d7d..3ed94721c44a 100644
+--- a/vendor/magento/module-company-graph-ql/Model/Company/UpdateCompanyAccount.php
++++ b/vendor/magento/module-company-graph-ql/Model/Company/UpdateCompanyAccount.php
+@@ -21,8 +21,11 @@
+ use Magento\Company\Api\CompanyRepositoryInterface;
+ use Magento\Company\Api\Data\CompanyInterface;
+ use Magento\Company\Model\CompanyContext;
++use Magento\Company\Model\CompanyFieldPool;
+ use Magento\Company\Model\CompanyManagement;
+ use Magento\Framework\Api\DataObjectHelper;
++use Magento\Framework\App\ObjectManager;
++use Magento\Framework\GraphQl\Exception\GraphQlAuthorizationException;
+ use Magento\Framework\GraphQl\Exception\GraphQlInputException;
+ 
+ /**
+@@ -51,23 +54,32 @@ class UpdateCompanyAccount
+     private $companyManagement;
+ 
++    /**
++     * @var CompanyFieldPool
++     */
++    private readonly CompanyFieldPool $companyProfileFieldPool;
++
+     /**
+      * @param CompanyRepositoryInterface $companyRepository
+      * @param DataObjectHelper $dataObjectHelper
+      * @param PrepareCompanyData $prepareCompanyData
+      * @param CompanyManagement $companyManagement
+      * @param CompanyContext $companyContext
++     * @param CompanyFieldPool|null $companyProfileFieldPool
+      */
+     public function __construct(
+         CompanyRepositoryInterface $companyRepository,
+         DataObjectHelper $dataObjectHelper,
+         PrepareCompanyData $prepareCompanyData,
+         CompanyManagement $companyManagement,
+-        private readonly CompanyContext $companyContext
++        private readonly CompanyContext $companyContext,
++        ?CompanyFieldPool $companyProfileFieldPool = null,
+     ) {
+         $this->companyRepository = $companyRepository;
+         $this->dataObjectHelper = $dataObjectHelper;
+         $this->prepareCompanyData = $prepareCompanyData;
+         $this->companyManagement = $companyManagement;
++        $this->companyProfileFieldPool = $companyProfileFieldPool
++            ?? ObjectManager::getInstance()->get(CompanyFieldPool::class);
+     }
+ 
+     /**
+@@ -87,18 +99,22 @@ public function execute(array $data, int $customerId): CompanyInterface
+             );
+         }
+ 
+-        if (!$this->companyContext->isResourceAllowed('Magento_Company::edit_address')) {
+-            unset($data['legal_address']);
++        $allowedData = [];
++        if ($this->companyContext->isResourceAllowed('Magento_Company::edit_account')) {
++            $allowedData += array_intersect_key(
++                $data,
++                array_flip($this->companyProfileFieldPool->getFields())
++            );
+         }
+-
+-        if (!$this->companyContext->isResourceAllowed('Magento_Company::edit_account')) {
+-            unset($data['company_name']);
+-            unset($data['company_email']);
+-            unset($data['legal_name']);
+-            unset($data['vat_tax_id']);
+-            unset($data['reseller_id']);
++        if ($this->companyContext->isResourceAllowed('Magento_Company::edit_address')) {
++            if (array_key_exists('legal_address', $data)) {
++                $allowedData['legal_address'] = $data['legal_address'];
++            }
++        }
++        $companyData = $this->prepareCompanyData->execute($allowedData);
++        if (empty($companyData)) {
++            throw new GraphQlAuthorizationException(__('You are not authorized to perform this operation.'));
+         }
+-        $companyData = $this->prepareCompanyData->execute($data);
+         $this->dataObjectHelper->populateWithArray(
+             $company,
+             $companyData,
+diff --git a/vendor/magento/module-company-graph-ql/etc/di.xml b/vendor/magento/module-company-graph-ql/etc/di.xml
+new file mode 100644
+index 000000000000..69668b67a7a0
+--- /dev/null
++++ b/vendor/magento/module-company-graph-ql/etc/di.xml
+@@ -0,0 +1,26 @@
++<?xml version="1.0"?>
++<!--
++/**
++ * ADOBE CONFIDENTIAL
++ *
++ * Copyright 2026 Adobe
++ * All Rights Reserved.
++ *
++ * NOTICE: All information contained herein is, and remains
++ * the property of Adobe and its suppliers, if any. The intellectual
++ * and technical concepts contained herein are proprietary to Adobe
++ * and its suppliers and are protected by all applicable intellectual
++ * property laws, including trade secret and copyright laws.
++ * Dissemination of this information or reproduction of this material
++ * is strictly forbidden unless prior written permission is obtained
++ * from Adobe.
++ */
++-->
++<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
++    <!-- Write path shares only the profile pool. Address is gated by the GraphQL input schema. -->
++    <type name="Magento\CompanyGraphQl\Model\Company\UpdateCompanyAccount">
++        <arguments>
++            <argument name="companyProfileFieldPool" xsi:type="object">companyProfileFieldPool</argument>
++        </arguments>
++    </type>
++</config>

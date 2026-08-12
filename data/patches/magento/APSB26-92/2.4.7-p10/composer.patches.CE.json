@@ -1,0 +1,16 @@
+{
+  "patches": {
+    "magento/magento2-base": {
+      "247p10-2026-08-001 underscore.js": "https://patches.happyhorizon.dev/patches/magento/APSB26-92/2.4.7-p10/247p10-2026-08-001-CE_underscore.js.patch"
+    },
+    "magento/module-cms": {
+      "247p10-2026-08-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-92/2.4.7-p10/247p10-2026-08-001-CE_module-cms.patch"
+    },
+    "magento/module-customer": {
+      "247p10-2026-08-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-92/2.4.7-p10/247p10-2026-08-001-CE_module-customer.patch"
+    },
+    "magento/module-review": {
+      "247p10-2026-08-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-92/2.4.7-p10/247p10-2026-08-001-CE_module-review.patch"
+    }
+  }
+}
