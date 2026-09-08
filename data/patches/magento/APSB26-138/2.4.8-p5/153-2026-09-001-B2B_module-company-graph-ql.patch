@@ -1,0 +1,13 @@
+diff --git a/vendor/magento/module-company-graph-ql/Controller/HttpRequestValidator/CompanyValidator.php b/vendor/magento/module-company-graph-ql/Controller/HttpRequestValidator/CompanyValidator.php
+index f2ab36bace94..fe1e58789353 100644
+--- a/vendor/magento/module-company-graph-ql/Controller/HttpRequestValidator/CompanyValidator.php
++++ b/vendor/magento/module-company-graph-ql/Controller/HttpRequestValidator/CompanyValidator.php
+@@ -107,7 +107,7 @@ private function getCustomerId(HttpRequestInterface $request): int
+          * is unreliable here, as proper initialization of the context relies on correct store scope,
+          * which is done at a later stage in request header processing.
+          */
+-        if ($context->getUserId() === null
++        if ((int)$context->getUserId() <= 0
+             || $context->getUserType() !== UserContextInterface::USER_TYPE_CUSTOMER
+         ) {
+             /**
