@@ -1,0 +1,7 @@
+{
+  "patches": {
+    "magento/module-company": {
+      "133p18-2026-09-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-138/2.4.4-p18/133p18-2026-09-001-B2B_module-company.patch"
+    }
+  }
+}

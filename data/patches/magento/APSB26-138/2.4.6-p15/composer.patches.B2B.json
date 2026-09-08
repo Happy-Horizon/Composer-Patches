@@ -1,0 +1,8 @@
+{
+  "patches": {
+    "magento/module-company": {
+      "142p10-2026-09-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-138/2.4.6-p15/142p10-2026-09-001-B2B_module-company.patch",
+      "152p5-2026-09-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-138/2.4.6-p15/152p5-2026-09-001-B2B_module-company.patch"
+    }
+  }
+}
