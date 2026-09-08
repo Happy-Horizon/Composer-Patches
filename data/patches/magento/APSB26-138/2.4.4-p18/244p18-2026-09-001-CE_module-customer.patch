@@ -1,0 +1,9 @@
+diff --git a/vendor/magento/module-customer/i18n/en_US.csv b/vendor/magento/module-customer/i18n/en_US.csv
+index cdb8eca3f087f..a00bb04523ccc 100644
+--- a/vendor/magento/module-customer/i18n/en_US.csv
++++ b/vendor/magento/module-customer/i18n/en_US.csv
+@@ -545,3 +545,4 @@ Addresses,Addresses
+ "Add/Update Address","Add/Update Address"
+ "The specified customer group id does not exist.","The specified customer group id does not exist."
+ "Something went wrong while logging out customer.","Something went wrong while logging out customer."
++"Address not found.","Address not found."

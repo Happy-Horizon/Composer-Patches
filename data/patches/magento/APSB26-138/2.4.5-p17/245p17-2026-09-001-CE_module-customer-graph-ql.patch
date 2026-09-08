@@ -1,0 +1,105 @@
+diff --git a/vendor/magento/module-customer-graph-ql/Model/Context/AddUserInfoToContext.php b/vendor/magento/module-customer-graph-ql/Model/Context/AddUserInfoToContext.php
+index b3ae57e0ff994..c9a87a7db0388 100644
+--- a/vendor/magento/module-customer-graph-ql/Model/Context/AddUserInfoToContext.php
++++ b/vendor/magento/module-customer-graph-ql/Model/Context/AddUserInfoToContext.php
+@@ -13,6 +13,11 @@
+ use Magento\Customer\Model\Session;
+ use Magento\GraphQl\Model\Query\ContextParametersInterface;
+ use Magento\GraphQl\Model\Query\UserContextParametersProcessorInterface;
++use Magento\Framework\App\ObjectManager;
++use Magento\Framework\App\Request\Http as HttpRequest;
++use Magento\Store\Api\Data\StoreInterface;
++use Magento\Store\Model\StoreManagerInterface;
++use Magento\Customer\Model\Config\Share;
+ 
+ /**
+  * @SuppressWarnings(PHPMD.CookieAndSessionMisuse)
+@@ -39,19 +44,43 @@ class AddUserInfoToContext implements UserContextParametersProcessorInterface
+      */
+     private $loggedInCustomerData = null;
+ 
++    /**
++     * @var Share
++     */
++    private $configShare;
++
++    /**
++     * @var StoreManagerInterface
++     */
++    private $storeManager;
++
++    /**
++     * @var HttpRequest
++     */
++    private $request;
++
+     /**
+      * @param UserContextInterface $userContext
+      * @param Session $session
+      * @param CustomerRepository $customerRepository
++     * @param Share|null $configShare
++     * @param StoreManagerInterface|null $storeManager
++     * @param HttpRequest|null $request
+      */
+     public function __construct(
+         UserContextInterface $userContext,
+         Session $session,
+-        CustomerRepository $customerRepository
++        CustomerRepository $customerRepository,
++        ?Share $configShare = null,
++        ?StoreManagerInterface $storeManager = null,
++        ?HttpRequest $request = null
+     ) {
+         $this->userContext = $userContext;
+         $this->session = $session;
+         $this->customerRepository = $customerRepository;
++        $this->configShare = $configShare ?? ObjectManager::getInstance()->get(Share::class);
++        $this->storeManager = $storeManager ?? ObjectManager::getInstance()->get(StoreManagerInterface::class);
++        $this->request = $request ?? ObjectManager::getInstance()->get(HttpRequest::class);
+     }
+ 
+     /**
+@@ -86,6 +115,13 @@ public function execute(ContextParametersInterface $contextParameters): ContextP
+             $this->loggedInCustomerData = $this->session->getCustomerData();
+         }
+ 
++        if (!$isCustomer
++            && !empty($currentUserId)
++            && $currentUserType === UserContextInterface::USER_TYPE_CUSTOMER
++        ) {
++            $contextParameters->setUserId(0);
++        }
++
+         if ($isCustomer) {
+             $customer = $this->customerRepository->getById($currentUserId);
+             $this->session->setCustomerData($customer);
+@@ -113,8 +149,28 @@ public function getLoggedInCustomerData(): ?CustomerInterface
+      */
+     private function isCustomer(?int $customerId, ?int $customerType): bool
+     {
+-        return !empty($customerId)
++        $result = !empty($customerId)
+             && !empty($customerType)
+             && $customerType === UserContextInterface::USER_TYPE_CUSTOMER;
++
++        if ($result && $this->configShare->isWebsiteScope()) {
++            $customer = $this->customerRepository->getById($customerId);
++            return (int)$customer->getWebsiteId() === (int)$this->getEffectiveStore()->getWebsiteId();
++        }
++        return $result;
++    }
++
++    /**
++     * Resolve the store to use for website-scope validation.
++     *
++     * @return StoreInterface
++     */
++    private function getEffectiveStore(): StoreInterface
++    {
++        $storeCode = trim((string) $this->request->getHeader('Store'));
++        if (!empty($storeCode)) {
++            return $this->storeManager->getStore($storeCode);
++        }
++        return $this->storeManager->getStore();
+     }
+ }
