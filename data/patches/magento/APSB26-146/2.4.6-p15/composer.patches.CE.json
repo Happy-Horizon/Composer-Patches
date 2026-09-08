@@ -1,0 +1,19 @@
+{
+  "patches": {
+    "magento/module-backend": {
+      "246p15-2026-09-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-146/2.4.6-p15/246p15-2026-09-001-CE_module-backend.patch"
+    },
+    "magento/module-email": {
+      "246p15-2026-09-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-146/2.4.6-p15/246p15-2026-09-001-CE_module-email.patch"
+    },
+    "magento/module-newsletter": {
+      "246p15-2026-09-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-146/2.4.6-p15/246p15-2026-09-001-CE_module-newsletter.patch"
+    },
+    "magento/framework": {
+      "246p15-2026-09-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-146/2.4.6-p15/246p15-2026-09-001-CE_framework.patch"
+    },
+    "magento/magento2-base": {
+      "246p15-2026-09-001 pub-errors-processor": "https://patches.happyhorizon.dev/patches/magento/APSB26-146/2.4.6-p15/246p15-2026-09-001-CE_pub-errors-processor.patch"
+    }
+  }
+}
