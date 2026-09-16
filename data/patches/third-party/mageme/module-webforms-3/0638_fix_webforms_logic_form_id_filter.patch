@@ -1,0 +1,45 @@
+diff --git a/vendor/mageme/module-webforms-3/Model/ResourceModel/Logic/Collection.php b/vendor/mageme/module-webforms-3/Model/ResourceModel/Logic/Collection.php
+index 4cfeff8..7208cf4 100644
+--- a/vendor/mageme/module-webforms-3/Model/ResourceModel/Logic/Collection.php
++++ b/vendor/mageme/module-webforms-3/Model/ResourceModel/Logic/Collection.php
+@@ -31,32 +31,38 @@ use MageMe\WebForms\Model\ResourceModel\Logic as LogicResource;
+  * @package MageMe\WebForms\Model\ResourceModel\Logic
+  */
+ class Collection extends AbstractSearchResult
+ {
+     /**
+      * @inheritDoc
+      */
+     public function addFieldToFilter($field, $condition = null)
+     {
+         $isFormFilter = false;
++        $formIdField = FieldInterface::FORM_ID;
++        $qualifiedFormId = 'main_table.' . $formIdField;
++        $fieldsFormId = 'fields.' . $formIdField;
+         if (is_array($field)) {
+             foreach ($field as &$value) {
+                 if ($value == LogicInterface::IS_ACTIVE) {
+                     $value = 'main_table.' . LogicInterface::IS_ACTIVE;
+                 }
+-                if ($value == FieldInterface::FORM_ID) {
++                if ($value == $formIdField || $value == $qualifiedFormId) {
+                     $isFormFilter = true;
++                    $value = $fieldsFormId;
+                 }
+             }
++            unset($value);
+         } else {
+-            if ($field == FieldInterface::FORM_ID) {
++            if ($field == $formIdField || $field == $qualifiedFormId) {
+                 $isFormFilter = true;
++                $field = $fieldsFormId;
+             }
+             if ($field == LogicInterface::IS_ACTIVE) {
+                 $field = 'main_table.' . LogicInterface::IS_ACTIVE;
+             }
+         }
+         if ($isFormFilter) {
+             $this->join(
+                 ['fields' => $this->getTable(FieldResource::DB_TABLE)],
+                 'main_table.' . LogicInterface::FIELD_ID . ' = fields.' . FieldInterface::ID,
+                 [
