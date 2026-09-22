@@ -1,0 +1,26 @@
+diff --git a/vendor/magento/magento2-base/lib/web/mage/requirejs/mixins.js b/vendor/magento/magento2-base/lib/web/mage/requirejs/mixins.js
+--- a/vendor/magento/magento2-base/lib/web/mage/requirejs/mixins.js
++++ b/vendor/magento/magento2-base/lib/web/mage/requirejs/mixins.js
+@@ -13,20 +13,22 @@
+         unbundledContext = contexts[unbundledContextName] = require.s.newContext(unbundledContextName),
+         defaultConfig = defContext.config,
+         unbundledConfig = {
+             baseUrl: defaultConfig.baseUrl,
+             paths: defaultConfig.paths,
+             shim: defaultConfig.shim,
+             config: defaultConfig.config,
+             map: defaultConfig.map
+         },
+         rjsMixins;
++
++    unbundledContext.nameToUrl = defContext.nameToUrl;
+ 
+     /**
+      * Prepare a separate context where modules are not assigned to bundles
+      * so we are able to get their true path and corresponding mixins.
+      */
+     unbundledContext.configure(unbundledConfig);
+ 
+     /**
+      * Checks if specified string contains
+      * a plugin spacer '!' substring.
