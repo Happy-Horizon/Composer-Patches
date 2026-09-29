@@ -1,0 +1,10 @@
+--- a/vendor/snowdog/frontools/package.json
++++ b/vendor/snowdog/frontools/package.json
+@@ -1,4 +1,7 @@
+ {
++  "overrides": {
++    "postcss": "^8.4.31"
++  },
+   "name": "magento2-frontools",
+   "version": "1.11.0",
+   "private": true,
