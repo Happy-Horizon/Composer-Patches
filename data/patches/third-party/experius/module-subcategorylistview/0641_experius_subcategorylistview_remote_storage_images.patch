@@ -1,0 +1,638 @@
+diff --git a/vendor/experius/module-subcategorylistview/Helper/Image.php b/vendor/experius/module-subcategorylistview/Helper/Image.php
+index 0ea8080..d832e11 100644
+--- a/vendor/experius/module-subcategorylistview/Helper/Image.php
++++ b/vendor/experius/module-subcategorylistview/Helper/Image.php
+@@ -1,38 +1,51 @@
+ <?php
+ /**
+  * Copyright © Experius B.V. All rights reserved.
+  * See COPYING.txt for license details.
+  */
+ declare(strict_types=1);
+ 
+ namespace Experius\Subcategorylistview\Helper;
+ 
+-use \Magento\Framework\App\Filesystem\DirectoryList;
++use Magento\Framework\App\Config\ScopeConfigInterface;
++use Magento\Framework\App\Filesystem\DirectoryList;
++use Magento\Framework\Exception\FileSystemException;
++use Magento\Framework\Exception\LocalizedException;
++use Magento\Framework\Exception\NoSuchEntityException;
++use Magento\Framework\Filesystem;
++use Magento\Framework\Filesystem\Directory\ReadInterface;
++use Magento\Framework\Filesystem\Directory\WriteInterface;
++use Magento\Framework\Image\AdapterFactory;
++use Magento\Framework\UrlInterface;
++use Magento\Store\Model\ScopeInterface;
++use Magento\Store\Model\StoreManagerInterface;
+ 
+ /**
+  * Class Image
+  * @package Experius\Subcategorylistview\Helper
+  */
+ class Image
+ {
+     const DEFAULT_WIDTH = 240;
+     const POSITION_TOP     = 'top';
+     const POSITION_TOP_LEFT     = 'top-left';
+     const POSITION_TOP_RIGHT     = 'top-right';
+     const POSITION_BOTTOM = 'bottom';
+     const POSITION_BOTTOM_LEFT = 'bottom-left';
+     const POSITION_BOTTOM_RIGHT = 'bottom-right';
+     const POSITION_CENTER = 'center';
+     const POSITION_CENTER_LEFT = 'center-left';
+     const POSITION_CENTER_RIGHT = 'center-right';
+ 
++    private const CACHE_BASE_PATH = 'experius/subcategorylistview/cache';
++
+     /**
+      * Crop position from top
+      *
+      * @var float
+      */
+     protected $topRate = 0.5;
+     /**
+      * Crop position from bootom
+      *
+      * @var float
+@@ -51,276 +64,399 @@ class Image
+      */
+     protected $rightRate = 1;
+     protected $adaptiveResize = false;
+     protected $width;
+     protected $height;
+     protected $categoryId;
+     protected $imageId;
+     protected $storeManager;
+     protected $catImageHelper;
+     protected $id;
++    /**
++     * Media-relative path to the source image (e.g. catalog/category/foo.jpg)
++     *
++     * @var string|null
++     */
+     protected $image;
+     protected $imageValue;
+     protected $baseUrl;
+     /**
+      * @var DirectoryList
+      */
+     private $directory_list;
+     /**
+-     * @var \Magento\Framework\UrlInterface
++     * @var UrlInterface
+      */
+     private $url;
+ 
+     protected $scopeConfig;
+     protected $filesystem;
+     protected $imageFactory;
+ 
++    /**
++     * @var WriteInterface|null
++     */
++    private $mediaDirectory;
++
++    /**
++     * @var ReadInterface|null
++     */
++    private $mediaDirectoryRead;
++
+     /**
+      * Image constructor.
+-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+-     * @param \Magento\Framework\Filesystem $filesystem
+-     * @param \Magento\Framework\Image\AdapterFactory $imageFactory
+-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
++     * @param ScopeConfigInterface $scopeConfig
++     * @param Filesystem $filesystem
++     * @param AdapterFactory $imageFactory
++     * @param StoreManagerInterface $storeManager
+      * @param \Magento\Catalog\Helper\Image $catImageHelper
+      * @param DirectoryList $directory_list
+-     * @param \Magento\Framework\UrlInterface $url
++     * @param UrlInterface $url
+      */
+     public function __construct(
+-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+-        \Magento\Framework\Filesystem $filesystem,
+-        \Magento\Framework\Image\AdapterFactory $imageFactory,
+-        \Magento\Store\Model\StoreManagerInterface $storeManager,
++        ScopeConfigInterface $scopeConfig,
++        Filesystem $filesystem,
++        AdapterFactory $imageFactory,
++        StoreManagerInterface $storeManager,
+         \Magento\Catalog\Helper\Image $catImageHelper,
+-        \Magento\Framework\App\Filesystem\DirectoryList $directory_list,
+-        \Magento\Framework\UrlInterface $url
++        DirectoryList $directory_list,
++        UrlInterface $url
+     ) {
+         $this->scopeConfig = $scopeConfig;
+         $this->filesystem = $filesystem;
+         $this->imageFactory = $imageFactory;
+         $this->storeManager = $storeManager;
+         $this->catImageHelper = $catImageHelper;
+         $this->directory_list = $directory_list;
+         $this->url = $url;
+     }
+ 
++    /**
++     * @return WriteInterface
++     * @throws FileSystemException
++     */
++    private function getMediaDirectory(): WriteInterface
++    {
++        if ($this->mediaDirectory === null) {
++            $this->mediaDirectory = $this->filesystem->getDirectoryWrite(DirectoryList::MEDIA);
++        }
++
++        return $this->mediaDirectory;
++    }
++
++    /**
++     * @return ReadInterface
++     */
++    private function getMediaDirectoryRead(): ReadInterface
++    {
++        if ($this->mediaDirectoryRead === null) {
++            $this->mediaDirectoryRead = $this->filesystem->getDirectoryRead(DirectoryList::MEDIA);
++        }
++
++        return $this->mediaDirectoryRead;
++    }
++
++    /**
++     * Normalize stored image value to a path relative to the media directory.
++     *
++     * @param string $imageValue
++     * @param string $defaultDirectory
++     * @return string
++     */
++    private function normalizeMediaRelativePath(string $imageValue, string $defaultDirectory): string
++    {
++        $imageValue = str_replace('\\', '/', $imageValue);
++        // Magento prepends media path in 2.3 during category save
++        if (strpos($imageValue, '/media/') !== false) {
++            $imageValue = (string) substr($imageValue, strpos($imageValue, '/media/') + strlen('/media/'));
++        }
++        $imageValue = ltrim($imageValue, '/');
++
++        if ($imageValue === '') {
++            return $defaultDirectory;
++        }
++
++        if (strpos($imageValue, $defaultDirectory . '/') === 0
++            || $imageValue === $defaultDirectory
++            || strpos($imageValue, 'experius/') === 0
++        ) {
++            return $imageValue;
++        }
++
++        return $defaultDirectory . '/' . $imageValue;
++    }
++
+     /**
+      * @param \Magento\Catalog\Api\Data\CategoryInterface $category
+      * @param null $imageId
+      * @param null $width
+      * @param null $height
+      * @return $this
+-     * @throws \Magento\Framework\Exception\FileSystemException
++     * @throws FileSystemException
+      */
+     public function init($category, $imageId = null, $width = null, $height = null)
+     {
+         $this->categoryId = $category->getId();
+         $this->imageId = $imageId;
+         $this->width = $width;
+         $this->height= $height;
+ 
+         $configPlaceHolder = $this->scopeConfig->getValue(
+             "experius_subcategorylistview/general/default_image",
+-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
++            ScopeInterface::SCOPE_STORE
+         );
+ 
+         $useCatImage = $this->scopeConfig->getValue(
+             "experius_subcategorylistview/general/use_cat_image",
+-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
++            ScopeInterface::SCOPE_STORE
+         );
+ 
+         // return subcategory image if set
+         if ($category->getCustomAttribute('experius_subcatlistview_image')) {
+             $this->imageValue = $category->getCustomAttribute('experius_subcatlistview_image')->getValue();
+-
+-            // Magento prepends media path in 2.3 during category save, remove it for backwards compatibility
+-            if(strpos($this->imageValue, '/media/') !== false) {
+-                $this->imageValue = str_replace('/media/', '', $this->imageValue);
+-                $this->image = $this->directory_list->getPath('media') . DIRECTORY_SEPARATOR . $this->imageValue;
+-            } else{
+-                $this->image = $this->directory_list->getPath('media') . '/catalog'
+-                    . DIRECTORY_SEPARATOR . 'category' . DIRECTORY_SEPARATOR . $this->imageValue;
+-            }
++            $this->image = $this->normalizeMediaRelativePath((string) $this->imageValue, 'catalog/category');
+             $this->id = 'subcat';
+             return $this;
+         }
+         // return category image if set
+         if ($category->getImageUrl()
+             && $useCatImage
+             && (strpos($category->getImageUrl(), '/placeholder/') === false)
+         ) {
+-            $explodedCategoryImageUrl = explode(DIRECTORY_SEPARATOR, $category->getImageUrl());
++            $explodedCategoryImageUrl = explode('/', str_replace('\\', '/', $category->getImageUrl()));
+             $categoryImageFilename = end($explodedCategoryImageUrl);
+-            $this->image = $this->directory_list->getPath('media')
+-                . DIRECTORY_SEPARATOR . 'catalog'
+-                . DIRECTORY_SEPARATOR . 'category'
+-                . DIRECTORY_SEPARATOR . $categoryImageFilename;
++            $this->image = 'catalog/category/' . $categoryImageFilename;
+ 
+             $this->id = $category->getId();
+             return $this;
+         }
+ 
+         if ($configPlaceHolder) {
+-            $this->image = $this->directory_list->getPath('media') . '/experius'
+-                . DIRECTORY_SEPARATOR . 'subcategorylistview' . DIRECTORY_SEPARATOR . $configPlaceHolder;
++            $this->image = 'experius/subcategorylistview/' . ltrim((string) $configPlaceHolder, '/');
+             $this->id = 'cph';
+             return $this;
+         }
+ 
+         $root = $this->directory_list->getRoot();
+         $base = $this->getBaseUrl();
+         $url = $this->catImageHelper->getDefaultPlaceholderUrl('image');
+ 
+-        $this->image = str_replace($base, $root . '/', $url);
++        $absolutePath = str_replace($base, rtrim($root, '/') . '/', $url);
++        $this->image = $this->resolveMediaRelativePath($absolutePath);
+         $this->id = 'ph';
+ 
+         return $this;
+     }
+ 
++    /**
++     * Resolve an absolute filesystem path to a media-relative path when possible.
++     *
++     * @param string $absolutePath
++     * @return string
++     */
++    private function resolveMediaRelativePath(string $absolutePath): string
++    {
++        $absolutePath = str_replace('\\', '/', $absolutePath);
++        try {
++            $relative = $this->getMediaDirectoryRead()->getRelativePath($absolutePath);
++            if ($relative !== null && $relative !== '' && strpos($relative, '..') !== 0) {
++                return ltrim(str_replace('\\', '/', $relative), '/');
++            }
++        } catch (\Exception $e) {
++            // Fall through to URL/media path heuristics.
++        }
++
++        $mediaMarker = '/media/';
++        $markerPos = strpos($absolutePath, $mediaMarker);
++        if ($markerPos !== false) {
++            return ltrim(substr($absolutePath, $markerPos + strlen($mediaMarker)), '/');
++        }
++
++        return ltrim($absolutePath, '/');
++    }
++
+     /**
+      * Get base url of the application
+      *
+      * @return string
+      */
+     public function getBaseUrl()
+     {
+         if (!$this->baseUrl) {
+             $this->baseUrl = $this->url->getBaseUrl();
+         }
+         return $this->baseUrl;
+     }
+ 
+     /**
+      * @return string
+-     * @throws \Magento\Framework\Exception\LocalizedException
+-     * @throws \Magento\Framework\Exception\NoSuchEntityException
++     * @throws LocalizedException
++     * @throws NoSuchEntityException
++     * @throws FileSystemException
+      */
+     public function createImageUrl()
+     {
+-        if (!is_file($this->image)) {
+-              throw new \Magento\Framework\Exception\LocalizedException(
+-                  __("Cant create image, image file does not exists! ( ". $this->image . ")")
+-              );
++        $mediaDirectory = $this->getMediaDirectory();
++        $sourceRelative = ltrim(str_replace('\\', '/', (string) $this->image), '/');
++
++        if ($sourceRelative === '' || !$mediaDirectory->isFile($sourceRelative)) {
++            throw new LocalizedException(
++                __("Cant create image, image file does not exists! ( " . $sourceRelative . ")")
++            );
+         }
++
++        $sourceBasename = basename($sourceRelative);
++
+         if ($this->imageId) {
+             $this->catImageHelper->init(null, $this->imageId, []);
+             $this->width = $this->catImageHelper->getWidth();
+             $this->height = $this->catImageHelper->getHeight();
+-            $newImage = $this->getImageDir($this->id) . "{$this->id}-" . $this->imageId . '-' . basename($this->image);
++            $newImageRelative = $this->getImageDirRelative($this->id)
++                . "{$this->id}-" . $this->imageId . '-' . $sourceBasename;
+         } elseif ($this->width && $this->height) {
+-            $newImage = $this->getImageDir($this->id)
+-                . "{$this->id}-" . $this->width . 'x' . $this->height . '-' . basename($this->image);
++            $newImageRelative = $this->getImageDirRelative($this->id)
++                . "{$this->id}-" . $this->width . 'x' . $this->height . '-' . $sourceBasename;
+         } else {
+-            throw new \Magento\Framework\Exception\LocalizedException(__("Cant create image, no dimensions set!"));
++            throw new LocalizedException(__("Cant create image, no dimensions set!"));
+         }
+ 
+-        if (!is_file($newImage)) {
++        if (!$mediaDirectory->isFile($newImageRelative)) {
++            $this->ensureImageDir($this->id);
++
+             $image = $this->imageFactory->create();
+-            $image->open($this->image);
++            // Absolute media paths let Magento RemoteStorage plugins sync via TMP when needed.
++            $image->open($mediaDirectory->getAbsolutePath($sourceRelative));
+             if ($this->adaptiveResize) {
+                 $image = $this->doAdaptiveResize($image);
+             } elseif ($this->width != 'auto' && $this->height != 'auto') {
+                 $image->backgroundColor([255, 255, 255]);
+                 $image->constrainOnly(true);
+                 $image->keepTransparency(true);
+                 $image->keepFrame(true);
+                 $image->keepAspectRatio(true);
+                 $image->resize($this->width, $this->height);
+             }
+ 
+-            $image->save($newImage);
++            $image->save($mediaDirectory->getAbsolutePath($newImageRelative));
+         }
+ 
+-        return $this->getImageUrl($newImage);
++        return $this->getImageUrl($newImageRelative);
+     }
+ 
+     /**
+-     * @param $id
++     * Build cache directory path relative to media (without creating it).
++     *
++     * @param string|int $id
+      * @return string
+      */
+-    public function getImageDir($id)
++    public function getImageDirRelative($id): string
+     {
+-        $filePath = [];
+-        $filePath[] = rtrim(
+-            $this->filesystem->getDirectoryRead(DirectoryList::MEDIA)->getAbsolutePath("experius/subcategorylistview/cache/"),
+-            '/'
+-        );
++        $filePath = [self::CACHE_BASE_PATH];
+ 
+         if (is_numeric($id)) {
+-            $filePath[] = substr($id, -1);
++            $filePath[] = substr((string) $id, -1);
+ 
+             if ($id >= 10) {
+-                $filePath[] = substr($id, -2, 1);
++                $filePath[] = substr((string) $id, -2, 1);
+             } else {
+-                $filePath[] = substr($id, -1);
++                $filePath[] = substr((string) $id, -1);
+             }
+         } else {
+-            $filePath[] = $id;
++            $filePath[] = (string) $id;
+         }
+ 
+-        $filePath = implode('/', $filePath) . '/';
++        return implode('/', $filePath) . '/';
++    }
+ 
+-        if (!is_dir($filePath)) {
+-            mkdir($filePath, 0777, true);
++    /**
++     * Ensure the cache directory exists via the media filesystem driver.
++     *
++     * @param string|int $id
++     * @return string Media-relative directory path with trailing slash
++     * @throws FileSystemException
++     */
++    private function ensureImageDir($id): string
++    {
++        $relativeDir = rtrim($this->getImageDirRelative($id), '/');
++        $mediaDirectory = $this->getMediaDirectory();
++        if (!$mediaDirectory->isDirectory($relativeDir)) {
++            $mediaDirectory->create($relativeDir);
+         }
+ 
+-        return $filePath;
++        return $relativeDir . '/';
+     }
+ 
+     /**
+-     * @param $image
++     * @param string|int $id
++     * @return string Absolute path to the cache directory (media driver aware)
++     * @throws FileSystemException
++     */
++    public function getImageDir($id)
++    {
++        $relativeDir = $this->ensureImageDir($id);
++
++        return $this->getMediaDirectory()->getAbsolutePath($relativeDir);
++    }
++
++    /**
++     * @param string $image Media-relative path or absolute path under media
+      * @return string
+-     * @throws \Magento\Framework\Exception\NoSuchEntityException
++     * @throws NoSuchEntityException
+      */
+     public function getImageUrl($image)
+     {
+         $store = $this->storeManager->getStore();
+-        $dir = $this->filesystem->getDirectoryRead(DirectoryList::MEDIA)->getAbsolutePath();
++        $path = str_replace('\\', '/', (string) $image);
+ 
+-        $path = substr($image, strlen($dir));
++        try {
++            $relative = $this->getMediaDirectoryRead()->getRelativePath($path);
++            if ($relative !== null && $relative !== '' && strpos($relative, '..') !== 0) {
++                $path = $relative;
++            }
++        } catch (\Exception $e) {
++            // Already a media-relative path.
++        }
+ 
+-        $mediaUrl = $store->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
++        $path = ltrim($path, '/');
++        $mediaUrl = $store->getBaseUrl(UrlInterface::URL_TYPE_MEDIA);
+ 
+         return $mediaUrl . $path;
+     }
+ 
+     /**
+-     * @param $id
++     * @param string|int $id
++     * @throws FileSystemException
++     * @throws \InvalidArgumentException
+      */
+     public function removeCachedImageDir($id)
+     {
+-        $dirPath = $this->getImageDir($id);
++        $relativeDir = rtrim($this->getImageDirRelative($id), '/');
++        $mediaDirectory = $this->getMediaDirectory();
+ 
+-        if (!is_dir($dirPath)) {
+-            throw new \InvalidArgumentException("$dirPath must be a directory");
+-        }
+-        if (substr($dirPath, strlen($dirPath) - 1, 1) != '/') {
+-            $dirPath .= '/';
++        if (!$mediaDirectory->isExist($relativeDir)) {
++            return;
+         }
+-        $files = glob($dirPath . '*', GLOB_MARK);
+-        foreach ($files as $file) {
+-            if (is_dir($file)) {
+-                self::removeCachedImageDir($file);
+-            } else {
+-                unlink($file);
+-            }
++
++        if (!$mediaDirectory->isDirectory($relativeDir)) {
++            throw new \InvalidArgumentException("$relativeDir must be a directory");
+         }
+-        rmdir($dirPath);
+ 
+-        $parentDir = substr($dirPath, 0, strrpos($dirPath, '/', -2));
+-        $lastDir = substr($parentDir, strrpos($parentDir, '/')+1);
++        $mediaDirectory->delete($relativeDir);
++
++        $parentDir = dirname($relativeDir);
++        $lastDir = basename($parentDir);
+ 
+-        if (!in_array($lastDir, ['cache','subcategorylistview','experius'])) {
+-            $files_in_directory = scandir($parentDir);
+-            $items_count = count($files_in_directory);
+-            // first two items are '.' and '..'
+-            if ($items_count <= 2) {
+-                rmdir($parentDir);
++        if (!in_array($lastDir, ['cache', 'subcategorylistview', 'experius'], true)) {
++            if ($mediaDirectory->isDirectory($parentDir)
++                && empty($mediaDirectory->read($parentDir))
++            ) {
++                $mediaDirectory->delete($parentDir);
+             }
+         }
+     }
+ 
+     /**
+      * Do adaptive resize on save
+      */
+     public function adaptiveResize($width = null, $height = null)
+     {
+         if ($width) {
+diff --git a/vendor/experius/module-subcategorylistview/Model/Config/Backend/Image.php b/vendor/experius/module-subcategorylistview/Model/Config/Backend/Image.php
+index 934222f..61210e7 100644
+--- a/vendor/experius/module-subcategorylistview/Model/Config/Backend/Image.php
++++ b/vendor/experius/module-subcategorylistview/Model/Config/Backend/Image.php
+@@ -3,21 +3,20 @@
+  * Copyright © Experius B.V. All rights reserved.
+  * See COPYING.txt for license details.
+  */
+ declare(strict_types=1);
+ 
+ /**
+  * System config image field backend model
+  */
+ namespace Experius\Subcategorylistview\Model\Config\Backend;
+ 
+-use Experius\Subcategorylistview\Helper\ImagesFactory as ImageHelperFactory;
+ use Magento\Config\Model\Config\Backend\File\RequestData\RequestDataInterface;
+ use Magento\Framework\App\Cache\TypeListInterface;
+ use Magento\Framework\App\Config\ScopeConfigInterface;
+ use Magento\Framework\App\Filesystem\DirectoryList;
+ use Magento\Framework\Data\Collection\AbstractDb;
+ use Magento\Framework\Exception\FileSystemException;
+ use Magento\Framework\Exception\LocalizedException;
+ use Magento\Framework\Filesystem;
+ use Magento\Framework\Model\Context;
+ use Magento\Framework\Model\ResourceModel\AbstractResource;
+@@ -26,36 +25,37 @@ use Magento\MediaStorage\Model\File\UploaderFactory;
+ 
+ class Image extends \Magento\Config\Model\Config\Backend\Image
+ {
+     /**
+      * @var \Experius\Subcategorylistview\Helper\Image|null
+      */
+     public ?\Experius\Subcategorylistview\Helper\Image $imageHelper = null;
+ 
+     /**
+      * @var DirectoryList|null
++     * @deprecated Unused; media operations go through Filesystem DirectoryWrite
+      */
+     public ?DirectoryList $directoryList = null;
+ 
+     /**
+      * Image constructor.
+      * @param Context $context
+      * @param Registry $registry
+      * @param ScopeConfigInterface $config
+      * @param TypeListInterface $cacheTypeList
+      * @param UploaderFactory $uploaderFactory
+      * @param RequestDataInterface $requestData
+      * @param Filesystem $filesystem
+      * @param AbstractResource|null $resource
+      * @param AbstractDb|null $resourceCollection
+      * @param \Experius\Subcategorylistview\Helper\Image $imageHelper
+-     * @param DirectoryList $directoryList
++     * @param DirectoryList $directoryList Kept for DI backward compatibility
+      */
+     public function __construct(
+         Context                                    $context,
+         Registry                                   $registry,
+         ScopeConfigInterface                       $config,
+         TypeListInterface                          $cacheTypeList,
+         UploaderFactory                            $uploaderFactory,
+         RequestDataInterface                       $requestData,
+         Filesystem                                 $filesystem,
+         \Experius\Subcategorylistview\Helper\Image $imageHelper,
+@@ -84,21 +84,21 @@ class Image extends \Magento\Config\Model\Config\Backend\Image
+      * @return Image
+      * @throws FileSystemException
+      * @throws LocalizedException
+      */
+     public function beforeSave(): Image
+     {
+         $value = $this->getValue();
+ 
+         if ((is_array($value) && !empty($value['tmp_name'])) || (is_array($value) && !empty($value['delete']))) {
+             $this->imageHelper->removeCachedImageDir('cph');
+-            $image = $this->directoryList->getPath('media')
+-                . '/experius' . DIRECTORY_SEPARATOR . 'subcategorylistview' . DIRECTORY_SEPARATOR . $value['value'];
+-
+-            if (file_exists($image)) {
+-                unlink($image);
++            if (!empty($value['value'])) {
++                $image = 'experius/subcategorylistview/' . ltrim((string) $value['value'], '/');
++                if ($this->_mediaDirectory->isFile($image)) {
++                    $this->_mediaDirectory->delete($image);
++                }
+             }
+         }
+ 
+         return parent::beforeSave();
+     }
+ }
