@@ -1,0 +1,99 @@
+diff --git a/vendor/experius/module-contentblock/Model/Block/Image.php b/vendor/experius/module-contentblock/Model/Block/Image.php
+index 653895f..af06733 100644
+--- a/vendor/experius/module-contentblock/Model/Block/Image.php
++++ b/vendor/experius/module-contentblock/Model/Block/Image.php
+@@ -432,7 +432,7 @@ class Image extends AbstractModel
+     }
+ 
+     /**
+-     * @param string|null $file
++     * @param string|null $file Media-relative path
+      * @return float|int
+      * @SuppressWarnings(PHPMD.NPathComplexity)
+      */
+@@ -443,13 +443,9 @@ class Image extends AbstractModel
+             return 0;
+         }
+ 
+-        if (!$this->_mediaDirectory->isExist($file)) {
+-            return 0;
+-        }
++        $imageInfo = $this->getImageSizeInfo($file);
+ 
+-        $imageInfo = getimagesize($this->_mediaDirectory->getAbsolutePath($file));
+-
+-        if (!isset($imageInfo[0]) || !isset($imageInfo[1])) {
++        if ($imageInfo === false || !isset($imageInfo[0]) || !isset($imageInfo[1])) {
+             return 0;
+         }
+         if (!isset($imageInfo['channels'])) {
+@@ -1012,7 +1008,7 @@ class Image extends AbstractModel
+     /**
+      * Return resized product image information
+      *
+-     * @return array
++     * @return array|false|null
+      * @throws LocalizedException
+      */
+     public function getResizedImageInfo()
+@@ -1023,15 +1019,57 @@ class Image extends AbstractModel
+                 "Magento_Catalog::images/product/placeholder/{$this->getDestinationSubdir()}.jpg"
+             );
+             $img = $asset->getSourceFile();
++            // Placeholder assets are module/static files on the local filesystem (Magento Catalog equivalent).
++            // phpcs:ignore Magento2.Functions.DiscouragedFunction
+             $fileInfo = getimagesize($img);
+-        } else {
+-            if ($this->_mediaDirectory->isFile($this->_mediaDirectory->getAbsolutePath($this->_newFile))) {
+-                $fileInfo = getimagesize($this->_mediaDirectory->getAbsolutePath($this->_newFile));
++        } elseif (is_string($this->_newFile)) {
++            $fileInfo = $this->getImageSizeInfo($this->_newFile);
++            if ($fileInfo === false) {
++                $fileInfo = null;
+             }
+         }
+         return $fileInfo;
+     }
+ 
++    /**
++     * Resolve image size for a media-relative path in a remote-storage-safe way.
++     *
++     * Prefer local getimagesize when the absolute path is a real local file (local media,
++     * DB media storage sync, or Hypernode local cache). Otherwise read via the MEDIA
++     * filesystem driver and use getimagesizefromstring — same outcome as Magento
++     * RemoteStorage Plugin\Image TMP sync without requiring GD open().
++     *
++     * @param string $relativePath Path relative to the media directory
++     * @return array|false Same return shape as getimagesize() / getimagesizefromstring()
++     */
++    private function getImageSizeInfo(string $relativePath)
++    {
++        if ($relativePath === '' || !$this->_mediaDirectory->isFile($relativePath)) {
++            return false;
++        }
++
++        $absolutePath = $this->_mediaDirectory->getAbsolutePath($relativePath);
++        // Capability probe: remote drivers return an absolute-looking path that is not a local file.
++        // phpcs:ignore Magento2.Functions.DiscouragedFunction
++        if (is_file($absolutePath)) {
++            // phpcs:ignore Magento2.Functions.DiscouragedFunction
++            return getimagesize($absolutePath);
++        }
++
++        try {
++            $content = $this->_mediaDirectory->readFile($relativePath);
++        } catch (FileSystemException $e) {
++            return false;
++        }
++
++        if ($content === '' || $content === false) {
++            return false;
++        }
++
++        // phpcs:ignore Magento2.Functions.DiscouragedFunction
++        return getimagesizefromstring($content);
++    }
++
+     /**
+      * Clear image data from cache
+      *
