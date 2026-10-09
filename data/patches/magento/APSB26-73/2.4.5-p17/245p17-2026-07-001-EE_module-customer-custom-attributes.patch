@@ -1,0 +1,42 @@
+diff --git a/vendor/magento/module-customer-custom-attributes/Block/Adminhtml/Customer/Address/Attribute/Edit/Tab/General.php b/vendor/magento/module-customer-custom-attributes/Block/Adminhtml/Customer/Address/Attribute/Edit/Tab/General.php
+index d721e12d4213..f81db8ce8c9b 100644
+--- a/vendor/magento/module-customer-custom-attributes/Block/Adminhtml/Customer/Address/Attribute/Edit/Tab/General.php
++++ b/vendor/magento/module-customer-custom-attributes/Block/Adminhtml/Customer/Address/Attribute/Edit/Tab/General.php
+@@ -186,6 +186,7 @@ protected function _prepareForm()
+         );
+ 
+         $forbiddenFileExtensions = implode(',', $this->extensionValidator->getProtectedFileExtensions());
++        $forbiddenFileExtensionsDisplay = implode(', ', $this->extensionValidator->getProtectedFileExtensions());
+         $noteMessage ='Comma separated, alphanumeric characters. Forbidden file extensions: %1.';
+         $fieldset->addField(
+             'file_extensions',
+@@ -194,7 +195,7 @@ protected function _prepareForm()
+                 'name' => 'file_extensions',
+                 'label' => __('File Extensions'),
+                 'title' => __('File Extensions'),
+-                'note' => __($noteMessage, $forbiddenFileExtensions),
++                'note' => __($noteMessage, $forbiddenFileExtensionsDisplay),
+                 'class' => 'validate-forbidden-extensions',
+                 'data-validation-params' => $forbiddenFileExtensions,
+             ],
+diff --git a/vendor/magento/module-customer-custom-attributes/Block/Adminhtml/Customer/Attribute/Edit/Tab/Main.php b/vendor/magento/module-customer-custom-attributes/Block/Adminhtml/Customer/Attribute/Edit/Tab/Main.php
+index be837ef69cdf..d32871ab1c23 100644
+--- a/vendor/magento/module-customer-custom-attributes/Block/Adminhtml/Customer/Attribute/Edit/Tab/Main.php
++++ b/vendor/magento/module-customer-custom-attributes/Block/Adminhtml/Customer/Attribute/Edit/Tab/Main.php
+@@ -206,6 +206,7 @@ protected function _prepareForm()
+         );
+ 
+         $forbiddenFileExtensions = implode(',', $this->extensionValidator->getProtectedFileExtensions());
++        $forbiddenFileExtensionsDisplay = implode(', ', $this->extensionValidator->getProtectedFileExtensions());
+         $fieldset->addField(
+             'file_extensions',
+             'text',
+@@ -213,7 +214,7 @@ protected function _prepareForm()
+                 'name' => 'file_extensions',
+                 'label' => __('File Extensions'),
+                 'title' => __('File Extensions'),
+-                'note' => __('Comma separated. Forbidden file extensions: %1.', $forbiddenFileExtensions),
++                'note' => __('Comma separated. Forbidden file extensions: %1.', $forbiddenFileExtensionsDisplay),
+                 'class' => 'validate-forbidden-extensions',
+                 'data-validation-params' => $forbiddenFileExtensions,
+             ],

@@ -1,0 +1,34 @@
+{
+    "patches": {
+        "magento/framework": {
+            "245p17-2026-07-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-73/2.4.5-p17/245p17-2026-07-001-CE_framework.patch"
+        },
+        "magento/module-catalog": {
+            "245p17-2026-07-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-73/2.4.5-p17/245p17-2026-07-001-CE_module-catalog.patch"
+        },
+        "magento/module-catalog-inventory": {
+            "245p17-2026-07-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-73/2.4.5-p17/245p17-2026-07-001-CE_module-catalog-inventory.patch"
+        },
+        "magento/module-catalog-url-rewrite-graph-ql": {
+            "245p17-2026-07-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-73/2.4.5-p17/245p17-2026-07-001-CE_module-catalog-url-rewrite-graph-ql.patch"
+        },
+        "magento/module-checkout": {
+            "245p17-2026-07-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-73/2.4.5-p17/245p17-2026-07-001-CE_module-checkout.patch"
+        },
+        "magento/module-customer": {
+            "245p17-2026-07-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-73/2.4.5-p17/245p17-2026-07-001-CE_module-customer.patch"
+        },
+        "magento/module-gift-message": {
+            "245p17-2026-07-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-73/2.4.5-p17/245p17-2026-07-001-CE_module-gift-message.patch"
+        },
+        "magento/module-quote": {
+            "245p17-2026-07-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-73/2.4.5-p17/245p17-2026-07-001-CE_module-quote.patch"
+        },
+        "magento/module-store": {
+            "245p17-2026-07-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-73/2.4.5-p17/245p17-2026-07-001-CE_module-store.patch"
+        },
+        "magento/module-translation": {
+            "245p17-2026-07-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-73/2.4.5-p17/245p17-2026-07-001-CE_module-translation.patch"
+        }
+    }
+}

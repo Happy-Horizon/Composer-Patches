@@ -1,0 +1,16 @@
+{
+    "patches": {
+        "magento/module-catalog-staging": {
+            "245p17-2026-07-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-73/2.4.5-p17/245p17-2026-07-001-EE_module-catalog-staging.patch"
+        },
+        "magento/module-customer-custom-attributes": {
+            "245p17-2026-07-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-73/2.4.5-p17/245p17-2026-07-001-EE_module-customer-custom-attributes.patch"
+        },
+        "magento/module-gift-card-account": {
+            "245p17-2026-07-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-73/2.4.5-p17/245p17-2026-07-001-EE_module-gift-card-account.patch"
+        },
+        "magento/module-gift-registry": {
+            "245p17-2026-07-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-73/2.4.5-p17/245p17-2026-07-001-EE_module-gift-registry.patch"
+        }
+    }
+}
