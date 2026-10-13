@@ -1,0 +1,71 @@
+diff --git a/vendor/magento/module-company/Model/SaveValidator/SanitizeRegion.php b/vendor/magento/module-company/Model/SaveValidator/SanitizeRegion.php
+new file mode 100644
+index 000000000000..4592ab614d06
+--- /dev/null
++++ b/vendor/magento/module-company/Model/SaveValidator/SanitizeRegion.php
+@@ -0,0 +1,53 @@
++<?php
++/**
++ * ADOBE CONFIDENTIAL
++ *
++ * Copyright 2026 Adobe
++ * All Rights Reserved.
++ *
++ * NOTICE: All information contained herein is, and remains
++ * the property of Adobe and its suppliers, if any. The intellectual
++ * and technical concepts contained herein are proprietary to Adobe
++ * and its suppliers and are protected by all applicable intellectual
++ * property laws, including trade secret and copyright laws.
++ * Dissemination of this information or reproduction of this material
++ * is strictly forbidden unless prior written permission is obtained
++ * from Adobe.
++ */
++declare(strict_types=1);
++
++namespace Magento\Company\Model\SaveValidator;
++
++use Magento\Company\Api\Data\CompanyInterface;
++use Magento\Company\Model\SaveValidatorInterface;
++use Magento\Framework\Filter\StripTags;
++
++/**
++ * Sanitizes the company region value.
++ */
++class SanitizeRegion implements SaveValidatorInterface
++{
++    /**
++     * @param CompanyInterface $company
++     * @param StripTags $stripTags
++     */
++    public function __construct(
++        private readonly CompanyInterface $company,
++        private readonly StripTags $stripTags
++    ) {
++    }
++
++    /**
++     * @inheritdoc
++     */
++    public function execute()
++    {
++        $region = $this->company->getRegion();
++        if (empty($region)) {
++            return;
++        }
++
++        $sanitized = trim($this->stripTags->filter($region));
++        $this->company->setRegion($sanitized);
++    }
++}
+diff --git a/vendor/magento/module-company/etc/di.xml b/vendor/magento/module-company/etc/di.xml
+index cbc695188b7a..710ea704cf8f 100755
+--- a/vendor/magento/module-company/etc/di.xml
++++ b/vendor/magento/module-company/etc/di.xml
+@@ -33,6 +33,7 @@
+                 <item name="companyId" xsi:type="string">\Magento\Company\Model\SaveValidator\CompanyId</item>
+                 <item name="requiredFields" xsi:type="string">\Magento\Company\Model\SaveValidator\RequiredFields</item>
+                 <item name="companyName" xsi:type="string">\Magento\Company\Model\SaveValidator\SanitizeCompanyName</item>
++                <item name="companyRegion" xsi:type="string">\Magento\Company\Model\SaveValidator\SanitizeRegion</item>
+                 <item name="salesRepresentative" xsi:type="string">\Magento\Company\Model\SaveValidator\SalesRepresentative</item>
+                 <item name="customerGroup" xsi:type="string">\Magento\Company\Model\SaveValidator\CustomerGroup</item>
+                 <item name="companyStatus" xsi:type="string">\Magento\Company\Model\SaveValidator\CompanyStatus</item>

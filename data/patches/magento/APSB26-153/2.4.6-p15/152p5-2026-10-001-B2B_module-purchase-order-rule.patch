@@ -1,0 +1,24 @@
+diff --git a/vendor/magento/module-purchase-order-rule/Plugin/Customer/Authorization/ApproveRejectPurchaseOrderPlugin.php b/vendor/magento/module-purchase-order-rule/Plugin/Customer/Authorization/ApproveRejectPurchaseOrderPlugin.php
+index 9619bbb4f14b..a4681cf9dbfc 100644
+--- a/vendor/magento/module-purchase-order-rule/Plugin/Customer/Authorization/ApproveRejectPurchaseOrderPlugin.php
++++ b/vendor/magento/module-purchase-order-rule/Plugin/Customer/Authorization/ApproveRejectPurchaseOrderPlugin.php
+@@ -108,6 +108,7 @@ public function afterIsAllowed(ApproveRejectPurchaseOrder $subject, $result, $pu
+         if ($companyId
+             && $this->companyAdminPermission->isGivenUserCompanyAdmin($customerId, $companyId)
+             && $this->companyStructure->getAllowedChildrenIds((int)$customerId)
++            && (int) $purchaseOrder->getCompanyId() === $companyId
+         ) {
+             return true;
+         }
+diff --git a/vendor/magento/module-purchase-order-rule/Plugin/Customer/Authorization/ViewPurchaseOrderPlugin.php b/vendor/magento/module-purchase-order-rule/Plugin/Customer/Authorization/ViewPurchaseOrderPlugin.php
+index 69338e182644..6e7b7ffd6045 100644
+--- a/vendor/magento/module-purchase-order-rule/Plugin/Customer/Authorization/ViewPurchaseOrderPlugin.php
++++ b/vendor/magento/module-purchase-order-rule/Plugin/Customer/Authorization/ViewPurchaseOrderPlugin.php
+@@ -112,6 +112,7 @@ public function afterIsAllowed(ViewPurchaseOrder $subject, $result, $purchaseOrd
+         if ($companyId
+             && $this->companyAdminPermission->isGivenUserCompanyAdmin($customerId, $companyId)
+             && $this->companyStructure->getAllowedChildrenIds((int)$customerId)
++            && (int) $purchaseOrder->getCompanyId() === $companyId
+         ) {
+             return true;
+         }
