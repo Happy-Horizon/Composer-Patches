@@ -15,19 +15,34 @@ class Assets
      */
     public function static(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $filePath = BP . '/view/static/' . $args['filepath'] ?? '';
-
-        if (!file_exists($filePath)) {
-            return $response->withStatus(404, 'File Not Found');
+        $relativePath = str_replace('\\', '/', (string)($args['filepath'] ?? ''));
+        $relativePath = ltrim($relativePath, '/');
+        if ($relativePath === '' || str_contains($relativePath, '..')) {
+            return $response->withStatus(404);
         }
 
-        $mimeType = match (pathinfo($filePath, PATHINFO_EXTENSION)) {
+        $baseDir = realpath(BP . '/view/static');
+        $filePath = $baseDir !== false ? realpath($baseDir . '/' . $relativePath) : false;
+
+        if ($baseDir === false || $filePath === false || !str_starts_with($filePath, $baseDir . DIRECTORY_SEPARATOR) || !is_file($filePath)) {
+            return $response->withStatus(404);
+        }
+
+        $mimeType = match (strtolower(pathinfo($filePath, PATHINFO_EXTENSION))) {
             'ico' => 'image/x-icon',
-            default => 'text/html; charset=UTF-8',
+            'css' => 'text/css; charset=UTF-8',
+            'js' => 'application/javascript; charset=UTF-8',
+            'woff2' => 'font/woff2',
+            'woff' => 'font/woff',
+            'png' => 'image/png',
+            'jpg', 'jpeg' => 'image/jpeg',
+            'svg' => 'image/svg+xml',
+            'webp' => 'image/webp',
+            default => 'application/octet-stream',
         };
 
-        $staticResponse = $response->withHeader('Content-Type', $mimeType );
-        $staticResponse->getBody()->write(file_get_contents($filePath));
+        $staticResponse = $response->withHeader('Content-Type', $mimeType);
+        $staticResponse->getBody()->write((string)file_get_contents($filePath));
 
         return $staticResponse;
     }

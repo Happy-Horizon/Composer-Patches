@@ -37,6 +37,11 @@ class DirectoryResolver
             $exists = true;
             $type = Type::All;
         }
+        if ($path === 'modules') {
+            $fullPath = rtrim(BP . '/data/patches/', DS);
+            $exists = true;
+            $type = Type::Modules;
+        }
         if ($path === 'readme') {
             $fullPath = BP . DS . 'README.md';
             $exists = true;

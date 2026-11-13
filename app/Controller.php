@@ -19,11 +19,14 @@ class Controller
     /**
      * @param DirectoryResolver $directoryResolver
      * @param CommonMarkConverter $markConverter
+     * @param Utils $utils
+     * @param PatchCatalog $patchCatalog
      */
     public function __construct(
         protected DirectoryResolver $directoryResolver,
         protected CommonMarkConverter $markConverter,
-        protected Utils $utils
+        protected Utils $utils,
+        protected PatchCatalog $patchCatalog
     ) {
         $this->phpRenderer = new PhpRenderer(__DIR__ . '/../view/templates/');
     }
@@ -40,6 +43,7 @@ class Controller
         $args['links'] = [
             'patches' => 'Patches',
             'patches/all' => 'All',
+            'patches/modules' => 'Modules',
             'patches/readme' => 'README'
         ];
         return $this->phpRenderer->render($response, 'links.phtml', $args);
@@ -55,10 +59,12 @@ class Controller
     public function patches(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $args['actions']['/patches/all'] = 'Show All';
+        $args['actions']['/patches/modules'] = 'Modules';
         $args['actions']['/patches/readme'] = 'README';
         $path = $this->directoryResolver->processPath($args['params'] ?? '');
         return match ($path->getType()) {
-            Type::All => $this->allPatches($path, $response, $args),
+            Type::All => $this->allPatches($path, $response, $args, $request),
+            Type::Modules => $this->modules($path, $response, $args),
             Type::Directory => $this->showDirectoryContents($path, $response, $args),
             Type::File => $this->showFile($path, $response, $args),
             Type::Invalid => $this->invalidUrl($path, $response)
@@ -69,20 +75,40 @@ class Controller
      * @param Path $path
      * @param ResponseInterface $response
      * @param array $args
+     * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    protected function allPatches(Path $path, ResponseInterface $response, array $args): ResponseInterface
-    {
-        $args['links'] = [];
-        $patches = $this->directoryResolver->getAllPatchFiles($path);
-        usort($patches, function ($patch1, $patch2) {
-            return $this->utils->getPatchNumber($patch1) - $this->utils->getPatchNumber($patch2);
-        });
-        foreach($patches as $patchFile) {
-            $args['links'][$patchFile] = $patchFile;
-        }
+    protected function allPatches(
+        Path $path,
+        ResponseInterface $response,
+        array $args,
+        ServerRequestInterface $request
+    ): ResponseInterface {
+        $queryParams = $request->getQueryParams();
+        $module = isset($queryParams['module']) ? (string)$queryParams['module'] : null;
+        $query = isset($queryParams['q']) ? (string)$queryParams['q'] : null;
+
+        $args['module'] = $module ?? '';
+        $args['q'] = $query ?? '';
+        $args['patches'] = $this->patchCatalog->filter($module, $query);
         $args['parent'] = $this->utils->getUrl($path->getRelativePath());
-        return $this->phpRenderer->render($response, 'links.phtml', $args);
+
+        return $this->phpRenderer->render($response, 'patches-list.phtml', $args);
+    }
+
+    /**
+     * @param Path $path
+     * @param ResponseInterface $response
+     * @param array $args
+     * @return ResponseInterface
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function modules(Path $path, ResponseInterface $response, array $args): ResponseInterface
+    {
+        $args['packages'] = $this->patchCatalog->getPackagesWithCounts();
+        $args['parent'] = $this->utils->getUrl('/patches');
+
+        return $this->phpRenderer->render($response, 'modules.phtml', $args);
     }
     
     /**
@@ -116,13 +142,14 @@ class Controller
     protected function showFile(Path $path, ResponseInterface $response, array $args): ResponseInterface
     {
         if ($path->getExtension() === 'md') {
-            $content = $this->markConverter->convert($path->getContents())->getContent();
-            $response = $response->withHeader('Content-Type', 'text/html')->withHeader('Content-Disposition', 'inline');
-        } else {
-            $content = $path->getContents();
-            $response = $response->withHeader('Content-Type', 'text/plain')->withHeader('Content-Disposition', 'inline');
+            $args['content'] = $this->markConverter->convert($path->getContents())->getContent();
+            $args['parent'] = $this->utils->getUrl('/patches');
+
+            return $this->phpRenderer->render($response, 'markdown.phtml', $args);
         }
-        $response->getBody()->write($content);
+
+        $response = $response->withHeader('Content-Type', 'text/plain')->withHeader('Content-Disposition', 'inline');
+        $response->getBody()->write($path->getContents());
         return $response;
     }
 
