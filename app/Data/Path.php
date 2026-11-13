@@ -47,6 +47,7 @@ class Path
     {
         return match ($this->type) {
             Type::All => 'all',
+            Type::Modules => 'modules',
             Type::Directory => 'dir',
             Type::File => pathinfo($this->getFullPath(), PATHINFO_EXTENSION),
             Type::Invalid => 'err'
