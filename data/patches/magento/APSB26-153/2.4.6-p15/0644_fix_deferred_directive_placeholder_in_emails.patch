@@ -1,0 +1,80 @@
+diff --git a/vendor/magento/framework/Filter/Template.php b/vendor/magento/framework/Filter/Template.php
+--- a/vendor/magento/framework/Filter/Template.php
++++ b/vendor/magento/framework/Filter/Template.php
+@@ -208,31 +208,39 @@ class Template implements FilterInterface
+     {
+         if (!is_string($value)) {
+             throw new InvalidArgumentException(__(
+                 'Argument \'value\' must be type of string, %1 given.',
+                 gettype($value)
+             )->render());
+         }
+ 
+         $this->filteringDepthMeter->descend();
+ 
+-        // Processing of template directives.
+-        $value = $this->resolveDirectives($value);
++        try {
++            // Processing of template directives.
++            $value = $this->resolveDirectives($value);
+ 
+-        // At the root template, resolve directives that child templates deferred to it.
+-        if ($this->filteringDepthMeter->showMark() === 1) {
+-            $value = $this->resolveDeferredDirectives($value);
+-        }
+-
+-        $value = $this->afterFilter($value);
++            // At the root template, resolve directives that child templates deferred to it.
++            if ($this->filteringDepthMeter->showMark() === 1) {
++                $value = $this->resolveDeferredDirectives($value);
++            }
+ 
+-        $this->filteringDepthMeter->ascend();
++            $value = $this->afterFilter($value);
++        } finally {
++            // The depth meter and the deferral registry are shared for the whole process. A directive
++            // that throws must not leave them behind, or every later template filtered in the same
++            // process is no longer treated as the root and emits unresolved deferral placeholders.
++            if ($this->filteringDepthMeter->showMark() === 1) {
++                $this->deferredDirectiveRegistry->clear();
++            }
++            $this->filteringDepthMeter->ascend();
++        }
+ 
+         return $value;
+     }
+ 
+     /**
+      * Defers a directive to the root template and returns the placeholder that represents it.
+      *
+      * @param string $directive
+      * @return string
+      * @throws \Magento\Framework\Exception\LocalizedException
+@@ -252,20 +260,27 @@ class Template implements FilterInterface
+     private function resolveDeferredDirectives(string $value): string
+     {
+         foreach ($this->deferredDirectiveRegistry->getAll() as $placeholder => $directive) {
+             if (strpos($value, $placeholder) === false) {
+                 continue;
+             }
+ 
+             $value = str_replace($placeholder, $this->resolveDirectives($directive), $value);
+         }
+ 
++        // A directive that defers again at the root template has no parent left to resolve
++        // it, which would leave an internal placeholder in the output. Emit the directive
++        // itself instead, matching the behaviour before out-of-band deferral.
++        foreach ($this->deferredDirectiveRegistry->getAll() as $placeholder => $directive) {
++            $value = str_replace($placeholder, $directive, $value);
++        }
++
+         $this->deferredDirectiveRegistry->clear();
+ 
+         return $value;
+     }
+ 
+     /**
+      * Processes directives and applies the results produced by each directive to the given value.
+      *
+      * @param string $value
+      *

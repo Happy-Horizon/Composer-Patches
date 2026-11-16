@@ -13,7 +13,8 @@
       "244p18-2026-10-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-153/2.4.4-p18/244p18-2026-10-001-CE_module-persistent.patch"
     },
     "magento/framework": {
-      "244p18-2026-10-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-153/2.4.4-p18/244p18-2026-10-001-CE_framework.patch"
+      "244p18-2026-10-001": "https://patches.happyhorizon.dev/patches/magento/APSB26-153/2.4.4-p18/244p18-2026-10-001-CE_framework.patch",
+      "0644 Fix deferred directive placeholder in emails after APSB26-153": "https://patches.happyhorizon.dev/patches/magento/APSB26-153/2.4.4-p18/0644_fix_deferred_directive_placeholder_in_emails.patch"
     }
   }
 }
