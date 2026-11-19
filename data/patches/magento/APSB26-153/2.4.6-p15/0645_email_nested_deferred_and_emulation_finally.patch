@@ -1,0 +1,118 @@
+diff --git a/vendor/magento/module-email/Model/Template/Filter.php b/vendor/magento/module-email/Model/Template/Filter.php
+--- a/vendor/magento/module-email/Model/Template/Filter.php
++++ b/vendor/magento/module-email/Model/Template/Filter.php
+@@ -1120,9 +1120,21 @@ class Filter extends \Magento\Framework\Filter\Template
+     }
+ 
+     /**
++     * Non-child email templates must resolve their own deferred placeholders even when nested
++     * inside another Template::filter() call (shared FilteringDepthMeter depth > 1).
++     *
++     * @return bool
++     */
++    protected function shouldResolveDeferredDirectives(): bool
++    {
++        return parent::shouldResolveDeferredDirectives() || !$this->isChildTemplate();
++    }
++
++    /**
+      * Filter the string as template
+      *
+-     * Overrides parent method in order to handle exceptions
++     * Overrides parent method in order to handle exceptions and to resolve leftover deferred
++     * placeholders that nested rendering left in non-child email output.
+      *
+      * @param string $value
+      * @return string
+@@ -1132,6 +1144,27 @@ class Filter extends \Magento\Framework\Filter\Template
+     {
+         try {
+             $value = parent::filter($value);
++
++            // Safety net: if a non-child email still contains :deferred: tokens after filter(),
++            // resolve them and log so the nesting module can be identified.
++            if (!$this->isChildTemplate() && $this->containsDeferredPlaceholders($value)) {
++                $template = $this->templateVars['this'] ?? null;
++                $templateId = null;
++                if (is_object($template)) {
++                    $templateId = method_exists($template, 'getId') ? $template->getId() : null;
++                    if ($templateId === null && method_exists($template, 'getTemplateId')) {
++                        $templateId = $template->getTemplateId();
++                    }
++                }
++                $this->_logger->warning(
++                    'Unresolved deferred directive placeholder left in email template after filter; resolving as fallback.',
++                    [
++                        'template_id' => $templateId,
++                        'depth' => $this->filteringDepthMeter->showMark(),
++                    ]
++                );
++                $value = $this->resolveDeferredDirectives($value);
++            }
+         } catch (Exception $e) {
+             // Since a single instance of this class can be used to filter content multiple times, reset callbacks to
+             // prevent callbacks running for unrelated content (e.g., email subject and email body)
+diff --git a/vendor/magento/module-email/Model/Template.php b/vendor/magento/module-email/Model/Template.php
+--- a/vendor/magento/module-email/Model/Template.php
++++ b/vendor/magento/module-email/Model/Template.php
+@@ -247,14 +247,12 @@ class Template extends AbstractTemplate
+         $storeId = $this->getDesignConfig()->getStore();
+ 
+         try {
+-            $processedResult = $processor->setStoreId($storeId)->filter($this->getTemplateSubject());
++            return $processor->setStoreId($storeId)->filter($this->getTemplateSubject());
+         } catch (\Exception $e) {
+-            $this->cancelDesignConfig();
+             throw new \Magento\Framework\Exception\MailException(__($e->getMessage()), $e);
++        } finally {
++            $this->cancelDesignConfig();
+         }
+-
+-        $this->cancelDesignConfig();
+-        return $processedResult;
+     }
+ 
+     /**
+@@ -363,26 +361,27 @@ class Template extends AbstractTemplate
+         // Support theme fallback for email templates
+         $isDesignApplied = $this->applyDesignConfig();
+ 
+-        $templateId = $this->getId();
+-        if (is_numeric($templateId)) {
+-            $this->load($templateId);
+-        } else {
+-            $this->loadDefault($templateId);
+-        }
+-
+-        if (!$this->getId()) {
+-            throw new \Magento\Framework\Exception\MailException(
+-                __('Invalid transactional email code: %1', $templateId)
+-            );
+-        }
++        try {
++            $templateId = $this->getId();
++            if (is_numeric($templateId)) {
++                $this->load($templateId);
++            } else {
++                $this->loadDefault($templateId);
++            }
+ 
+-        $this->setUseAbsoluteLinks(true);
+-        $text = $this->getProcessedTemplate($this->_getVars());
++            if (!$this->getId()) {
++                throw new \Magento\Framework\Exception\MailException(
++                    __('Invalid transactional email code: %1', $templateId)
++                );
++            }
+ 
+-        if ($isDesignApplied) {
+-            $this->cancelDesignConfig();
++            $this->setUseAbsoluteLinks(true);
++            return $this->getProcessedTemplate($this->_getVars());
++        } finally {
++            if ($isDesignApplied) {
++                $this->cancelDesignConfig();
++            }
+         }
+-        return $text;
+     }

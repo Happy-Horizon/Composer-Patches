@@ -1,0 +1,134 @@
+diff --git a/vendor/magento/framework/Filter/Template.php b/vendor/magento/framework/Filter/Template.php
+--- a/vendor/magento/framework/Filter/Template.php
++++ b/vendor/magento/framework/Filter/Template.php
+@@ -113,12 +113,12 @@ class Template implements FilterInterface
+     /**
+      * @var FilteringDepthMeter|null
+      */
+-    private $filteringDepthMeter;
++    protected $filteringDepthMeter;
+ 
+     /**
+      * @var DeferredDirectiveRegistry|null
+      */
+-    private $deferredDirectiveRegistry;
++    protected $deferredDirectiveRegistry;
+ 
+     /**
+      * @param StringUtils $string
+@@ -219,8 +219,8 @@ class Template implements FilterInterface
+             // Processing of template directives.
+             $value = $this->resolveDirectives($value);
+ 
+-            // At the root template, resolve directives that child templates deferred to it.
+-            if ($this->filteringDepthMeter->showMark() === 1) {
++            // Resolve directives that child templates deferred when this filter owns the result.
++            if ($this->shouldResolveDeferredDirectives()) {
+                 $value = $this->resolveDeferredDirectives($value);
+             }
+ 
+@@ -229,6 +229,8 @@ class Template implements FilterInterface
+             // The depth meter and the deferral registry are shared for the whole process. A directive
+             // that throws must not leave them behind, or every later template filtered in the same
+             // process is no longer treated as the root and emits unresolved deferral placeholders.
++            // Only clear at true process root (depth 1): nested email filters may resolve their own
++            // placeholders without wiping deferrals that still belong to an outer filter.
+             if ($this->filteringDepthMeter->showMark() === 1) {
+                 $this->deferredDirectiveRegistry->clear();
+             }
+@@ -239,6 +241,36 @@ class Template implements FilterInterface
+     }
+ 
+     /**
++     * Whether this filter call should resolve deferred directive placeholders in its output.
++     *
++     * Default: only the process-root filter (depth 1). Email filters override this so a non-child
++     * email still resolves its own header deferrals when rendered nested inside another filter.
++     *
++     * @return bool
++     */
++    protected function shouldResolveDeferredDirectives(): bool
++    {
++        return $this->filteringDepthMeter->showMark() === 1;
++    }
++
++    /**
++     * Whether the given value still contains any registered deferred placeholders.
++     *
++     * @param string $value
++     * @return bool
++     */
++    protected function containsDeferredPlaceholders(string $value): bool
++    {
++        foreach ($this->deferredDirectiveRegistry->getAll() as $placeholder => $directive) {
++            if (strpos($value, $placeholder) !== false) {
++                return true;
++            }
++        }
++
++        return false;
++    }
++
++    /**
+      * Defers a directive to the root template and returns the placeholder that represents it.
+      *
+      * @param string $directive
+@@ -257,24 +289,35 @@ class Template implements FilterInterface
+      * @return string
+      * @throws \Exception
+      */
+-    private function resolveDeferredDirectives(string $value): string
++    protected function resolveDeferredDirectives(string $value): string
+     {
++        $owned = [];
++
+         foreach ($this->deferredDirectiveRegistry->getAll() as $placeholder => $directive) {
+             if (strpos($value, $placeholder) === false) {
+                 continue;
+             }
+ 
+             $value = str_replace($placeholder, $this->resolveDirectives($directive), $value);
++            $owned[] = $placeholder;
+         }
+ 
+         // A directive that defers again at the root template has no parent left to resolve
+         // it, which would leave an internal placeholder in the output. Emit the directive
+         // itself instead, matching the behaviour before out-of-band deferral.
+         foreach ($this->deferredDirectiveRegistry->getAll() as $placeholder => $directive) {
++            if (strpos($value, $placeholder) === false) {
++                continue;
++            }
++
+             $value = str_replace($placeholder, $directive, $value);
++            $owned[] = $placeholder;
+         }
+ 
+-        $this->deferredDirectiveRegistry->clear();
++        // Only drop placeholders this filter resolved; leave unrelated shared deferrals intact.
++        foreach (array_unique($owned) as $placeholder) {
++            $this->deferredDirectiveRegistry->forget($placeholder);
++        }
+ 
+         return $value;
+     }
+diff --git a/vendor/magento/framework/Filter/Template/DeferredDirectiveRegistry.php b/vendor/magento/framework/Filter/Template/DeferredDirectiveRegistry.php
+--- a/vendor/magento/framework/Filter/Template/DeferredDirectiveRegistry.php
++++ b/vendor/magento/framework/Filter/Template/DeferredDirectiveRegistry.php
+@@ -81,6 +81,17 @@ class DeferredDirectiveRegistry
+     }
+ 
+     /**
++     * Forget a single registered deferral by placeholder token.
++     *
++     * @param string $placeholder
++     * @return void
++     */
++    public function forget(string $placeholder): void
++    {
++        unset($this->directives[$placeholder]);
++    }
++
++    /**
+      * Forget all registered deferrals.
+      *
+      * @return void
